@@ -7,15 +7,37 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <iostream>
 
+#if 0
 #if WIN32
 #include <iostream>
+#endif
 #endif
 
 #include <assert.h>
 
+#if 0
 using namespace std;
+#endif
 
+class my
+{
+public:
+    template <class T> 
+    static inline 
+    T abs(const T t) { return (t < 0) ? -t : t; }
+
+    template <class T>
+    static inline 
+    const T& min (const T& a, const T& b) { return (a < b) ? a : b; }
+
+    template <class T>
+    static inline 
+    const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
+};
+
+#if 0
 /*
  * These conflict with Windows if not in my namespace, but egcs does not yet
  * support namespaces.  And I can't use Windows' abs() because
@@ -37,11 +59,14 @@ inline const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
 
 #if WIN32
 }
+#endif
 
 using my::min;
 using my::max;
 using my::abs;
-#endif
+
+#endif /* 0 */
+
 
 #include "BandedMatrix.h"
 #include "BSpline.h"
@@ -304,7 +329,7 @@ BSplineBase<T>::Basis (int m, T x)
 {
     double y = 0;
     double xm = xmin + (m * DX);
-    double z = /*my::*/abs((double)(x - xm) / (double)DX);
+    double z = my::abs((double)(x - xm) / (double)DX);
     if (z < 2.0)
     {
 	z = 2 - z;
@@ -372,7 +397,7 @@ BSplineBase<T>::qDelta (int m1, int m2)
 	return 0.0;
 
     double q = 0;
-    for (int m = /*my::*/max (m1-2,0); m < /*my::*/min (m1+2, M); ++m)
+    for (int m = my::max (m1-2,0); m < my::min (m1+2, M); ++m)
 	q += qparts[K-1][m2-m1][m-m1+2];
     return q * alpha;
 }
@@ -446,7 +471,7 @@ BSplineBase<T>::addP ()
 {
     // Add directly to Q's elements
     Matrix<T> &P = base->Q;
-    std::vector<float> &X = base->X;
+    std::vector<T> &X = base->X;
 
     // For each data point, sum the product of the nearest, non-zero Basis
     // nodes
@@ -454,18 +479,18 @@ BSplineBase<T>::addP ()
     for (i = 0; i < NX; ++i)
     {
 	// Which node does this put us in?
-	float &x = X[i];
+	T &x = X[i];
 	mx = (int)((x - xmin) / DX);
 
 	// Loop over the upper triangle of nonzero basis functions,
 	// and add in the products on each side of the diagonal.
-	for (m = /*my::*/max(0, mx-1); m <= /*my::*/min(M, mx+2); ++m)
+	for (m = my::max(0, mx-1); m <= my::min(M, mx+2); ++m)
 	{
 	    float pn;
 	    float pm = Basis (m, x);
 	    float sum = pm * pm;
 	    P[m][m] += sum;
-	    for (n = m+1; n <= /*my::*/min(M, mx+2); ++n)
+	    for (n = m+1; n <= my::min(M, mx+2); ++n)
 	    {
 		pn = Basis (n, x);
 		sum = pm * pn;
@@ -602,9 +627,9 @@ BSplineBase<T>::nodes (int *nn)
 
 
 template <class T>
-ostream &operator<< (ostream &out, const vector<T> &c)
+ostream &operator<< (ostream &out, const std::vector<T> &c)
 {
-    for (vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
+    for (std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
 	out << *it << ", ";
     out << endl;
     return out;
@@ -697,7 +722,7 @@ BSpline<T>::solve (const T *y)
 	T yj = y[j] - mean;
 	mx = (int)((xj - xmin) / DX);
 
-	for (m = max(0,mx-1); m <= min(mx+2,M); ++m)
+	for (m = my::max(0,mx-1); m <= my::min(mx+2,M); ++m)
 	{
 	    B[m] += yj * Basis (m, xj);
 	}
@@ -756,7 +781,7 @@ T BSpline<T>::evaluate (T x)
     if (OK)
     {
 	int n = (int)((x - xmin)/DX);
-	for (int i = max(0,n-1); i <= min(M,n+2); ++i)
+	for (int i = my::max(0,n-1); i <= my::min(M,n+2); ++i)
 	{
 	    y += s->A[i] * Basis (i, x);
 	}
