@@ -99,3 +99,18 @@ so that the solver routines can be re-written without the [] and -1
 offsets.
 
 Try doc++ now that bspline is a template.
+
+Should the template parameter be just for the types which are smoothed and
+returned?  Do the actual matrix calculations always as doubles?  Or take
+two template parameters, one for the data domain and one for the
+computation domain?  Can the second default to the same type as the first?
+
+Find some way to use gnu make to import dependencies and rules rather than
+performing sub-makes or depends?  Perform the hierarchy without actually
+running recursive makes?  I.e. every directory or component has a target as
+its name and a rule for making that target.  If the rules all use some
+directory variable to find their directory and include that variable in all
+of their rules, then the rules can be directory independent and executed
+anywhere.
+
+
