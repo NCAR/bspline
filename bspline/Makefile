@@ -12,7 +12,7 @@ CXXDEBUGFLAGS = -g -O -Wall
 
 INCLUDES = -I./lib
 CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES) $(DEFINES)
-LDFLAGS = -pg
+# LDFLAGS = -pg
 FFLAGS = -O
 
 .SUFFIXES: .cxx
@@ -29,6 +29,9 @@ all:: driver
 
 driver: $(SUBDIRS) $(OBJS) 
 	$(CXX) -o driver $(LDFLAGS) $(OBJS) $(LIBS)
+
+clean::
+	rm -f driver $(OBJS) *~
 
 subdirs:
 	@set -x; cd lib; \
@@ -58,9 +61,6 @@ tarfile: $(DISTFILES)
 	  echo "Cannot make link '$(TARFILE)'!  Aborting."; \
 	  false ; \
 	fi
-
-clean::
-	rm -f $(OBJS)
 
 clean::
 	cd lib; $(MAKE) $(MFLAGS) clean

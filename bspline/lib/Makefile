@@ -31,7 +31,7 @@ html::
 	doc++ -d $(DOCXX_HTMLDIR) $(DOCXX_HEADERS)
 
 clean::
-	rm -f $(OBJS) core *~
+	rm -f $(OBJS) $(LIB) core *~
 
 depend::
 
