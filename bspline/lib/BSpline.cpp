@@ -598,7 +598,7 @@ struct BSplineP
  * solves for the spline curve coeffiecients all at once.
  */
 BSpline::BSpline (const float *x, int nx, const float *y,
-		  float wl, int bc_type = BC_ZERO_SECOND) :
+		  float wl, int bc_type) :
     BSplineBase(x, nx, wl, bc_type), s(new BSplineP)
 {
     solve (y);
