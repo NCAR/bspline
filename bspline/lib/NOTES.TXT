@@ -40,6 +40,19 @@ the E vectors do not depend upon the B vector, only the F vector, we can compute
 E ahead of time also.  And only the diagonals of P+Q should be stored, rather than
 the full square matrix.
 
+The BSplineSolver can either keep a reference to M and use it back-solve for a 
+given b, else it can forget M after it has generated the e and f vectors (keeping
+the M elements needed for f in f, possibly as their inverse).  Then a Solver would
+not need any further reference to M and can still solve for given b vectors, but
+ultimately it requires more multiplications than using M directly.  (Access to M
+may be slow enough to warrant using the private vectors instead.)
+
+The problem with solver keeping a reference to Q, when it is copied 
+in the construction of a BSpline subclass, it will still
+refer to the Q in the BSplineBase class, rather than the new copy of BSplineBaseP
+in the subclass object.  At least using a default constructor in baseP set the
+reference to the new Q without calling upper().
+
 Bug: Setup() probably in infinite loop when not enough data points for a smaller
 cutoff wavelength.
 
