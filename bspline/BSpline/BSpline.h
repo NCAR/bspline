@@ -1,16 +1,10 @@
 //
-// $Id$
-//
 // BSpline.h: interface for the BSplineBase class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_BSPLINE_H__97C5C270_06EE_11D2_BF96_00C04FA30D33__INCLUDED_)
-#define AFX_BSPLINE_H__97C5C270_06EE_11D2_BF96_00C04FA30D33__INCLUDED_
-
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
+#ifndef _BSPLINEBASE_IFACE_ID
+#define _BSPLINEBASE_IFACE_ID "$Id$"
 
 class BSpline;
 
@@ -23,8 +17,9 @@ class BSplineBase
 public:
 	// Class members
 	static const double PI;
-
-	static bool Debug;					/* True enables debug messages */
+	static bool Debug;						/* True enables debug messages */
+	static const char *ImplVersion();		/* Return implementation version string */
+	static const char *IfaceVersion();
 	
 	// Boundary condition types
 	enum
@@ -41,29 +36,49 @@ public:
 				 int bc_type = BC_ZERO_SECOND		/* boundary condition type */
 				 );
 
-	// The copy constructor, which is especially used by the
-	// BSpline subclass constructor.
+	// Copy constructor
 	BSplineBase (const BSplineBase &);
 
-	virtual ~BSplineBase();
-
-	int nX () { return NX; }
+	// Set this spline to a whole new domain.  This does not yet work to
+	// re-apply the smoothing to a BSpline curve.
 	bool setDomain (const float *x, int nx, float wl, 
 				    int bc_type = BC_ZERO_SECOND);
 
+	// Create a BSpline smoothed curve for the given set of NX y values.  The
+	// returned object will need to be deleted.
 	BSpline *apply (const float *y);
+
+	// These methods return info about the spline domain.  The array of nodes returned
+	// by nodes() belongs to the object and should not be deleted; it will also be
+	// invalid if the object is destroyed.
 	const float *nodes (int *nnodes);
+	int nNodes () { return M+1; }
+
+	// These methods return information about the original X domain.
+	int nX () { return NX; }
 	float Xmin () { return xmin; }
 	float Xmax () { return xmin + (M * DX); }
+
+	// Return the Alpha value for a given wavelength.  With no argument, return
+	// the object's current alpha.
 	float Alpha (float wavelength);
+	float Alpha () { return alpha; }
+
+	// Use this method to test for valid state after construction or after a call to
+	// setDomain().  ok() will return false if either fail, such as when an
+	// appropriate number of nodes and node interval cannot be found for a given
+	// wavelength, or when the linear equation for the coefficients
+	// cannot be solved.
 	bool ok () { return OK; }
+
+	virtual ~BSplineBase();
 
 protected:
 
 	// Provided
 	float waveLength;	// Cutoff wavelength (l sub c)
 	int NX;
-	int K;				// Degree of derivative constraint
+	int K;				// Degree of derivative constraint (currently fixed at 1)
 	int BC;				// Boundary conditions type (0,1,2)
 
 	// Derived
@@ -102,6 +117,8 @@ class BSpline : public BSplineBase
 {
 public:
 	// Return the entire curve evaluated at each of the nodes.
+	// The array is held by the object, and thus should not be freed and
+	// is only valid while the object exists.
 	const float *curve (int *nx = 0);
 
 	// Return the evaluation of the smoothed curve 
@@ -125,4 +142,4 @@ protected:
 
 };
 
-#endif // !defined(AFX_BSPLINE_H__97C5C270_06EE_11D2_BF96_00C04FA30D33__INCLUDED_)
+#endif // !defined _BSPLINEBASE_IFACE_ID

@@ -1,4 +1,3 @@
-// $Id$
 //
 // BSpline.cxx: implementation of the BSplineBase class.
 //
@@ -151,6 +150,19 @@ const double BSplineBase::PI = 3.1415927;
 
 bool BSplineBase::Debug = false;
 
+const char *
+BSplineBase::ImplVersion()
+{
+	return ("$Id$");
+}
+
+const char *
+BSplineBase::IfaceVersion()
+{
+	return (_BSPLINEBASE_IFACE_ID);
+}
+
+	
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -188,22 +200,6 @@ BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) :
 
 
 // Methods
-
-
-#ifdef notdef
-void
-BSplineBase::Copy (const float *x, int nx, float wl)
-{
-	if (nx && x)
-	{
-		// Copy the x array into our storage.
-		base->X.resize (nx);
-		std::copy (x, x+nx, base->X.begin());
-		NX = base->X.size();
-	}
-	waveLength = wl;
-}
-#endif
 
 
 bool
