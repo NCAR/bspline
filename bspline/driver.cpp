@@ -81,6 +81,7 @@ main (int argc, char *argv[])
 	// wavelength.
 	//float wl = (x.back() - x.front()) / (x.size()/3 + 1);
 	//float wl = 30.0; /*secs*/
+	BSplineBase::Debug = true;
 	BSplineBase bb (x.begin(), x.size(), wl);
 
 	// Now apply our y values to get the smoothed curve.
@@ -122,7 +123,7 @@ EvalSpline (BSpline &spline, ostream &out)
 	ostream_iterator<float> of(out, "\t ");
 
 	float x = spline.Xmin();
-	float xs = (spline.Xmax() - x) / 500.0;
+	float xs = (spline.Xmax() - x) / 2000.0;
 	for (; x <= spline.Xmax(); x += xs)
 	{
 		*of++ = x;
