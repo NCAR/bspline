@@ -26,7 +26,7 @@ public:
 
 public:
 
-	BSplineBase (float *x, int nx, float wl /*cutoff wavelength*/);
+	BSplineBase (const float *x, int nx, float wl /*cutoff wavelength*/);
 	/* BSplineBase (); */
 
 	// The copy constructor, which is especially used by the
@@ -36,9 +36,9 @@ public:
 	virtual ~BSplineBase();
 
 	int nX () { return NX; }
-	void setDomain (float *x, int nx, float wl);
+	void setDomain (const float *x, int nx, float wl);
 
-	BSpline *apply (float *y);
+	BSpline *apply (const float *y);
 	const float *nodes (int *nnodes);
 	float Xmin () { return xmin; }
 	float Xmax () { return xmin + (M * DX); }
@@ -61,7 +61,7 @@ protected:
 	BSplineBaseP *base;	// Hide more complicated state members
 						// from the public interface.
 
-	void Copy (float *x, int nx, float wl);
+	void Copy (const float *x, int nx, float wl);
 	void Reset ();
 	int Setup ();
 	void calculateQ ();
@@ -98,7 +98,7 @@ public:
 
 	// A BSpline curve must be derived from a Base and a set
 	// of data points over that base.
-	BSpline (BSplineBase &, float *y);
+	BSpline (BSplineBase &, const float *y);
 
 	virtual ~BSpline();
 
@@ -106,6 +106,7 @@ protected:
 
 	// Our hidden state structure
 	BSplineP *s;
+	float mean;			// Fit without mean but add it in later
 
 };
 

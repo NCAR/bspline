@@ -182,7 +182,7 @@ BSplineBase::BSplineBase (const BSplineBase &bb) :
 }
 
 
-BSplineBase::BSplineBase (float *x, int nx, float wl) : 
+BSplineBase::BSplineBase (const float *x, int nx, float wl) : 
 	K(1), BC(2), base(new BSplineBaseP)
 {
 	setDomain (x, nx, wl);
@@ -206,7 +206,7 @@ BSplineBase::Reset ()
 
 
 void
-BSplineBase::Copy (float *x, int nx, float wl)
+BSplineBase::Copy (const float *x, int nx, float wl)
 {
 	if (nx && x)
 	{
@@ -220,7 +220,7 @@ BSplineBase::Copy (float *x, int nx, float wl)
 
 
 void
-BSplineBase::setDomain (float * x, int nx, float wl)
+BSplineBase::setDomain (const float *x, int nx, float wl)
 {
 	// If called while we have an existing array, release it.
 	Reset ();
@@ -295,7 +295,7 @@ BSplineBase::Beta (int m)
  * object which contains the smoothed curve for the y array.
  */
 BSpline *
-BSplineBase::apply (float *y)
+BSplineBase::apply (const float *y)
 {
 	BSpline *spline = new BSpline (*this, y);
 
@@ -413,52 +413,11 @@ BSplineBase::qDelta (int m1, int m2)
 void
 BSplineBase::calculateQ ()
 {
-#ifdef notdef
-	// At present Q is hardcoded for the first derivative
-	// filter constraint and the type 1 boundary constraint.
-
-	// These are the products of the first derivative of the
-	// normalized basis functions
-	// given a distance m nodes apart, q[m], 0 <= m <= 3
-	// Each column is the integral over each unit domain, -2 to 2
-	static const float qparts[4][4] = 
-	{
-		0.11250f,   0.63750f,   0.63750f,   0.11250f,
-		0.00000f,   0.13125f,  -0.54375f,   0.13125f,
-		0.00000f,   0.00000f,  -0.22500f,  -0.22500f,
-		0.00000f,   0.00000f,   0.00000f,  -0.01875f
-	};
-
-	// Simply the sums of each row above, for interior nodes
-	// where the integral is not restricted by the domain.
-	static const float qinterior[4] =
-	{
-		1.5f,	-0.28125f,	-0.450f,	-0.01875f
-	};
-
-	Vector<float> qdelta(4, qinterior);
-	qdelta *= DX * alpha;
-#endif
-
 	C_matrix<float> &Q = base->Q;
 	Q.newsize (M+1,M+1);
 	Q = 0.0;
 	//return;
 
-#ifdef notdef
-	// Start by filling in the diagonal where the boundary
-	// constraints do not contribute.
-	int i;
-	for (i = 0; i <= M; ++i)
-	{
-		Q[i][i] = qdelta[0];
-		for (int j = 1; j < 4 && i+j <= M; ++j)
-		{
-			Q[i][i+j] = qdelta[j];
-			Q[i+j][i] = qdelta[j];
-		}
-	}
-#endif
 	// First fill in the q values without the boundary constraints.
 	int i;
 	for (i = 0; i <= M; ++i)
@@ -490,7 +449,7 @@ BSplineBase::calculateQ ()
 		}
 	}
 
-	// Now the lower right
+	// Then the lower right
 	for (i = M-1; i <= M; ++i)
 	{
 		b1 = Beta(i);
@@ -526,24 +485,8 @@ BSplineBase::addP ()
 	C_matrix<float> P(M+1, M+1, 0.0);
 	std::vector<float> &X = base->X;
 
-#ifdef notdef
-	for (int m = 0; m <= M; ++m)
-	{
-		for (int n = 0; n <= M; ++n)
-		{
-			float sum = 0.0;
-			for (int j = 0; j < NX; ++j)
-			{
-				sum += Basis (m, X[j]) * Basis (n, X[j]) * DX;
-			}
-			P[m][n] = sum;
-		}
-	}
-#endif
-
-//#ifdef notdef
-	int m, n, i;
 	// For each data point, sum the product of the nearest, non-zero Basis nodes
+	int m, n, i;
 	for (i = 0; i < NX; ++i)
 	{
 		// Which node does this put us in?
@@ -568,8 +511,6 @@ BSplineBase::addP ()
 			}
 		}
 	}
-	//cerr << "Array P: " << P << endl;
-//#endif
 
 	base->Q += P;
 }
@@ -615,7 +556,8 @@ int BSplineBase::Setup()
 	xmin = X[0];
 	xmax = X[0];
 
-	for (int i = 1; i < NX; ++i)
+	int i;
+	for (i = 1; i < NX; ++i)
 	{
 		if (X[i] < xmin)
 			xmin = X[i];
@@ -698,13 +640,22 @@ struct BSplineP
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-BSpline::BSpline (BSplineBase &bb, float *y) :
-	BSplineBase (bb), s (new BSplineP)
+BSpline::BSpline (BSplineBase &bb, const float *y) :
+	BSplineBase(bb), s(new BSplineP)
 {
 	// Given an array of data points over x and its precalculated
 	// P+Q matrix, calculate the b vector and solve for the coefficients.
 
 	Vector<float> B(M+1);
+
+	// Find the mean of these data
+	mean = 0.0;
+	int i;
+	for (i = 0; i < NX; ++i)
+	{
+		mean += y[i];
+	}
+	mean = mean / (float)NX;
 
 	int m, j;
 	for (m = 0; m < M+1; ++m)
@@ -712,7 +663,7 @@ BSpline::BSpline (BSplineBase &bb, float *y) :
 		float sum = 0.0;
 		for (j = 0; j < NX; ++j)
 		{
-			sum += y[j] * Basis (m, base->X[j]);
+			sum += (y[j] - mean) * Basis (m, base->X[j]);
 		}
 		B[m] = sum * DX;
 	}
@@ -757,11 +708,12 @@ float BSpline::evaluate (float x)
 	{
 		y += s->A[i] * Basis (i, x);
 	}
+	y += mean;
 	return y;
 }
 
 
-const float * BSpline::curve (int *nx)
+const float *BSpline::curve (int *nx)
 {
 	std::vector<float> &spline = s->spline;
 
