@@ -87,13 +87,17 @@ main (int argc, char *argv[])
 	//float wl = 30.0; /*secs*/
 	BSplineBase::Debug = true;
 	BSplineBase bb (x.begin(), x.size(), wl, 2 /*bc*/);
+	if (bb.ok())
+	{
+		// Now apply our y values to get the smoothed curve.
+		BSpline spline(bb, y.begin());
 
-	// Now apply our y values to get the smoothed curve.
-	BSpline spline(bb, y.begin());
-
-	// And finally write the curve to a file
-	DumpSpline (x, y, spline, ofstream("spline.out"));
-	EvalSpline (spline, ofstream("curve.out"));
+		// And finally write the curve to a file
+		DumpSpline (x, y, spline, ofstream("spline.out"));
+		EvalSpline (spline, ofstream("curve.out"));
+	}
+	else
+		cerr << "Spline setup failed." << endl;
 
 	return 0;
 }
