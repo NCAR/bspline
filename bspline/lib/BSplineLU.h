@@ -1,3 +1,4 @@
+/* -*- mode: c++; c-basic-offset: 4; -*- */
 
 /*
  * This is a modified version of R. Pozo's LU_factor template procedure from
@@ -11,15 +12,15 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
     // assert(A.lbound() == 1);                // currently for 1-offset
     // assert(indx.lbound() == 1);             // vectors and matrices
 
-	Matrix::size_type M = A.num_rows();
-	Matrix::size_type N = A.num_cols();
+	typename Matrix::size_type M = A.num_rows();
+	typename Matrix::size_type N = A.num_cols();
 
     if (M == 0 || N==0) return 0;
-	indx.assign (M);
+	indx.resize (M);
 
-	Matrix::size_type j,k,jp;
-    Matrix::element_type t;
-	Matrix::size_type minMN = my::min(M,N);
+	typename Matrix::size_type j,k,jp;
+	typename Matrix::element_type t;
+	typename Matrix::size_type minMN = min(M,N);
 
     for (j=1; j<= minMN; j++)
     {
@@ -58,7 +59,7 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
             // note A(j,j), was A(jp,p) previously which was
             // guarranteed not to be zero (Label #1)
             //
-            Matrix::element_type recp =  1.0 / A(j,j);
+            typename Matrix::element_type recp =  1.0 / A(j,j);
 
             for (k=j+1; (k <= j+bands) && (k<=M); k++)
                 A(k,j) *= recp;
@@ -73,7 +74,7 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
             // x is the column vector A(j+1:M,j)
             // y is row vector A(j,j+1:N)
 
-			Matrix::size_type ii,jj;
+	    typename Matrix::size_type ii,jj;
 
             for (ii=j+1; (ii <= j+bands) && (ii<=M); ii++)
                 for (jj=j+1; (jj <= j+bands) && (jj<=N); jj++)
@@ -93,9 +94,9 @@ int LU_solve_banded(const Matrix &A, const VectorSubscripts &indx, Vector &b)
     //assert(indx.lbound() == 1);             // vectors and matrices
     //assert(b.lbound() == 1);
 
-	Matrix::size_type i,ii=0,ip,j;
-	Matrix::size_type n = A.num_rows();
-    Matrix::element_type sum = 0.0;
+	typename Matrix::size_type i,ii=0,ip,j;
+	typename Matrix::size_type n = A.num_rows();
+    typename Matrix::element_type sum = 0.0;
 
     for (i=1;i<=n;i++) 
     {
