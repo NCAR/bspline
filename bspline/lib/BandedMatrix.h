@@ -20,18 +20,18 @@ public:
 
     // Create a banded matrix with the same number of bands above and below
     // the diagonal.
-    BandedMatrix (int _N = 1, int nbands_off_diagonal = 0) : bands(0)
+    BandedMatrix (int N_ = 1, int nbands_off_diagonal = 0) : bands(0)
     {
-	if (! setup (_N, nbands_off_diagonal))
+	if (! setup (N_, nbands_off_diagonal))
 	    setup ();
     }
 
     // Create a banded matrix by naming the first and last non-zero bands,
     // where the diagonal is at zero, and bands below the diagonal are
     // negative, bands above the diagonal are positive.
-    BandedMatrix (int _N, int first, int last) : bands(0)
+    BandedMatrix (int N_, int first, int last) : bands(0)
     {
-	if (! setup (_N, first, last))
+	if (! setup (N_, first, last))
 	    setup ();
     }
 
@@ -41,25 +41,25 @@ public:
 	Copy (*this, b);
     }
 
-    inline bool setup (int _N = 1, int noff = 0)
+    inline bool setup (int N_ = 1, int noff = 0)
     {
-	return setup (_N, -noff, noff);
+	return setup (N_, -noff, noff);
     }
 
-    bool setup (int _N, int first, int last)
+    bool setup (int N_, int first, int last)
     {
 	// Check our limits first and make sure they make sense.
 	// Don't change anything until we know it will work.
-	if (first > last || _N <= 0)
+	if (first > last || N_ <= 0)
 	    return false;
 
-	// Need at least as many _N as columns and as rows in the bands.
-	if (_N < abs(first) || _N < abs(last))
+	// Need at least as many N_ as columns and as rows in the bands.
+	if (N_ < abs(first) || N_ < abs(last))
 	    return false;
 
 	top = last;
 	bot = first;
-	N = _N;
+	N = N_;
 	out_of_bounds = T();
 
 	// Finally setup the diagonal vectors
