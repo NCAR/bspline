@@ -25,10 +25,10 @@ LIBS =  -lstdc++ $(FLIBS)
 
 all:: driver
 
-driver: $(OBJS) 
+driver: subdirs $(OBJS) 
 	$(CXX) -o driver $(LDFLAGS) $(OBJS) $(LIBS)
 
-$(BSPLINE):
+subdirs:
 	@set -x; cd lib; \
 	$(MAKE) $(MFLAGS) LDFLAGS='$(LDFLAGS)' \
 		CXXDEBUGFLAGS='$(CXXDEBUGFLAGS)' all
