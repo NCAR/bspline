@@ -11,11 +11,13 @@
 #include <ios>
 #include <iomanip>
 
+#include <assert.h>
+
 //using namespace std;
 
-#include <tnt.h>
-#include <cmat.h>
-#include <lu.h>
+//#include <tnt.h>
+//#include <cmat.h>
+//#include <lu.h>
 
 #include "BandedMatrix.h"
 
@@ -47,8 +49,7 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
 	Matrix::size_type N = A.num_cols();
 
     if (M == 0 || N==0) return 0;
-    if (indx.dim() != M)
-        indx.newsize(M);
+	indx.assign (M);
 
 	Matrix::size_type i=0,j=0,k=0,jp=0;
     Matrix::element_type t;
@@ -68,7 +69,7 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
                 t = abs(A(i,j));
             }
 
-        indx(j) = jp;
+        indx[j-1] = jp;
 
         // jp now has the index of maximum element 
         // of column j, below the diagonal
@@ -126,26 +127,26 @@ int LU_solve_banded(const Matrix &A, const VectorSubscripts &indx, Vector &b)
     //assert(b.lbound() == 1);
 
 	Matrix::size_type i,ii=0,ip,j;
-	Matrix::size_type n = b.dim();
+	Matrix::size_type n = A.num_rows();
     Matrix::element_type sum = 0.0;
 
     for (i=1;i<=n;i++) 
     {
-        ip=indx(i);
-        sum=b(ip);
-        b(ip)=b(i);
+        ip=indx[i-1];
+        sum=b[ip-1];
+        b[i-1]=b[i-1];
         if (ii)
             for (j=ii;j<=i-1;j++) 
-                sum -= A(i,j)*b(j);
+                sum -= A(i,j)*b[j-1];
         else if (sum) ii=i;
-            b(i)=sum;
+            b[i-1]=sum;
     }
     for (i=n;i>=1;i--) 
     {
-        sum=b(i);
+        sum=b[i-1];
         for (j=i+1;j<=n;j++) 
-            sum -= A(i,j)*b(j);
-        b(i)=sum/A(i,i);
+            sum -= A(i,j)*b[j-1];
+        b[i-1]=sum/A(i,i);
     }
 
     return 0;
@@ -153,6 +154,7 @@ int LU_solve_banded(const Matrix &A, const VectorSubscripts &indx, Vector &b)
 
 
 #include "BSpline.h"
+#include "BSplineSolver.h"
 
 // Our private state structure, which also hides our use
 // of TNT for matrices.
@@ -163,8 +165,9 @@ typedef BandedMatrix<float> MatrixT;
 struct BSplineBaseP 
 {
 	MatrixT Q;					// Holds P+Q
+	BSplineSolver<MatrixT> solver;
 	MatrixT LU;					// LU factorization of PQ
-	Vector<Subscript> index;
+	std::vector<MatrixT::element_type> index;
 	std::vector<float> X;
 	std::vector<float> Nodes;
 };
@@ -382,6 +385,7 @@ BSplineBase::Basis (int m, float x)
 
 
 
+#if 0
 template <class T>
 Vector<T>& operator *= (Vector<T> &v, const T mult)
 {
@@ -394,7 +398,7 @@ Vector<T>& operator *= (Vector<T> &v, const T mult)
 	}
 	return v;
 }
-
+#endif
 
 
 MatrixT &operator += (MatrixT &A, const MatrixT &B)
@@ -459,7 +463,7 @@ BSplineBase::qDelta (int m1, int m2)
 template <class T> 
 void setup (T &matrix, int n);
 
-void setup<> (C_matrix<float> &matrix, int n) { matrix.newsize (n, n); }
+//void setup<> (C_matrix<float> &matrix, int n) { matrix.newsize (n, n); }
 
 void setup<> (BandedMatrix<float> &matrix, int n) { matrix.setup (n, 3); }
 
@@ -566,7 +570,8 @@ BSplineBase::addP ()
 bool
 BSplineBase::factor ()
 {	
-	base->index.newsize (M+1);
+//#if 0
+	base->index.assign (M+1);
 	base->LU = base->Q;
 
     if (LU_factor_banded (base->LU, base->index, 3) != 0)
@@ -574,6 +579,15 @@ BSplineBase::factor ()
         if (Debug) cerr << "LU_factor() failed." << endl;
 		return false;
     }
+//#endif
+
+	if (! base->solver.upper (base->Q))
+	{
+		if (Debug) cerr << "BSplineSolver::upper failed." << endl;
+		return false;
+	}
+	if (Debug && M < 30)
+		cerr << *base->solver.matrix();
 	return true;
 }
 
@@ -670,6 +684,19 @@ BSplineBase::nodes (int *nn)
 }
 
 
+#include <iterator>
+#include <iostream>
+
+template <class C>
+ostream &operator<< (ostream &out, C &c)
+{
+	for (C::iterator it = c.begin(); it < c.end(); ++it)
+		out << *it << ", ";
+	out << endl;
+	return out;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////
 // BSpline Class
@@ -678,7 +705,8 @@ BSplineBase::nodes (int *nn)
 struct BSplineP
 {
 	std::vector<float> spline;
-	Vector<float> A;
+	std::vector<float> A;
+	std::vector<float> A2;
 };
 
 
@@ -689,10 +717,13 @@ struct BSplineP
 BSpline::BSpline (BSplineBase &bb, const float *y) :
 	BSplineBase(bb), s(new BSplineP)
 {
+	if (! OK)
+		return;
+
 	// Given an array of data points over x and its precalculated
 	// P+Q matrix, calculate the b vector and solve for the coefficients.
 
-	Vector<float> B(M+1);
+	std::vector<float> B(M+1);
 
 	// Find the mean of these data
 	mean = 0.0;
@@ -714,18 +745,29 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 		B[m] = sum * DX;
 	}
 
+	std::vector<float> &luA = s->A;
+	std::vector<float> &sA = s->A2;
+
 	// Now solve for the A vector.
-	s->A = B;
-    if (LU_solve_banded (base->LU, base->index, s->A) != 0)
+	if (! base->solver.solve (B, sA))
+	{
+		cerr << "Solver failed." << endl;
+		exit(1);
+	}
+//#if 0
+	luA = B;
+    if (LU_solve_banded (base->LU, base->index, luA) != 0)
     {
         cerr << "LU_Solve() failed." << endl;
         exit(1);
     }
+//#endif
 	if (Debug && M < 30)
 	{
 	    cerr << "Solution a for (P+Q)a = b" << endl;
-		cerr << " b: " << B << endl;
-		cerr << " a: " << s->A << endl;
+		//cerr << " b: " << B << endl;
+		cerr << "solver a: " << sA << endl;
+		cerr << "    lu a: " << luA << endl;
 
 	    //cerr << "A*x should be the vector b, ";
 		//cerr << "residual [s->A*x - b]: " << endl;
@@ -742,8 +784,9 @@ BSpline::~BSpline()
 
 float BSpline::coefficient (int n)
 {
-	if (0 <= n && n <= M)
-		return s->A[n];
+	if (OK)
+		if (0 <= n && n <= M)
+			return s->A[n];
 	return 0;
 }
 
@@ -751,20 +794,25 @@ float BSpline::coefficient (int n)
 float BSpline::evaluate (float x)
 {
 	float y = 0;
-	for (int i = 0; i <= M; ++i)
+	if (OK)
 	{
-		y += s->A[i] * Basis (i, x);
+		for (int i = 0; i <= M; ++i)
+		{
+			y += s->A[i] * Basis (i, x);
+		}
+		y += mean;
 	}
-	y += mean;
 	return y;
 }
 
 
 const float *BSpline::curve (int *nx)
 {
-	std::vector<float> &spline = s->spline;
+	if (! OK)
+		return 0;
 
 	// If we already have the curve calculated, don't do it again.
+	std::vector<float> &spline = s->spline;
 	if (spline.size() == 0)
 	{
 		spline.reserve (M+1);
