@@ -405,12 +405,9 @@ BSplineBase<T>::qDelta (int m1, int m2)
  * restricted to the node domain, 0 to M.
  */
 {
-    // At present Q is hardcoded for the first derivative
-    // filter constraint and the type 1 boundary constraint.
-
-    // These are the products of the first derivative of the
+    // These are the products of the Kth derivative of the
     // normalized basis functions
-    // given a distance m nodes apart, qparts[m], 0 <= m <= 3
+    // given a distance m nodes apart, qparts[K-1][m], 0 <= m <= 3
     // Each column is the integral over each unit domain, -2 to 2
     static const double qparts[3][4][4] = 
     {

@@ -86,13 +86,44 @@ template <class T> struct BSplineBaseP;
         ostream_iterator<float> of(cout, "\t ");
     	float xi = spline.Xmin();
 	float xs = (spline.Xmax() - xi) / 2000.0;
-	for (; x <= spline.Xmax(); x += xs)
+	for (; xi <= spline.Xmax(); xi += xs)
 	{
 	    *of++ = spline.evaluate (xi);
 	}
     }
  
 \end{verbatim}
+ *
+ * In the usual usage, the BSplineBase can compute a reasonable number of
+ * nodes for the spline, balancing between a few desirable factors.  There
+ * needs to be at least 2 nodes per cutoff wavelength (preferably 4 or
+ * more) for the derivative constraint to reliably approximate a lo-pass
+ * filter.  There should be at least 1 and preferably about 2 data points
+ * per node (measured just by their number and not by any check of the
+ * density of points across the domain).  Lastly, of course, the fewer the
+ * nodes then the faster the computation of the spline.  The computation of
+ * the number of nodes happens in the Setup() method during BSplineBase
+ * construction and when setDomain() is called.  If the setup fails to find
+ * a desirable number of nodes, then the BSplineBase object will return
+ * false from ok().
+ *
+ * The ok() method returns false when a BSplineBase or BSpline could not
+ * complete any operation successfully.  In particular, as mentioned above,
+ * ok() will return false if some problem was detected with the domain
+ * values or if no reasonable number of nodes could be found for the given
+ * cutoff wavelength.  Also, ok() on a BSpline object will return false if
+ * the matrix equation could not be solved, such as after BSpline
+ * construction or after a call to apply().
+ *
+ * If letting Setup() determine the number of nodes is not acceptable, the
+ * constructors and setDomain() accept the parameter num_nodes.  By
+ * default, num_nodes is passed as zero, forcing Setup() to calculate the
+ * number of nodes.  However, if num_nodes is passed as 2 or greater, then
+ * Setup() will bypass its own algorithm and accept the given number of
+ * nodes instead.  Obviously, it's up to the programmer to understand the
+ * affects of the number of nodes on the representation of the data and on
+ * the solution (or non-solution) of the spline.  Remember to check the
+ * ok() method to detect when the spline solution has failed.
  *
  * The interface for the BSplineBase and BSpline templates is defined in 
  * the header file BSpline.h.  The implementation is defined in BSpline.cxx.
@@ -109,25 +140,33 @@ template <class T> struct BSplineBaseP;
  * The algorithm is based on the cubic spline described by Katsuyuki Ooyama
  * in Montly Weather Review, Vol 115, October 1987.  This implementation
  * has benefited from comparisons with a previous FORTRAN implementation by
- * James L. Franklin, NOAA/Hurricane Research Division.  The cubic b-spline
- * is formulated as the sum of some multiple of the basis function centered
- * at each node in the domain.  The number of nodes is determined by the
- * desired cutoff wavelength and a desirable number of x values per node.
- * The basis function is continuous and differentiable up to the second
- * degree.  A derivative constraint is included in the solution to achieve
- * the effect of a low-pass frequency filter with the given cutoff
- * wavelength.  The derivative constraint can be disabled by specifying a
- * wavelength value of zero, which reduces the analysis to a least squares
- * fit to a cubic b-spline.  The domain nodes, boundary constraints, and
- * wavelength determine a linear system of equations, Qa=b, where a is the
- * vector of basis function coefficients at each node.  The coefficient
- * vector is solved by first LU factoring along the diagonally banded
- * matrix Q in BSplineBase.  The BSpline object then computes the B vector
- * for a set of y values and solves for the coefficient vector with the LU
- * matrix.  Only the diagonal bands are stored in memory and calculated
- * during LU factoring and back substitution, and the basis function is
- * evaluated as few times as possible in computing the diagonal matrix and
- * B vector.
+ * James L. Franklin, NOAA/Hurricane Research Division.  In particular, the
+ * algorithm in the Setup() method is based mostly on his implementation
+ * (VICSETUP).  The Setup() method finds a suitable default for the number
+ * of nodes given a domain and cutoff frequency.  This implementation
+ * adopts most of the same constraints, including a constraint that the
+ * cutoff wavelength not be greater than the span of the domain values: wl
+ * < max(x) - min(x). If this is not an acceptable constraint, then use the
+ * num_nodes parameter to specify the number of nodes explicitly.
+ *
+ * The cubic b-spline is formulated as the sum of some multiple of the
+ * basis function centered at each node in the domain.  The number of nodes
+ * is determined by the desired cutoff wavelength and a desirable number of
+ * x values per node.  The basis function is continuous and differentiable
+ * up to the second degree.  A derivative constraint is included in the
+ * solution to achieve the effect of a low-pass frequency filter with the
+ * given cutoff wavelength.  The derivative constraint can be disabled by
+ * specifying a wavelength value of zero, which reduces the analysis to a
+ * least squares fit to a cubic b-spline.  The domain nodes, boundary
+ * constraints, and wavelength determine a linear system of equations,
+ * Qa=b, where a is the vector of basis function coefficients at each node.
+ * The coefficient vector is solved by first LU factoring along the
+ * diagonally banded matrix Q in BSplineBase.  The BSpline object then
+ * computes the B vector for a set of y values and solves for the
+ * coefficient vector with the LU matrix.  Only the diagonal bands are
+ * stored in memory and calculated during LU factoring and back
+ * substitution, and the basis function is evaluated as few times as
+ * possible in computing the diagonal matrix and B vector.
  *
 \begin{verbatim}
 Copyright (c) 1998,1999,2001
