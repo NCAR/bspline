@@ -116,7 +116,7 @@ BSplineBase::BSplineBase (const BSplineBase &bb) :
 
 
 BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) : 
-	K(1), base(new BSplineBaseP)
+	K(1), OK(false), base(new BSplineBaseP)
 {
 	setDomain (x, nx, wl, bc);
 }
@@ -128,15 +128,13 @@ BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) :
 bool
 BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
 {
-	// If called while we have an existing array, release it.
-	//Copy (x, nx, wl);
-	OK = false;
-	BC = bc;
-	waveLength = wl;
-	if (nx <= 0 || x == 0)
+	if (nx <= 0 || x == 0 || wl < 0 || bc < 0 || bc > 2)
 	{
 		return false;
 	}
+	OK = false;
+	waveLength = wl;
+	BC = bc;
 		
 	// Copy the x array into our storage.
 	base->X.resize (nx);
@@ -337,8 +335,9 @@ BSplineBase::calculateQ ()
 {
 	MatrixT &Q = base->Q;
 	setup (Q, M+1);
-	// Q.newsize (M+1,M+1);
 	Q = 0.0;
+	if (alpha == 0)
+		return;
 
 	// First fill in the q values without the boundary constraints.
 	int i;
@@ -414,13 +413,13 @@ BSplineBase::addP ()
 		{
 			float pn;
 			float pm = Basis (m, x);
-			float sum = pm * pm * DX;
+			float sum = pm * pm/* * DX*/;
 			P[m][m] += sum;
 			for (n = m+1; n <= my::min(M, m+3); ++n)
 			{
 				pm = Basis (m, x);
 				pn = Basis (n, x);
-				sum = pm * pn * DX;
+				sum = pm * pn/* * DX*/;
 				P[m][n] += sum;
 				P[n][m] += sum;
 			}
@@ -500,30 +499,39 @@ bool BSplineBase::Setup()
 		return (false);
 	}
 
-	// Minimum acceptable number of nodes per cutoff wavelength
-	static const float fmin = 2.0;
-
 	int ni = 9;		// Number of node intervals
 	float deltax;
-	float ratiof;	// Nodes per wavelength for current deltax
-	float ratiod;	// Points per node interval
 
-	do {
-		if (! Ratio (++ni, deltax, ratiof))
-			return false;
+	if (waveLength == 0)		// Allows turning off frequency constraint
+	{
+		ni = NX;
+		deltax = (xmax - xmin) / (float)NX;
 	}
-	while (ratiof > fmin);
+	else
+	{
+		// Minimum acceptable number of nodes per cutoff wavelength
+		static const float fmin = 2.0;
 
-	// Tweak the estimates obtained above
-	do {
-		if (! Ratio (++ni, deltax, ratiof, &ratiod) || 
-			  ratiof > 15.0)
-		{
-			Ratio (--ni, deltax, ratiof);
-			break;
+		float ratiof;	// Nodes per wavelength for current deltax
+		float ratiod;	// Points per node interval
+
+		do {
+			if (! Ratio (++ni, deltax, ratiof))
+				return false;
 		}
+		while (ratiof > fmin);
+
+		// Tweak the estimates obtained above
+		do {
+			if (! Ratio (++ni, deltax, ratiof, &ratiod) || 
+				  ratiof > 15.0)
+			{
+				Ratio (--ni, deltax, ratiof);
+				break;
+			}
+		}
+		while (ratiof < 4 || ratiod > 2.0);
 	}
-	while (ratiof < 4 || ratiod > 2.0);
 
 	// Store the calculations in our state
 	M = ni;
@@ -613,7 +621,7 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 		{
 			sum += (y[j] - mean) * Basis (m, base->X[j]);
 		}
-		B[m] = sum * DX;
+		B[m] = sum/* * DX*/;
 	}
 
 	std::vector<float> &luA = s->A;

@@ -56,4 +56,25 @@ reference to the new Q without calling upper().
 Bug: Setup() probably in infinite loop when not enough data points for a smaller
 cutoff wavelength.
 
+Deriving the least squares between the actual and approximated u(x) results in
+a set of linear equations for A independent of DX.  This makes sense, since we could
+have divided both sides of the (P+Q)a = b equation by DX without affecting the solution.
+Oops, we still need to divide Q, or at least not include DX in the elements of Q.  Oops
+again, it seems to work without dividing Q, though I don't know what the implications are
+for the stability of the linear system.  Mathematically it makes sense since the least
+squares is just the addition of the derivative constraint, which can be minimized 
+separately.
+
+The algorithm seems to be working well for the wind speed data I have.  I don't know
+what Charlie's problem is.  Two approaches:
+
+	Copy his routine to generate test curve and use it as source data.
+
+	Try building spline on unix and linking it with FORTRAN and compare the results,
+	especially for Charlie's tests.
+
+Need to add kth derivatives 2 and 3, since FORTRAN code may use the higher derivatives
+and not the first as is coded now.
+
+
 
