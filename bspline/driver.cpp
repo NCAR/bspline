@@ -82,7 +82,7 @@ main (int argc, char *argv[])
 	//float wl = (x.back() - x.front()) / (x.size()/3 + 1);
 	//float wl = 30.0; /*secs*/
 	BSplineBase::Debug = true;
-	BSplineBase bb (x.begin(), x.size(), wl);
+	BSplineBase bb (x.begin(), x.size(), wl, 2 /*bc*/);
 
 	// Now apply our y values to get the smoothed curve.
 	BSpline spline(bb, y.begin());
