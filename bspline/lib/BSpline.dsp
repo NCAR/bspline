@@ -57,7 +57,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 TargetPath=\Binaries\BSpline\Release\Lib\BSpline.dll
 SOURCE="$(InputPath)"
-PostBuild_Cmds=copy $(TargetPath)  c:\winnt\system32
+PostBuild_Cmds=copy $(TargetPath)  c:\windows\system32
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "BSpline - Win32 Debug"
