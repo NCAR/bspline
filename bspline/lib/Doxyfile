@@ -3,7 +3,7 @@ PROJECT_NAME           = "dataspace"
 PROJECT_NUMBER         = "Version 1.2"
 HTML_OUTPUT            = ../doc
 
-PROJECT_NAME           = "DataSpace Library"
+PROJECT_NAME           = "BSpline Library"
 INPUT                  = . ../BSpline ../README
 GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
