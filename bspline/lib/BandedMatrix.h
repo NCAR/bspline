@@ -184,7 +184,7 @@ private:
 
 
 template <class T>
-ostream &operator<< (ostream &out, const BandedMatrix<T> &m)
+std::ostream &operator<< (std::ostream &out, const BandedMatrix<T> &m)
 {
     unsigned int i, j;
     for (i = 0; i < m.num_rows(); ++i)

@@ -9,17 +9,7 @@
 #include <iterator>
 #include <iostream>
 
-#if 0
-#if WIN32
-#include <iostream>
-#endif
-#endif
-
 #include <assert.h>
-
-#if 0
-using namespace std;
-#endif
 
 class my
 {
@@ -36,37 +26,6 @@ public:
     static inline 
     const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
 };
-
-#if 0
-/*
- * These conflict with Windows if not in my namespace, but egcs does not yet
- * support namespaces.  And I can't use Windows' abs() because
- * it truncs the arg to an int.
- */
-#if WIN32
-namespace my {
-#endif
-template <class T> 
-inline T abs(const T t) { return (t < 0) ? -t : t; }
-
-#if WIN32
-template <class T>
-inline const T& min (const T& a, const T& b) { return (a < b) ? a : b; }
-
-template <class T>
-inline const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
-#endif
-
-#if WIN32
-}
-#endif
-
-using my::min;
-using my::max;
-using my::abs;
-
-#endif /* 0 */
-
 
 #include "BandedMatrix.h"
 #include "BSpline.h"
@@ -627,7 +586,7 @@ BSplineBase<T>::nodes (int *nn)
 
 
 template <class T>
-ostream &operator<< (ostream &out, const std::vector<T> &c)
+std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
 {
     for (std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
 	out << *it << ", ";
