@@ -13,12 +13,15 @@
 
 using namespace std;
 
-#include "BSpline.h"
+#include "BSpline.cxx"
+typedef float datum;
+typedef BSpline<datum> SplineT;
+typedef BSplineBase<datum> SplineBase;
 
 static void 
-DumpSpline (vector<float> &x, vector<float> &y, BSpline &spline, ostream &out);
+DumpSpline (vector<float> &x, vector<float> &y, SplineT &spline, ostream &out);
 static void
-EvalSpline (BSpline &spline, ostream &out);
+EvalSpline (SplineT &spline, ostream &out);
 #if OOYAMA
 static bool
 vic (float *xt, int nxp, float wl, int bc, float *y);
@@ -40,9 +43,9 @@ main (int argc, char *argv[])
 {
     // Some basics first
     cout << "BSpline interface version: "
-	 << BSplineBase::IfaceVersion() << endl;
+	 << SplineBase::IfaceVersion() << endl;
     cout << "BSpline implementation version: "
-	 << BSplineBase::ImplVersion() << endl;
+	 << SplineBase::ImplVersion() << endl;
 	
 	// Sub-sampling and cutoff wavelength come from command-line
     if (argc != 3)
@@ -101,20 +104,20 @@ main (int argc, char *argv[])
 		
     // Create our bspline base on the X vector with a simple 
     // wavelength.
-    int bc = BSplineBase::BC_ZERO_SECOND;
-    BSpline::Debug = true;
+    int bc = SplineBase::BC_ZERO_SECOND;
+    SplineT::Debug = true;
 #if 0
     //float wl = (x.back() - x.front()) / (x.size()/3 + 1);
     //float wl = 30.0; /*secs*/
-    BSplineBase::Debug = true;
-    BSplineBase bb (x.begin(), x.size(), wl, bc);
+    SplineBase::Debug = true;
+    SplineBase bb (x.begin(), x.size(), wl, bc);
     if (bb.ok())
     {
 	// Now apply our y values to get the smoothed curve.
-	BSpline spline(bb, y.begin());
+	SplineT spline(bb, y.begin());
     }
 #endif
-    BSpline spline (x.begin(), x.size(), y.begin(), wl, bc);
+    SplineT spline (x.begin(), x.size(), y.begin(), wl, bc);
     if (spline.ok())
     {
 	// And finally write the curve to a file
@@ -157,7 +160,7 @@ main (int argc, char *argv[])
 
 
 void
-DumpSpline (vector<float> &x, vector<float> &y, BSpline &spline, ostream &out)
+DumpSpline (vector<float> &x, vector<float> &y, SplineT &spline, ostream &out)
 {
 #ifdef notdef
     int nx;
@@ -179,7 +182,7 @@ DumpSpline (vector<float> &x, vector<float> &y, BSpline &spline, ostream &out)
 
 
 void
-EvalSpline (BSpline &spline, ostream &out)
+EvalSpline (SplineT &spline, ostream &out)
 {
     ostream_iterator<float> of(out, "\t ");
 

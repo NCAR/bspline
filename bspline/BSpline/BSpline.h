@@ -7,11 +7,11 @@
 #ifndef _BSPLINEBASE_IFACE_ID
 #define _BSPLINEBASE_IFACE_ID "$Id$"
 
-class BSpline;
+template <class T> class BSpline;
 
 // Opaque structure to hide our matrix implementation, ala
 // Cheshire cat.
-struct BSplineBaseP;
+template <class T> struct BSplineBaseP;
 
 /**
  * Base class for a spline object containing the nodes for a given domain,
@@ -85,7 +85,7 @@ struct BSplineBaseP;
  * @see BSpline
 
  */
-class BSplineBase  
+template <class T> class BSplineBase  
 {
 public:
     // Class members
@@ -130,8 +130,8 @@ public:
      * @see setDomain 
      * @see ok
      */
-    BSplineBase (const float *x, int nx, 
-		 float wl, int bc_type = BC_ZERO_SECOND);
+    BSplineBase (const T *x, int nx, 
+		 double wl, int bc_type = BC_ZERO_SECOND);
 
     /// Copy constructor
     BSplineBase (const BSplineBase &);
@@ -156,7 +156,7 @@ public:
      *
      * @see ok
      */
-    bool setDomain (const float *x, int nx, float wl, 
+    bool setDomain (const T *x, int nx, double wl, 
 		    int bc_type = BC_ZERO_SECOND);
 
     /**
@@ -166,14 +166,14 @@ public:
      *		x values in the domain.
      * @see ok
      */
-    BSpline *apply (const float *y);
+    BSpline *apply (const T *y);
 
     /**
      * Return array of the node coordinates.  Returns 0 if not ok().  The
      * array of nodes returned by nodes() belongs to the object and should
      * not be deleted; it will also be invalid if the object is destroyed.
      */
-    const float *nodes (int *nnodes);
+    const T *nodes (int *nnodes);
 
     /** 
      * Return the number of nodes (one more than the number of intervals).
@@ -186,21 +186,21 @@ public:
     int nX () { return NX; }
 
     /// Minimum x value found.
-    float Xmin () { return xmin; }
+    T Xmin () { return xmin; }
 
     /// Maximum x value found.
-    float Xmax () { return xmin + (M * DX); }
+    T Xmax () { return xmin + (M * DX); }
 
     /** 
      * Return the Alpha value for a given wavelength.  Note that this
      * depends on the current node interval length (DX).
      */
-    float Alpha (float wavelength);
+    double Alpha (double wavelength);
 
     /**
      * Return alpha currently in use by this domain.
      */
-    float Alpha () { return alpha; }
+    double Alpha () { return alpha; }
 
     /**
      * Return the current state of the object, either ok or not ok.
@@ -216,40 +216,42 @@ public:
 
 protected:
 
+    typedef BSplineBaseP<T> Base;
+
     // Provided
-    float waveLength;	// Cutoff wavelength (l sub c)
+    double waveLength;	// Cutoff wavelength (l sub c)
     int NX;
     int K;	// Degree of derivative constraint (currently fixed at 1)
     int BC;			// Boundary conditions type (0,1,2)
 
     // Derived
-    float xmax;
-    float xmin;
+    T xmax;
+    T xmin;
     int M;			// Number of intervals (M+1 nodes)
-    float DX;			// Interval length in same units as X
-    float alpha;
+    T DX;			// Interval length in same units as X
+    double alpha;
     bool OK;
-    BSplineBaseP *base;	// Hide more complicated state members
-    			// from the public interface.
+    Base *base;			// Hide more complicated state members
+    				// from the public interface.
 
     bool Setup ();
     void calculateQ ();
-    float qDelta (int m1, int m2);
-    float Beta (int m);
+    double qDelta (int m1, int m2);
+    double Beta (int m);
     void addP ();
     bool factor ();
-    float Basis (int m, float x);
+    double Basis (int m, T x);
 
-    static const float BoundaryConditions[3][4];
+    static const double BoundaryConditions[3][4];
 
 private:
 
-    Ratio (int&, float &, float &, float *rd = 0);
+    Ratio (int&, double &, double &, double *rd = 0);
 
 };
 
 
-struct BSplineP;
+template <class T> struct BSplineP;
 
 
 /**
@@ -260,7 +262,7 @@ struct BSplineP;
  * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
 
  */
-class BSpline : public BSplineBase
+template <class T> class BSpline : public BSplineBase<T>
 {
 public:
     /**
@@ -281,16 +283,16 @@ public:
      * @param bc_type	The enumerated boundary condition type.  If
      *			omitted it defaults to BC_ZERO_SECOND.
      */
-    BSpline (const float *x, int nx, 		/* independent variable */
-	     const float *y,			/* dependent values @ ea X */
-	     float wl,				/* cutoff wavelength */
+    BSpline (const T *x, int nx, 		/* independent variable */
+	     const T *y,			/* dependent values @ ea X */
+	     double wl,				/* cutoff wavelength */
 	     int bc_type = BC_ZERO_SECOND);
 
     /**
      * A BSpline curve can be derived from a separate Base and a set
      * of data points over that base.
      */
-    BSpline (BSplineBase &base, const float *y);
+    BSpline (BSplineBase &base, const T *y);
 
     /**
      * Solve the spline curve for a new set of y values.  Returns false
@@ -299,7 +301,7 @@ public:
      * @param y The array of y values corresponding to each of the nX()
      *		x values in the domain.
      */
-    bool solve (const float *y);
+    bool solve (const T *y);
 
     /**
      * Return the entire curve evaluated at each of the nodes.
@@ -309,27 +311,27 @@ public:
      *
      * @param nx  If non-zero, returns the number of points in the curve.
      */
-    const float *curve (int *nx = 0);
+    const T *curve (int *nx = 0);
 
     /**
      * Return the evaluation of the smoothed curve 
      * at a particular x value.  If current state is not ok(), returns 0.
      */
-    float evaluate (float x);
+    T evaluate (T x);
 
     /**
      * Return the n-th basis coefficient, from 0 to M.  If the current
      * state is not ok(), or n is out of range, the method returns zero.
      */
-    float coefficient (int n);
+    T coefficient (int n);
 
     virtual ~BSpline();
 
 protected:
 
     // Our hidden state structure
-    BSplineP *s;
-    float mean;			// Fit without mean and add it in later
+    BSplineP<T> *s;
+    T mean;			// Fit without mean and add it in later
 
 };
 

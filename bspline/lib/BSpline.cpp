@@ -44,30 +44,60 @@ using my::abs;
 #endif
 
 #include "BandedMatrix.h"
-#include "BSplineLU.h"
 #include "BSpline.h"
 
-template <class T> 
-void setup (T &matrix, int n);
+template <class T>
+class Matrix : public BandedMatrix<T>
+{
+public:
+    Matrix &operator += (const Matrix &B)
+    {
+	Matrix &A = *this;
+        Matrix::size_type M = A.num_rows();
+	Matrix::size_type N = A.num_cols();
 
-void setup<> (BandedMatrix<float> &matrix, int n) { matrix.setup (n, 3); }
+	assert(M==B.num_rows());
+	assert(N==B.num_cols());
+
+	Matrix::size_type i,j;
+	for (i=0; i<M; i++)
+	    for (j=0; j<N; j++)
+		A[i][j] += B[i][j];
+	return A;
+    }
+
+    inline Matrix & operator= (const Matrix &b) 
+    {
+	return Copy (*this, b);
+    }
+
+    inline Matrix & operator= (const T &e)
+    {
+	BandedMatrix<T>::operator= (e);
+	return *this;
+    }
+
+};
+
 
 // Our private state structure, which hides our use of some matrix
 // template classes.
 
-typedef BandedMatrix<float> MatrixT;
-
+template <class T>
 struct BSplineBaseP 
 {
+    typedef Matrix<T> MatrixT;
+    
     MatrixT Q;				// Holds P+Q and its factorization
-    std::vector<float> X;
-    std::vector<float> Nodes;
+    std::vector<T> X;
+    std::vector<T> Nodes;
 };
 
 
 // For now, hardcoding type 1 boundary conditions, 
 // which constrains the derivative to zero at the endpoints.
-const float BSplineBase::BoundaryConditions[3][4] = 
+template <class T>
+const double BSplineBase<T>::BoundaryConditions[3][4] = 
 { 
     //	0		1		M-1		M
     {	-4,		-1,		-1,		-4 },
@@ -75,18 +105,22 @@ const float BSplineBase::BoundaryConditions[3][4] =
     {	2,		-1,		-1,		2 }
 };
 
-const double BSplineBase::PI = 3.1415927;
+template <class T>
+const double BSplineBase<T>::PI = 3.1415927;
 
-bool BSplineBase::Debug = false;
+template <class T>
+bool BSplineBase<T>::Debug = false;
 
+template <class T>
 const char *
-BSplineBase::ImplVersion()
+BSplineBase<T>::ImplVersion()
 {
     return ("$Id$");
 }
 
+template <class T>
 const char *
-BSplineBase::IfaceVersion()
+BSplineBase<T>::IfaceVersion()
 {
     return (_BSPLINEBASE_IFACE_ID);
 }
@@ -97,7 +131,8 @@ BSplineBase::IfaceVersion()
 //////////////////////////////////////////////////////////////////////
 
 
-BSplineBase::~BSplineBase()
+template <class T>
+BSplineBase<T>::~BSplineBase()
 {
     delete base;
 }
@@ -107,8 +142,9 @@ BSplineBase::~BSplineBase()
 // private base structure with the source's, rather than just copying
 // the pointer.  But we use the compiler's default copy constructor for
 // constructing our BSplineBaseP.
-BSplineBase::BSplineBase (const BSplineBase &bb) : 
-    K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP(*bb.base))
+template <class T>
+BSplineBase<T>::BSplineBase (const BSplineBase<T> &bb) : 
+    K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP<T>(*bb.base))
 {
     xmin = bb.xmin;
     xmax = bb.xmax;
@@ -120,8 +156,9 @@ BSplineBase::BSplineBase (const BSplineBase &bb) :
 }
 
 
-BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) : 
-    K(2), OK(false), base(new BSplineBaseP)
+template <class T>
+BSplineBase<T>::BSplineBase (const T *x, int nx, double wl, int bc) : 
+    K(2), OK(false), base(new BSplineBaseP<T>)
 {
     setDomain (x, nx, wl, bc);
 }
@@ -130,8 +167,9 @@ BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) :
 // Methods
 
 
+template <class T>
 bool
-BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
+BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc)
 {
     if (nx <= 0 || x == 0 || wl < 0 || bc < 0 || bc > 2)
     {
@@ -207,11 +245,12 @@ BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
 /*
  * Calculate the alpha parameter given a wavelength.
  */
-float
-BSplineBase::Alpha (float wl)
+template <class T>
+double
+BSplineBase<T>::Alpha (double wl)
 {
     // K is the degree of the derivative constraint: 1, 2, or 3
-    float a = (float) (wl / (2 * PI * DX));
+    double a = (double) (wl / (2 * PI * DX));
     a *= a;			// a^2
     if (K == 2)
 	a = a * a;		// a^4
@@ -225,8 +264,9 @@ BSplineBase::Alpha (float wl)
  * Return the correct beta value given the node index.  The value depends
  * on the node index and the current boundary condition type.
  */
-inline float
-BSplineBase::Beta (int m)
+template <class T>
+inline double
+BSplineBase<T>::Beta (int m)
 {
     if (m > 1 && m < M-1)
 	return 0.0;
@@ -244,10 +284,11 @@ BSplineBase::Beta (int m)
  * of x data points in this BSplineBase, create a BSpline
  * object which contains the smoothed curve for the y array.
  */
-BSpline *
-BSplineBase::apply (const float *y)
+template <class T>
+BSpline<T> *
+BSplineBase<T>::apply (const T *y)
 {
-    BSpline *spline = new BSpline (*this, y);
+    BSpline<T> *spline = new BSpline<T> (*this, y);
 
     return (spline);
 }
@@ -257,12 +298,13 @@ BSplineBase::apply (const float *y)
  * Evaluate the closed basis function at node m for value x,
  * using the parameters for the current boundary conditions.
  */
-float
-BSplineBase::Basis (int m, float x)
+template <class T>
+double
+BSplineBase<T>::Basis (int m, T x)
 {
-    float y = 0;
-    float xm = xmin + (m * DX);
-    float z = /*my::*/abs((float)(x - xm) / (float)DX);
+    double y = 0;
+    double xm = xmin + (m * DX);
+    double z = /*my::*/abs((double)(x - xm) / (double)DX);
     if (z < 2.0)
     {
 	z = 2 - z;
@@ -284,25 +326,11 @@ BSplineBase::Basis (int m, float x)
 
 
 
-MatrixT &operator += (MatrixT &A, const MatrixT &B)
-{
-    MatrixT::size_type M = A.num_rows();
-    MatrixT::size_type N = A.num_cols();
-
-    assert(M==B.num_rows());
-    assert(N==B.num_cols());
-
-    MatrixT::size_type i,j;
-    for (i=0; i<M; i++)
-        for (j=0; j<N; j++)
-            A[i][j] += B[i][j];
-    return A;
-}
 
 
-
-float
-BSplineBase::qDelta (int m1, int m2)
+template <class T>
+double
+BSplineBase<T>::qDelta (int m1, int m2)
 /*
  * Return the integral of the product of the basis function derivative
  * restricted to the node domain, 0 to M.
@@ -315,25 +343,25 @@ BSplineBase::qDelta (int m1, int m2)
     // normalized basis functions
     // given a distance m nodes apart, qparts[m], 0 <= m <= 3
     // Each column is the integral over each unit domain, -2 to 2
-    static const float qparts[3][4][4] = 
+    static const double qparts[3][4][4] = 
     {
 	{
-	    { 0.11250f,   0.63750f,   0.63750f,   0.11250f },
-	    { 0.00000f,   0.13125f,  -0.54375f,   0.13125f },
-	    { 0.00000f,   0.00000f,  -0.22500f,  -0.22500f },
-	    { 0.00000f,   0.00000f,   0.00000f,  -0.01875f }
+	    { 0.11250,   0.63750,   0.63750,   0.11250 },
+	    { 0.00000,   0.13125,  -0.54375,   0.13125 },
+	    { 0.00000,   0.00000,  -0.22500,  -0.22500 },
+	    { 0.00000,   0.00000,   0.00000,  -0.01875 }
 	},
 	{
-	    { 0.75000f,   2.25000f,   2.25000f,   0.75000f },
-	    { 0.00000f,  -1.12500f,  -1.12500f,  -1.12500f },
-	    { 0.00000f,   0.00000f,   0.00000f,   0.00000f },
-	    { 0.00000f,   0.00000f,   0.00000f,   0.37500f }
+	    { 0.75000,   2.25000,   2.25000,   0.75000 },
+	    { 0.00000,  -1.12500,  -1.12500,  -1.12500 },
+	    { 0.00000,   0.00000,   0.00000,   0.00000 },
+	    { 0.00000,   0.00000,   0.00000,   0.37500 }
 	},
 	{
-	    { 2.25000f,  20.25000f,  20.25000f,   2.25000f },
-	    { 0.00000f,  -6.75000f, -20.25000f,  -6.75000f },
-	    { 0.00000f,   0.00000f,   6.75000f,   6.75000f },
-	    { 0.00000f,   0.00000f,   0.00000f,  -2.25000f }
+	    { 2.25000,  20.25000,  20.25000,   2.25000 },
+	    { 0.00000,  -6.75000, -20.25000,  -6.75000 },
+	    { 0.00000,   0.00000,   6.75000,   6.75000 },
+	    { 0.00000,   0.00000,   0.00000,  -2.25000 }
 	}
     };
 
@@ -343,7 +371,7 @@ BSplineBase::qDelta (int m1, int m2)
     if (m2 - m1 > 3)
 	return 0.0;
 
-    float q = 0.0;
+    double q = 0;
     for (int m = /*my::*/max (m1-2,0); m < /*my::*/min (m1+2, M); ++m)
 	q += qparts[K-1][m2-m1][m-m1+2];
     return q * alpha;
@@ -351,12 +379,13 @@ BSplineBase::qDelta (int m1, int m2)
 
 
 
+template <class T>
 void
-BSplineBase::calculateQ ()
+BSplineBase<T>::calculateQ ()
 {
-    MatrixT &Q = base->Q;
-    setup (Q, M+1);
-    Q = 0.0;
+    Matrix<T> &Q = base->Q;
+    Q.setup (M+1, 3);
+    Q = 0;
     if (alpha == 0)
 	return;
 
@@ -411,12 +440,12 @@ BSplineBase::calculateQ ()
 
 
 
-
+template <class T>
 void
-BSplineBase::addP ()
+BSplineBase<T>::addP ()
 {
     // Add directly to Q's elements
-    MatrixT &P = base->Q;
+    Matrix<T> &P = base->Q;
     std::vector<float> &X = base->X;
 
     // For each data point, sum the product of the nearest, non-zero Basis
@@ -449,10 +478,11 @@ BSplineBase::addP ()
 
 
 
+template <class T>
 bool
-BSplineBase::factor ()
+BSplineBase<T>::factor ()
 {	
-    MatrixT &LU = base->Q;
+    Matrix<T> &LU = base->Q;
 
     if (LU_factor_banded (LU, 3) != 0)
     {
@@ -466,13 +496,14 @@ BSplineBase::factor ()
 
 	
 
+template <class T>
 inline int 
-BSplineBase::Ratio (int &ni, float &deltax, float &ratiof,
-		    float *ratiod)
+BSplineBase<T>::Ratio (int &ni, double &deltax, double &ratiof,
+		       double *ratiod)
 {
     deltax = (xmax - xmin) / ni;
     ratiof = waveLength / deltax;
-    float rd = (float) NX / (float) (ni + 1);
+    double rd = (double) NX / (double) (ni + 1);
     if (ratiod)
 	*ratiod = rd;
     return (rd >= 1.0);
@@ -482,9 +513,11 @@ BSplineBase::Ratio (int &ni, float &deltax, float &ratiof,
 /*
  * Return zero if this fails, non-zero otherwise.
  */
-bool BSplineBase::Setup()
+template <class T>
+bool 
+BSplineBase<T>::Setup()
 {
-    std::vector<float> &X = base->X;
+    std::vector<T> &X = base->X;
 	
     // Find the min and max of the x domain
     xmin = X[0];
@@ -505,20 +538,20 @@ bool BSplineBase::Setup()
     }
 
     int ni = 9;		// Number of node intervals (NX - 1)
-    float deltax;
+    double deltax;
 
     if (waveLength == 0)	// Allows turning off frequency constraint
     {
 	ni = NX;
-	deltax = (xmax - xmin) / (float)NX;
+	deltax = (xmax - xmin) / (double)NX;
     }
     else
     {
 	// Minimum acceptable number of node intervals per cutoff wavelength.
-	static const float fmin = 2.0;
+	static const double fmin = 2.0;
 
-	float ratiof;	// Nodes per wavelength for current deltax
-	float ratiod;	// Points per node interval
+	double ratiof;	// Nodes per wavelength for current deltax
+	double ratiod;	// Points per node interval
 
 	do {
 	    if (! Ratio (++ni, deltax, ratiof))
@@ -546,8 +579,9 @@ bool BSplineBase::Setup()
 }
 
 
-const float *
-BSplineBase::nodes (int *nn)
+template <class T>
+const T *
+BSplineBase<T>::nodes (int *nn)
 {
     if (base->Nodes.size() == 0)
     {
@@ -567,9 +601,10 @@ BSplineBase::nodes (int *nn)
 
 
 
-ostream &operator<< (ostream &out, const vector<float> &c)
+template <class T>
+ostream &operator<< (ostream &out, const vector<T> &c)
 {
-    for (vector<float>::const_iterator it = c.begin(); it < c.end(); ++it)
+    for (vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
 	out << *it << ", ";
     out << endl;
     return out;
@@ -581,10 +616,11 @@ ostream &operator<< (ostream &out, const vector<float> &c)
 // BSpline Class
 //////////////////////////////////////////////////////////////////////
 
+template <class T>
 struct BSplineP
 {
-    std::vector<float> spline;
-    std::vector<float> A;
+    std::vector<T> spline;
+    std::vector<T> A;
 };
 
 
@@ -597,9 +633,10 @@ struct BSplineP
  * This BSpline constructor constructs and sets up a new base and 
  * solves for the spline curve coeffiecients all at once.
  */
-BSpline::BSpline (const float *x, int nx, const float *y,
-		  float wl, int bc_type) :
-    BSplineBase(x, nx, wl, bc_type), s(new BSplineP)
+template <class T>
+BSpline<T>::BSpline (const T *x, int nx, const T *y,
+		     double wl, int bc_type) :
+    BSplineBase<T>(x, nx, wl, bc_type), s(new BSplineP<T>)
 {
     solve (y);
 }
@@ -609,8 +646,9 @@ BSpline::BSpline (const float *x, int nx, const float *y,
 /*
  * Create a new spline given a BSplineBase.
  */
-BSpline::BSpline (BSplineBase &bb, const float *y) :
-    BSplineBase(bb), s(new BSplineP)
+template <class T>
+BSpline<T>::BSpline (BSplineBase<T> &bb, const T *y) :
+    BSplineBase<T>(bb), s(new BSplineP<T>)
 {
     solve (y);
 }
@@ -620,8 +658,9 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 /*
  * (Re)calculate the spline for the given set of y values.
  */
+template <class T>
 bool
-BSpline::solve (const float *y)
+BSpline<T>::solve (const T *y)
 {
     if (! OK)
 	return false;
@@ -632,8 +671,8 @@ BSpline::solve (const float *y)
 
     // Given an array of data points over x and its precalculated
     // P+Q matrix, calculate the b vector and solve for the coefficients.
-    std::vector<float> &B = s->A;
-    std::vector<float> &A = s->A;
+    std::vector<T> &B = s->A;
+    std::vector<T> &A = s->A;
     A.clear ();
     A.resize (M+1);
 
@@ -646,7 +685,7 @@ BSpline::solve (const float *y)
     {
 	mean += y[i];
     }
-    mean = mean / (float)NX;
+    mean = mean / (double)NX;
     if (Debug)
 	cerr << "Mean for y: " << mean << endl;
 
@@ -654,8 +693,8 @@ BSpline::solve (const float *y)
     for (j = 0; j < NX; ++j)
     {
 	// Which node does this put us in?
-	float &xj = base->X[j];
-	float yj = y[j] - mean;
+	T &xj = base->X[j];
+	T yj = y[j] - mean;
 	mx = (int)((xj - xmin) / DX);
 
 	for (m = max(0,mx-1); m <= min(mx+2,M); ++m)
@@ -691,14 +730,16 @@ BSpline::solve (const float *y)
 
 
 
-BSpline::~BSpline()
+template <class T>
+BSpline<T>::~BSpline()
 {
     delete s;
 }
 
 
 
-float BSpline::coefficient (int n)
+template <class T>
+T BSpline<T>::coefficient (int n)
 {
     if (OK)
 	if (0 <= n && n <= M)
@@ -708,9 +749,10 @@ float BSpline::coefficient (int n)
 
 
 
-float BSpline::evaluate (float x)
+template <class T>
+T BSpline<T>::evaluate (T x)
 {
-    float y = 0;
+    T y = 0;
     if (OK)
     {
 	int n = (int)((x - xmin)/DX);
@@ -725,19 +767,20 @@ float BSpline::evaluate (float x)
 
 
 
-const float *BSpline::curve (int *nx)
+template <class T>
+const T *BSpline<T>::curve (int *nx)
 {
     if (! OK)
 	return 0;
 
     // If we already have the curve calculated, don't do it again.
-    std::vector<float> &spline = s->spline;
+    std::vector<T> &spline = s->spline;
     if (spline.size() == 0)
     {
 	spline.reserve (M+1);
 	for (int n = 0; n <= M; ++n)
 	{
-	    float x = xmin + (n * DX);
+	    T x = xmin + (n * DX);
 	    spline.push_back (evaluate (x));
 	}
     }

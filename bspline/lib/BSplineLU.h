@@ -5,16 +5,16 @@
  * limiting the trailing sub-matrix multiplication to the non-zero
  * elements in the diagonal bands.  Return nonzero if a problem occurs.
  */
-template <class Matrix>
-int LU_factor_banded (Matrix &A, unsigned int bands)
+template <class MT>
+int LU_factor_banded (MT &A, unsigned int bands)
 {
-    typename Matrix::size_type M = A.num_rows();
-    typename Matrix::size_type N = A.num_cols();
+    typename MT::size_type M = A.num_rows();
+    typename MT::size_type N = A.num_cols();
     if (M != N)
 	return 1;
 
-    typename Matrix::size_type i,j,k;
-    typename Matrix::element_type sum;
+    typename MT::size_type i,j,k;
+    typename MT::element_type sum;
 
     for (j = 1; j <= N; ++j)
     {
@@ -56,13 +56,13 @@ int LU_factor_banded (Matrix &A, unsigned int bands)
  * problem occurs.  Limit the substitution sums to the elements on the
  * bands above and below the diagonal.
  */
-template <class Matrix, class Vector>
-int LU_solve_banded(const Matrix &A, Vector &b, unsigned int bands)
+template <class MT, class Vector>
+int LU_solve_banded(const MT &A, Vector &b, unsigned int bands)
 {
-    typename Matrix::size_type i,j;
-    typename Matrix::size_type M = A.num_rows();
-    typename Matrix::size_type N = A.num_cols();
-    typename Matrix::element_type sum;
+    typename MT::size_type i,j;
+    typename MT::size_type M = A.num_rows();
+    typename MT::size_type N = A.num_cols();
+    typename MT::element_type sum;
 
     if (M != N || M == 0)
 	return 1;
