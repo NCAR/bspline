@@ -12,6 +12,7 @@ CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES)
 
 DOCXX = doc++
 DOCXX_HEADERS = BSpline.h
+DOCXX_HTMLDIR = /net/global/www/homes/granger/bspline
 
 OBJS = BSpline.o
 
@@ -21,7 +22,7 @@ OBJS = BSpline.o
 all:: $(OBJS)
 
 html::
-	doc++ -d html $(DOCXX_HEADERS)
+	doc++ -d $(DOCXX_HTMLDIR) $(DOCXX_HEADERS)
 
 clean::
 	rm -f $(OBJS)

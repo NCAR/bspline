@@ -14,20 +14,17 @@ class BSpline;
 struct BSplineBaseP;
 
 /**
-
- * {\small Interface version: $Id$}
- *
- * This is the base class for a spline object, containing the computed
- * nodes for a given domain, cutoff wavelength, and boundary condition.  To
- * smooth a single curve, the BSpline interface contains a constructor
- * which both sets up the domain and solves for the spline.  Subsequent
- * curves over the same domain can be created by apply()ing them to the
- * BSpline object, where apply() is a BSplineBase method.  [See
- * \Ref{apply}.]  New curves can also be smoothed within the same BSpline
- * object by calling solve() with the new set of y values.  [See
- * \Ref{BSpline}.]  A BSplineBase can be created on its own, in which case
- * all of the computations dependent on the x values, boundary conditions,
- * and cutoff wavelength have already been completed.
+ * Base class for a spline object containing the nodes for a given domain,
+ * cutoff wavelength, and boundary condition.  To smooth a single curve,
+ * the BSpline interface contains a constructor which both sets up the
+ * domain and solves for the spline.  Subsequent curves over the same
+ * domain can be created by apply()ing them to the BSpline object, where
+ * apply() is a BSplineBase method.  [See \Ref{apply}.]  New curves can
+ * also be smoothed within the same BSpline object by calling solve() with
+ * the new set of y values.  [See \Ref{BSpline}.]  A BSplineBase can be
+ * created on its own, in which case all of the computations dependent on
+ * the x values, boundary conditions, and cutoff wavelength have already
+ * been completed.
  *
  * The solution of the cubic b-spline is divided into two parts.  The first
  * is the setup of the domain given the x values, boundary conditions, and
@@ -82,8 +79,11 @@ struct BSplineBaseP;
  * substitution, and the basis function is evaluated as few times as
  * possible in computing the diagonal matrix and B vector.
  *
+ * {\small Interface version: $Id$}
+ *
  * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
  * @see BSpline
+
  */
 class BSplineBase  
 {
@@ -253,12 +253,12 @@ struct BSplineP;
 
 
 /**
- * The BSpline class is derived from a Base so that all information
- * about the base domain is available to users of the spline object.
- * See the \Ref{BSplineBase} documentation for a summary of the BSpline
- * interface.
+ * Inherit the BSplineBase domain information and interface and add
+ * smoothing.  See the \Ref{BSplineBase} documentation for a summary of the
+ * BSpline interface.
  *
- * @author	\URL[Gary Granger]{mailto:granger@atd.ucar.edu}
+ * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
+
  */
 class BSpline : public BSplineBase
 {
