@@ -14,7 +14,8 @@ DOCXX = doc++
 DOCXX_HEADERS = BSpline.h
 DOCXX_HTMLDIR = /net/global/www/homes/granger/bspline
 
-OBJS = BSpline.o
+# OBJS = BSpline.o
+OBJS =
 
 .cxx.o:
 	$(CXX) -c $(CXXFLAGS) $< -o $@

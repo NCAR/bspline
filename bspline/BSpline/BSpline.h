@@ -244,6 +244,7 @@ protected:
     void addP ();
     bool factor ();
     double Basis (int m, T x);
+    double DBasis (int m, T x);
 
     static const double BoundaryConditions[3][4];
 
@@ -321,6 +322,12 @@ public:
      * at a particular x value.  If current state is not ok(), returns 0.
      */
     T evaluate (T x);
+
+    /** 
+     * Return the first derivative of the spline curve at the given x.
+     * Returns zero if the current state is not ok().
+     */
+    T slope (T x);
 
     /**
      * Return the n-th basis coefficient, from 0 to M.  If the current

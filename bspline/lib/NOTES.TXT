@@ -104,6 +104,7 @@ Should the template parameter be just for the types which are smoothed and
 returned?  Do the actual matrix calculations always as doubles?  Or take
 two template parameters, one for the data domain and one for the
 computation domain?  Can the second default to the same type as the first?
+Should the node coefficients be the element type or the computation type?
 
 Find some way to use gnu make to import dependencies and rules rather than
 performing sub-makes or depends?  Perform the hierarchy without actually

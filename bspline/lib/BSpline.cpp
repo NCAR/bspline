@@ -309,6 +309,40 @@ BSplineBase<T>::Basis (int m, T x)
 
 
 
+/*
+ * Evaluate the deriviative of the closed basis function at node m for
+ * value x, using the parameters for the current boundary conditions.
+ */
+template <class T>
+double
+BSplineBase<T>::DBasis (int m, T x)
+{
+    double dy = 0;
+    double xm = xmin + (m * DX);
+    double delta = (double)(x - xm) / (double)DX;
+    double z = my::abs(delta);
+    if (z < 2.0)
+    {
+	z = 2.0 - z;
+	dy = 0.25 * z * z;
+	z -= 1.0;
+
+	if (z > 0)
+	{
+	    dy -= z * z;
+	}
+	dy *= ((delta > 0) ? -1.0 : 1.0) * 3.0 / DX;
+    }
+
+    // Boundary conditions, if any, are an additional addend.
+    if (m == 0 || m == 1)
+	dy += Beta(m) * DBasis (-1, x);
+    else if (m == M-1 || m == M)
+	dy += Beta(m) * DBasis (M+1, x);
+
+    return dy;
+}
+
 
 
 
@@ -747,6 +781,23 @@ T BSpline<T>::evaluate (T x)
 	y += mean;
     }
     return y;
+}
+
+
+
+template <class T>
+T BSpline<T>::slope (T x)
+{
+    T dy = 0;
+    if (OK)
+    {
+	int n = (int)((x - xmin)/DX);
+	for (int i = my::max(0,n-1); i <= my::min(M,n+2); ++i)
+	{
+	    dy += s->A[i] * DBasis (i, x);
+	}
+    }
+    return dy;
 }
 
 

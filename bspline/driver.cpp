@@ -24,7 +24,7 @@ typedef BSpline<datum> SplineT;
 typedef BSplineBase<datum> SplineBase;
 typedef BSpline<double> SplineD;
 
-static void 
+void 
 DumpSpline (vector<datum> &x, vector<datum> &y, SplineT &spline, ostream &out);
 static void
 EvalSpline (SplineT &spline, ostream &out);
@@ -116,9 +116,9 @@ main (int argc, char *argv[])
     if (spline.ok())
     {
 	// And finally write the curve to a file
-	ofstream fspline("spline.out");
-	ofstream fcurve("smooth.out");
+	ofstream fspline("input.out");
 	DumpSpline (x, y, spline, fspline);
+	ofstream fcurve("spline.out");
 	EvalSpline (spline, fcurve);
     }
     else
@@ -148,6 +148,7 @@ main (int argc, char *argv[])
 	    spotval_ (&xi, &kdat, &fout, &foutd);
 	    *of++ = xi;
 	    *of++ = fout;
+	    *of++ = foutd;
 	    vspline << endl;
 	}
     }
@@ -188,6 +189,7 @@ EvalSpline (SplineT &spline, ostream &out)
     {
 	*of++ = x;
 	*of++ = spline.evaluate (x);
+	*of++ = spline.slope (x);
 	out << endl;
     }
 }
