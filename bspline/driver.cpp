@@ -23,6 +23,10 @@ EvalSpline (BSpline &spline, ostream &out);
 int
 main (int argc, char *argv[])
 {
+	// Some basics first
+	cout << "BSpline interface version: " << BSplineBase::IfaceVersion() << endl;
+	cout << "BSpline implementation version: " << BSplineBase::ImplVersion() << endl;
+	
 	// Sub-sampling and cutoff wavelength come from command-line
 	if (argc != 3)
 	{
