@@ -101,19 +101,25 @@ main (int argc, char *argv[])
 		
     // Create our bspline base on the X vector with a simple 
     // wavelength.
+    int bc = BSplineBase::BC_ZERO_SECOND;
+    BSpline::Debug = true;
+#if 0
     //float wl = (x.back() - x.front()) / (x.size()/3 + 1);
     //float wl = 30.0; /*secs*/
-    int bc = BSplineBase::BC_ZERO_SECOND;
     BSplineBase::Debug = true;
     BSplineBase bb (x.begin(), x.size(), wl, bc);
     if (bb.ok())
     {
 	// Now apply our y values to get the smoothed curve.
 	BSpline spline(bb, y.begin());
-
+    }
+#endif
+    BSpline spline (x.begin(), x.size(), y.begin(), wl, bc);
+    if (spline.ok())
+    {
 	// And finally write the curve to a file
 	ofstream fspline("spline.out");
-	ofstream fcurve("curve.out");
+	ofstream fcurve("smooth.out");
 	DumpSpline (x, y, spline, fspline);
 	EvalSpline (spline, fcurve);
     }
