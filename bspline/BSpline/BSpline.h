@@ -88,6 +88,9 @@ template <class T> struct BSplineBaseP;
 template <class T> class BSplineBase  
 {
 public:
+    // Datum type
+    typedef T datum_type;
+
     // Class members
     static const double PI;
 
@@ -166,7 +169,7 @@ public:
      *		x values in the domain.
      * @see ok
      */
-    BSpline *apply (const T *y);
+    BSpline<T> *apply (const T *y);
 
     /**
      * Return array of the node coordinates.  Returns 0 if not ok().  The
@@ -228,7 +231,7 @@ protected:
     T xmax;
     T xmin;
     int M;			// Number of intervals (M+1 nodes)
-    T DX;			// Interval length in same units as X
+    double DX;			// Interval length in same units as X
     double alpha;
     bool OK;
     Base *base;			// Hide more complicated state members
