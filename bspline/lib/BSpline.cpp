@@ -46,7 +46,7 @@ using my::abs;
 #include "BandedMatrix.h"
 #include "BSplineLU.h"
 #include "BSpline.h"
-#include "BSplineSolver.h"
+// #include "BSplineSolver.h"
 
 template <class T> 
 void setup (T &matrix, int n);
@@ -63,9 +63,9 @@ typedef BandedMatrix<float> MatrixT;
 
 struct BSplineBaseP 
 {
-    MatrixT Q;					// Holds P+Q
-    BSplineSolver<MatrixT> solver;
-    MatrixT LU;					// LU factorization of P+Q
+    MatrixT Q;					// Holds P+Q and its factorization
+    // BSplineSolver<MatrixT> solver;
+    // MatrixT LU;					// LU factorization of P+Q
     std::vector<MatrixT::size_type> index;
     std::vector<float> X;
     std::vector<float> Nodes;
@@ -460,15 +460,15 @@ BSplineBase::factor ()
 {	
     base->index.clear ();
     base->index.resize (M+1);
-    base->LU = base->Q;
+    MatrixT &LU = base->Q;
 
-    if (LU_factor_banded (base->LU, base->index, 3) != 0)
+    if (LU_factor_banded (LU, base->index, 3) != 0)
     {
         if (Debug) cerr << "LU_factor() failed." << endl;
 	return false;
     }
     if (Debug && M < 30)
-	cerr << "LU decomposition: " << endl << base->LU << endl;
+	cerr << "LU decomposition: " << endl << LU << endl;
 
 #if 0
     if (! base->solver.upper (base->Q))
@@ -603,7 +603,9 @@ struct BSplineP
 {
     std::vector<float> spline;
     std::vector<float> A;
+#if 0
     std::vector<float> A2;
+#endif
 };
 
 
@@ -646,18 +648,16 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
     }
 
     std::vector<float> &luA = s->A;
-    std::vector<float> &sA = s->A2;
 
     // Now solve for the A vector.
-    //#if 0
     luA = B;
-    if (LU_solve_banded (base->LU, base->index, luA) != 0)
+    if (LU_solve_banded (base->Q, base->index, luA) != 0)
     {
         cerr << "LU_Solve() failed." << endl;
         exit(1);
     }
-    //#endif
 #if 0
+    std::vector<float> &sA = s->A2;
     if (! base->solver.solve (base->Q, B, sA))
     {
 	cerr << "Solver failed." << endl;
@@ -669,12 +669,9 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
     {
 	cerr << "Solution a for (P+Q)a = b" << endl;
 	cerr << " b: " << B << endl;
-	cerr << "solver a: " << sA << endl;
+	// cerr << "solver a: " << sA << endl;
 	cerr << "    lu a: " << luA << endl;
-
 	cerr << "(P+Q)a = " << endl << (base->Q * s->A) << endl;
-	//cerr << "residual [s->A*x - b]: " << endl;
-	//cerr << matmult(base->Q, s->A) - B << endl;
     }
 }
 

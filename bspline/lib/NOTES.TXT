@@ -4,28 +4,14 @@ of data points per node interval (which means maximizing the
 interval size), while maximizing the number of nodes per 
 wavelength, which means minimizing the interval size.  
 
-Need to add partial quadratures to calculation of Q at boundaries.
-
 Calculation of P should only loop over the basis functions
 nearby each point X[J] which will have a contribution to the matrix
 entry, then take advantage of symmetry to avoid redundant
 calculations.
 
-The Ooyama fortran code first removes the mean from the y values before
-smoothing.  We could do the same, keeping the mean in the object state,
-and adding it back in when evaluating.
-
 When calculating mean, we can test for order in the X values and use it
 to help limit the range of X values which need to be calculated for the
 b vector (see below).
-
-In addP(), try the faster algorithm currently ifdef'd out, but add DX
-to the calculation, since that seems to be what was missing in the
-slow version.
-
-Move DX out of addP() loop over sums, and multiply it once at the left edge
-of the box currently being calculated, since those sums will be done at the end
-of the current box.
 
 Any way to limit the summations in calculating the b vector to the X data
 points which will actually produce non-zero values in the basis function?
@@ -37,8 +23,11 @@ diagonal matrix.  Pivoting should be unnecessary, since the diagonal should
 have the larger values and always be non-zero.  The diagonalized matrix can
 be used to solve against each B vector using the recursive method.  In fact, since
 the E vectors do not depend upon the B vector, only the F vector, we can compute
-E ahead of time also.  And only the diagonals of P+Q should be stored, rather than
-the full square matrix.
+E ahead of time also.  Problem: need B vector when performing the gaussian 
+elimination, so use LU factoring limited to the diagonal bands.
+
+Only the diagonals of P+Q should be stored, rather than
+the full square matrix: hence the BandedMatrix template class.
 
 The BSplineSolver can either keep a reference to M and use it back-solve for a 
 given b, else it can forget M after it has generated the e and f vectors (keeping
@@ -63,10 +52,10 @@ Oops, we still need to divide Q, or at least not include DX in the elements of Q
 again, it seems to work without dividing Q, though I don't know what the implications are
 for the stability of the linear system.  Mathematically it makes sense since the least
 squares is just the addition of the derivative constraint, which can be minimized 
-separately.
+(i.e., set to zero) separately.
 
-The algorithm seems to be working well for the wind speed data I have.  I don't know
-what Charlie's problem is.  Two approaches:
+The algorithm seems to be working well for the wind speed data I have.  I can't figure
+out Charlie's problem.  Two approaches:
 
 	Copy his routine to generate test curve and use it as source data.
 
@@ -76,5 +65,10 @@ what Charlie's problem is.  Two approaches:
 Need to add kth derivatives 2 and 3, since FORTRAN code may use the higher derivatives
 and not the first as is coded now.
 
+Do the LU factorization in place in Q instead of a separate LU matrix. -- Done.
 
+Can we take advantage of X ordering in the spline evaluation also?
+
+Do a binary search to find the X nearest a node, then add up the X's before and after
+it which would have nonzero basis() values.  
 
