@@ -88,7 +88,7 @@ public:
 	int i;
 	for (i = 0; i < nbands; ++i)
 	{
-	    fill_n (bands[i].begin(), bands[i].size(), e);
+	    std::fill_n (bands[i].begin(), bands[i].size(), e);
 	}
 	out_of_bounds = e;
 	return (*this);
@@ -193,7 +193,7 @@ std::ostream &operator<< (std::ostream &out, const BandedMatrix<T> &m)
 	{
 	    out << m.element (i, j) << " ";
 	}
-	out << endl;
+	out << std::endl;
     }
     return out;
 }

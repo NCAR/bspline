@@ -7,6 +7,21 @@
 #ifndef _BSPLINEBASE_IFACE_ID
 #define _BSPLINEBASE_IFACE_ID "$Id$"
 
+/*
+ * If including this file without the implementation (BSpline.cxx) on WIN32,
+ * it assumes the implementation will come from a DLL and thus declare dllimport.
+ * To explicitly instantiate the implementation in a source file, include the 
+ * _IMPLEMENTATION_ file BSpline.cxx and _NOT_ this file.
+ */
+#if WIN32
+# ifndef BSPLINE_DLL_
+#  define BSPLINE_DLL_ __declspec(dllimport)
+# endif
+#else
+# define BSPLINE_DLL_
+#endif /* WIN32 */
+
+
 template <class T> class BSpline;
 
 // Opaque structure to hide our matrix implementation, ala
@@ -85,19 +100,12 @@ template <class T> struct BSplineBaseP;
  * @see BSpline
 
  */
-template <class T> class BSplineBase  
+template <class T> 
+class BSPLINE_DLL_ BSplineBase  
 {
 public:
     // Datum type
     typedef T datum_type;
-
-    // Class members
-    static const double PI;
-
-    /**
-     * Set this class member to true to enable debug messages.
-     */
-    static bool Debug;
 
     /// Return a string describing the implementation version.
     static const char *ImplVersion();
@@ -105,6 +113,13 @@ public:
     /// Return a string describing the interface version.
     static const char *IfaceVersion();
 	
+    /**
+     * Call this class method with a value greater than zero to enable
+     * debug messages, or with zero to disable messages.  Calling with
+     * no arguments returns true if debugging enabled, else false.
+     */
+    static bool Debug (int on = -1);
+
     /**
      * Boundary condition types.
      *
@@ -247,6 +262,7 @@ protected:
     double DBasis (int m, T x);
 
     static const double BoundaryConditions[3][4];
+    static const double PI;
 
 private:
 
@@ -266,7 +282,8 @@ template <class T> struct BSplineP;
  * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
 
  */
-template <class T> class BSpline : public BSplineBase<T>
+template <class T>
+class BSPLINE_DLL_ BSpline : public BSplineBase<T>
 {
 public:
     /**
@@ -296,7 +313,7 @@ public:
      * A BSpline curve can be derived from a separate Base and a set
      * of data points over that base.
      */
-    BSpline (BSplineBase &base, const T *y);
+    BSpline (BSplineBase<T> &base, const T *y);
 
     /**
      * Solve the spline curve for a new set of y values.  Returns false

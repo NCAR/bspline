@@ -4,6 +4,21 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+/*
+ * If we're on WIN32 and the DLL macro has not been set yet, which
+ * implies the interface file (BSpline.h) has not been included yet,
+ * assume only the implementation is wanted and empty the DLL macro
+ * before including the interface.
+ */
+#if WIN32
+# ifndef BSPLINE_DLL_
+#  define BSPLINE_DLL_
+# endif
+#endif /* WIN32 */
+
+#include "BSpline.h"
+#include "BandedMatrix.h"
+
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -11,6 +26,10 @@
 
 #include <assert.h>
 
+/*
+ * This class simulates a namespace for private symbols used by this template
+ * implementation which should not pollute the global namespace.
+ */
 class my
 {
 public:
@@ -27,8 +46,6 @@ public:
     const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
 };
 
-#include "BandedMatrix.h"
-#include "BSpline.h"
 
 template <class T>
 class Matrix : public BandedMatrix<T>
@@ -89,11 +106,20 @@ const double BSplineBase<T>::BoundaryConditions[3][4] =
     {	2,		-1,		-1,		2 }
 };
 
+
+template <class T>
+inline bool BSplineBase<T>::Debug (int on)
+{
+    static bool debug = false;
+    if (on >= 0)
+	debug = (on > 0);
+    return debug;
+}
+
+
 template <class T>
 const double BSplineBase<T>::PI = 3.1415927;
 
-template <class T>
-bool BSplineBase<T>::Debug = false;
 
 template <class T>
 const char *
@@ -101,6 +127,7 @@ BSplineBase<T>::ImplVersion()
 {
     return ("$Id$");
 }
+
 
 template <class T>
 const char *
@@ -171,53 +198,56 @@ BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc)
     // The Setup() method determines the number and size of node intervals.
     if (Setup())
     {
-	if (Debug) 
+	if (Debug()) 
 	{
-	    cerr << "Using M node intervals: " << M << " of length DX: "
-		 << DX << endl;
-	    cerr << "X min: " << xmin << " ; X max: " << xmax << endl;
-	    cerr << "Data points per interval: " << (float)NX/(float)M << endl;
-	    cerr << "Derivative constraint degree: " << K << endl;
+	    std::cerr << "Using M node intervals: " << M << " of length DX: "
+		      << DX << std::endl;
+	    std::cerr << "X min: " << xmin << " ; X max: " << xmax 
+		      << std::endl;
+	    std::cerr << "Data points per interval: " << (float)NX/(float)M 
+		 << std::endl;
+	    std::cerr << "Derivative constraint degree: " << K << std::endl;
 	}
 
 	// Now we can calculate alpha and our Q matrix
 	alpha = Alpha (waveLength);
-	if (Debug)
+	if (Debug())
 	{
-	    cerr << "Cutoff wavelength: " << waveLength << " ; "
-		 << "Alpha: " << alpha << endl;
-	    cerr << "Calculating Q..." << endl;
+	    std::cerr << "Cutoff wavelength: " << waveLength << " ; "
+		 << "Alpha: " << alpha << std::endl;
+	    std::cerr << "Calculating Q..." << std::endl;
 	}
 	calculateQ ();
-	if (Debug && M < 30)
+	if (Debug() && M < 30)
 	{
-	    cerr.fill(' ');
-	    cerr.precision(2);
-	    cerr.width(5);
-	    cerr << base->Q << endl;
+	    std::cerr.fill(' ');
+	    std::cerr.precision(2);
+	    std::cerr.width(5);
+	    std::cerr << base->Q << std::endl;
 	}
 	
-	if (Debug) cerr << "Calculating P..." << endl;
+	if (Debug()) std::cerr << "Calculating P..." << std::endl;
 	addP ();
-	if (Debug)
+	if (Debug())
 	{
-	    cerr << "Done." << endl;
+	    std::cerr << "Done." << std::endl;
 	    if (M < 30)
 	    {
-		cerr << "Array Q after addition of P." << endl;
-		cerr << base->Q;
+		std::cerr << "Array Q after addition of P." << std::endl;
+		std::cerr << base->Q;
 	    }
 	}
 
 	// Now perform the LU factorization on Q
-	if (Debug) cerr << "Beginning LU factoring of P+Q..." << endl;
+	if (Debug()) std::cerr << "Beginning LU factoring of P+Q..." 
+			     << std::endl;
 	if (! factor ())
 	{
-	    if (Debug) cerr << "Factoring failed." << endl;
+	    if (Debug()) std::cerr << "Factoring failed." << std::endl;
 	}
 	else
 	{
-	    if (Debug) cerr << "Done." << endl;
+	    if (Debug()) std::cerr << "Done." << std::endl;
 	    OK = true;
 	}
     }
@@ -272,9 +302,7 @@ template <class T>
 BSpline<T> *
 BSplineBase<T>::apply (const T *y)
 {
-    BSpline<T> *spline = new BSpline<T> (*this, y);
-
-    return (spline);
+    return new BSpline<T> (*this, y);
 }
 
 
@@ -504,11 +532,11 @@ BSplineBase<T>::factor ()
 
     if (LU_factor_banded (LU, 3) != 0)
     {
-        if (Debug) cerr << "LU_factor_banded() failed." << endl;
+        if (Debug()) std::cerr << "LU_factor_banded() failed." << std::endl;
 	return false;
     }
-    if (Debug && M < 30)
-	cerr << "LU decomposition: " << endl << LU << endl;
+    if (Debug() && M < 30)
+	std::cerr << "LU decomposition: " << std::endl << LU << std::endl;
     return true;
 }
 
@@ -624,7 +652,7 @@ std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
 {
     for (std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
 	out << *it << ", ";
-    out << endl;
+    out << std::endl;
     return out;
 }
 
@@ -694,7 +722,7 @@ BSpline<T>::solve (const T *y)
     A.clear ();
     A.resize (M+1);
 
-    if (Debug) cerr << "Solving for B..." << endl;
+    if (Debug()) std::cerr << "Solving for B..." << std::endl;
 
     // Find the mean of these data
     mean = 0.0;
@@ -704,8 +732,8 @@ BSpline<T>::solve (const T *y)
 	mean += y[i];
     }
     mean = mean / (double)NX;
-    if (Debug)
-	cerr << "Mean for y: " << mean << endl;
+    if (Debug())
+	std::cerr << "Mean for y: " << mean << std::endl;
 
     int mx, m, j;
     for (j = 0; j < NX; ++j)
@@ -721,26 +749,27 @@ BSpline<T>::solve (const T *y)
 	}
     }
 
-    if (Debug && M < 30)
+    if (Debug() && M < 30)
     {
-	cerr << "Solution a for (P+Q)a = b" << endl;
-	cerr << " b: " << B << endl;
+	std::cerr << "Solution a for (P+Q)a = b" << std::endl;
+	std::cerr << " b: " << B << std::endl;
     }
 
     // Now solve for the A vector in place.
     if (LU_solve_banded (base->Q, A, 3) != 0)
     {
-	if (Debug)
-	    cerr << "LU_solve_banded() failed." << endl;
+	if (Debug())
+	    std::cerr << "LU_solve_banded() failed." << std::endl;
     }
     else
     {
 	OK = true;
-	if (Debug) cerr << "Done." << endl;
-	if (Debug && M < 30)
+	if (Debug()) std::cerr << "Done." << std::endl;
+	if (Debug() && M < 30)
 	{
-	    cerr << " a: " << A << endl;
-	    cerr << "LU factor of (P+Q) = " << endl << base->Q << endl;
+	    std::cerr << " a: " << A << std::endl;
+	    std::cerr << "LU factor of (P+Q) = " << std::endl 
+		      << base->Q << std::endl;
 	}
     }
     return (OK);

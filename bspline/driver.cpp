@@ -5,10 +5,16 @@
 // Simple test driver for the bspline interface.
 //
 
+/* On WIN32 just get the interface and link with the DLL.
+ * Otherwise include the implementation so we can instantiate it.
+ */
+#ifndef WIN32
 #include "BSpline.cxx"
-
 template class BSpline<double>;
 template class BSpline<float>;
+#else
+#include "BSpline.h"
+#endif /*WIN32*/
 
 #include <iostream>
 #include <fstream>
@@ -18,7 +24,6 @@ template class BSpline<float>;
 
 using namespace std;
 
-//typedef float datum;
 typedef double datum;
 typedef BSpline<datum> SplineT;
 typedef BSplineBase<datum> SplineBase;
@@ -111,7 +116,7 @@ main (int argc, char *argv[])
     // Create our bspline base on the X vector with a simple 
     // wavelength.
     int bc = SplineBase::BC_ZERO_SECOND;
-    SplineT::Debug = true;
+    SplineT::Debug(1);
     SplineT spline (x.begin(), x.size(), y.begin(), wl, bc);
     if (spline.ok())
     {
