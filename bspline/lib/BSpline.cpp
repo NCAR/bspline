@@ -456,7 +456,7 @@ BSplineBase::factor ()
 
     if (LU_factor_banded (LU, 3) != 0)
     {
-        if (Debug) cerr << "LU_factor() failed." << endl;
+        if (Debug) cerr << "LU_factor_banded() failed." << endl;
 	return false;
     }
     if (Debug && M < 30)
@@ -671,10 +671,10 @@ BSpline::solve (const float *y)
     }
 
     // Now solve for the A vector in place.
-    if (LU_solve_banded (base->Q, A) != 0)
+    if (LU_solve_banded (base->Q, A, 3) != 0)
     {
 	if (Debug)
-	    cerr << "LU_Solve() failed." << endl;
+	    cerr << "LU_solve_banded() failed." << endl;
     }
     else
     {

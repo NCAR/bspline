@@ -1,56 +1,48 @@
 /* -*- mode: c++; c-basic-offset: 4; -*- */
 
 /*
- * This is a modified version of R. Pozo's LU_factor template procedure from
- * the Template Numerical Toolkit.  It was modified to limit pivot searching
- * in the case of banded diagonal matrices.  The extra parameter BANDS
- * is the number of bands below the diagonal.  Also, this routine now does
- * NO pivoting, so the index vector has been eliminated.
+ * LU factor a diagonally banded matrix using Crout's algorithm, but
+ * limiting the trailing sub-matrix multiplication to the non-zero
+ * elements in the diagonal bands.  Return nonzero if a problem occurs.
  */
 template <class Matrix>
-int LU_factor_banded (Matrix &A, int bands)
+int LU_factor_banded (Matrix &A, unsigned int bands)
 {
     typename Matrix::size_type M = A.num_rows();
     typename Matrix::size_type N = A.num_cols();
+    if (M != N)
+	return 1;
 
-    typename Matrix::size_type j,k,jp;
-    typename Matrix::size_type minMN = min(M,N);
+    typename Matrix::size_type i,j,k;
+    typename Matrix::element_type sum;
 
-    for (j=1; j<= minMN; j++)
+    for (j = 1; j <= N; ++j)
     {
-        jp = j;
+	// Check for zero pivot
+        if ( A(j,j) == 0 )                 
+            return 1;
 
-        // jp now has the index of maximum element 
-        // of column j, below the diagonal
+	// Calculate rows above and on diagonal. A(1,j) remains as A(1,j).
+	for (i = (j > bands) ? j-bands : 1; i <= j; ++i)
+	{	
+	    sum = 0;
+	    for (k = (j > bands) ? j-bands : 1; k < i; ++k)
+	    {
+		sum += A(i,k)*A(k,j);
+	    }
+	    A(i,j) -= sum;
+	}
 
-        if ( A(jp,j) == 0 )                 
-            return 1;       // factorization failed because of zero pivot
-
-        if (j<M)                // compute elements j+1:M of jth column
-        {
-            // note A(j,j), was A(jp,p) previously which was
-            // guarranteed not to be zero (Label #1)
-            //
-            typename Matrix::element_type recp =  1.0 / A(j,j);
-
-            for (k=j+1; (k <= j+bands) && (k<=M); k++)
-                A(k,j) *= recp;
-        }
-
-        if (j < minMN)
-        {
-            // rank-1 update to trailing submatrix:   E = E - x*y;
-            //
-            // E is the region A(j+1:M, j+1:N)
-            // x is the column vector A(j+1:M,j)
-            // y is row vector A(j,j+1:N)
-
-	    typename Matrix::size_type ii,jj;
-
-            for (ii=j+1; (ii <= j+bands) && (ii<=M); ii++)
-                for (jj=j+1; (jj <= j+bands) && (jj<=N); jj++)
-                    A(ii,jj) -= A(ii,j)*A(j,jj);
-        }
+	// Calculate rows below the diagonal.
+	for (i = j+1; (i <= M) && (i <= j+bands); ++i)
+	{
+	    sum = 0;
+	    for (k = (i > bands) ? i-bands : 1; k < j; ++k)
+	    {
+		sum += A(i,k)*A(k,j);
+	    }
+	    A(i,j) = (A(i,j) - sum) / A(j,j);
+	}
     }
 
     return 0;
@@ -58,30 +50,47 @@ int LU_factor_banded (Matrix &A, int bands)
 
 
 
+/*
+ * Solving (LU)x = B.  First forward substitute to solve for y, Ly = B.
+ * Then backwards substitute to find x, Ux = y.  Return nonzero if a
+ * problem occurs.  Limit the substitution sums to the elements on the
+ * bands above and below the diagonal.
+ */
 template <class Matrix, class Vector>
-int LU_solve_banded(const Matrix &A, Vector &b)
+int LU_solve_banded(const Matrix &A, Vector &b, unsigned int bands)
 {
-    typename Matrix::size_type i,ii=0,ip,j;
-    typename Matrix::size_type n = A.num_rows();
-    typename Matrix::element_type sum = 0.0;
+    typename Matrix::size_type i,j;
+    typename Matrix::size_type M = A.num_rows();
+    typename Matrix::size_type N = A.num_cols();
+    typename Matrix::element_type sum;
 
-    for (i=1;i<=n;i++) 
+    if (M != N || M == 0)
+	return 1;
+
+    // Forward substitution to find y.  The diagonals of the lower
+    // triangular matrix are taken to be 1.
+    for (i = 2; i <= M; ++i)
     {
-        ip=i;
-        sum=b[ip-1];
-        b[ip-1]=b[i-1];
-        if (ii)
-            for (j=ii;j<=i-1;j++) 
-                sum -= A(i,j)*b[j-1];
-        else if (sum) ii=i;
-            b[i-1]=sum;
+	sum = b[i-1];
+	for (j = (i > bands) ? i-bands : 1; j < i; ++j)
+	{
+	    sum -= A(i,j)*b[j-1];
+	}
+	b[i-1] = sum;
     }
-    for (i=n;i>=1;i--) 
+
+    // Now for the backward substitution
+    b[M-1] /= A(M,M);
+    for (i = M-1; i >= 1; --i)
     {
-        sum=b[i-1];
-        for (j=i+1;j<=n;j++) 
-            sum -= A(i,j)*b[j-1];
-        b[i-1]=sum/A(i,i);
+	if (A(i,i) == 0)	// oops!
+	    return 1;
+	sum = b[i-1];
+	for (j = i+1; (j <= N) && (j <= i+bands); ++j)
+	{
+	    sum -= A(i,j)*b[j-1];
+	}
+	b[i-1] = sum / A(i,i);
     }
 
     return 0;

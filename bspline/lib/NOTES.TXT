@@ -118,3 +118,14 @@ mentions this in the paper I think.
 Compute and solve the B vector in place, rather than copying into the A
 first.
  --> Done.
+
+LU_solve_banded doesn't need to multiply A elements outside the diagonals.
+Fix that.
+ --> Done.
+
+Might be nice to include the banded solvers in BandedMatrix instead of a
+separate header file.  Also, try subclassing vector<> to add an operator()
+so that the solver routines can be re-written without the [] and -1
+offsets.
+
+
