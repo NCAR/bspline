@@ -5,7 +5,7 @@
 #ifndef _BANDEDMATRIX_ID
 #define _BANDEDMATRIX_ID "$Id$"
 
-
+#include <iostream.h>
 #include <vector>
 
 
