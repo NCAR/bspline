@@ -10,7 +10,7 @@ CXXDEBUGFLAGS = -g -O -Wall
 # FLIBS = -L/opt/SUNWspro/SC4.0/lib -lF77 -lV77 -lM77 -lsunmath -lm
 # OOYAMA_OBJS = ooyama/ooyama.o
 
-INCLUDES = -I./lib
+INCLUDES = -I./lib -I./BSpline
 CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES) $(DEFINES)
 # LDFLAGS = -pg
 FFLAGS = -O
@@ -45,7 +45,7 @@ ZIPEXT = gz
 LN = ln -s
 DISTFILES = \
      README COPYRIGHT Makefile driver.cpp bspline.dsw driver.dsp \
-     lib/BSpline.cpp lib/BSpline.h lib/BSplineD.cpp lib/BSplineF.cpp \
+     lib/BSpline.cpp BSpline/BSpline.h lib/BSplineD.cpp lib/BSplineF.cpp \
      lib/BandedMatrix.h lib/Makefile lib/BSpline.dsp lib/BSpline.dsw doc
 
 DISTSUBDIRS = 
@@ -70,4 +70,4 @@ clean::
 
 depend::
 
-driver.o: lib/BSpline.cpp lib/BSpline.h 
+driver.o: lib/BSpline.cpp BSpline/BSpline.h 

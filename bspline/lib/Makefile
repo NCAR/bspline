@@ -1,6 +1,8 @@
 # $Id$
 #
 
+INCLUDES = -I../BSpline
+
 CXX = g++
 
 CXXDEBUGFLAGS = -g -Wall
@@ -10,7 +12,7 @@ CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES)
 .SUFFIXES: .cpp
 
 DOCXX = doc++
-DOCXX_HEADERS = BSpline.h
+DOCXX_HEADERS = ../BSpline/BSpline.h
 DOCXX_HTMLDIR = ../doc
 
 OBJS = BSplineF.o BSplineD.o
@@ -35,4 +37,4 @@ clean::
 
 depend::
 
-$(OBJS): BSpline.cpp BandedMatrix.h BSpline.h
+$(OBJS): BSpline.cpp BandedMatrix.h ../BSpline/BSpline.h
