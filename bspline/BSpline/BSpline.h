@@ -126,16 +126,12 @@ template <class T> struct BSplineBaseP;
  * factoring and back substitution, and the basis function is evaluated as
  * few times as possible in computing the diagonal matrix and B vector.
  *
- * {\small Interface version: $Id$}
- *
 \begin{verbatim}
 Copyright (c) 1998,1999
 University Corporation for Atmospheric Research, UCAR
 \end{verbatim}
  *
- * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
- * @see BSpline
-
+ * \URL[Gary Granger]{http://www.atd.ucar.edu/~granger}
  */
 template <class T> 
 class BSPLINE_DLL_ BSplineBase  
@@ -316,7 +312,7 @@ template <class T> struct BSplineP;
  * smoothing.  See the \Ref{BSplineBase} documentation for a summary of the
  * BSpline interface.
  *
- * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
+ * @author \URL[Gary Granger]{http://www.atd.ucar.edu/~granger}
 
  */
 template <class T>
