@@ -6,10 +6,10 @@
 
 #include <vector>
 #include <algorithm>
+#include <iterator>
+
 #if WIN32
 #include <iostream>
-//#include <ios>
-//#include <iomanip>
 #endif
 
 #include <assert.h>
@@ -65,7 +65,7 @@ struct BSplineBaseP
 {
     MatrixT Q;					// Holds P+Q
     BSplineSolver<MatrixT> solver;
-    MatrixT LU;					// LU factorization of PQ
+    MatrixT LU;					// LU factorization of P+Q
     std::vector<MatrixT::size_type> index;
     std::vector<float> X;
     std::vector<float> Nodes;
@@ -178,10 +178,14 @@ BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
 	
 	if (Debug) cerr << "Calculating P..." << endl;
 	addP ();
-	if (Debug && M < 30)
+	if (Debug)
 	{
-	    cerr << "Array Q after addition of P." << endl;
-	    cerr << base->Q;
+	    cerr << "Done." << endl;
+	    if (M < 30)
+	    {
+		cerr << "Array Q after addition of P." << endl;
+		cerr << base->Q;
+	    }
 	}
 
 	// Now perform the LU factorization on Q
@@ -407,9 +411,14 @@ BSplineBase::calculateQ ()
 void
 BSplineBase::addP ()
 {
+#if 0
     MatrixT P;
     setup (P, M+1);
     P = 0.0;
+#endif
+    // Just add directly to Q's elements instead of creating a 
+    // separate P and then adding
+    MatrixT &P = base->Q;
     std::vector<float> &X = base->X;
 
     // For each data point, sum the product of the nearest, non-zero Basis
@@ -439,8 +448,9 @@ BSplineBase::addP ()
 	    }
 	}
     }
-
+#if 0
     base->Q += P;
+#endif
 }
 
 
@@ -448,7 +458,6 @@ BSplineBase::addP ()
 bool
 BSplineBase::factor ()
 {	
-//#if 0
     base->index.clear ();
     base->index.resize (M+1);
     base->LU = base->Q;
@@ -460,7 +469,6 @@ BSplineBase::factor ()
     }
     if (Debug && M < 30)
 	cerr << "LU decomposition: " << endl << base->LU << endl;
-//#endif
 
 #if 0
     if (! base->solver.upper (base->Q))
@@ -576,7 +584,6 @@ BSplineBase::nodes (int *nn)
 }
 
 
-#include <iterator>
 
 ostream &operator<< (ostream &out, const vector<float> &c)
 {
@@ -615,6 +622,7 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 
     std::vector<float> B(M+1);
 
+    if (Debug) cerr << "Solving for B..." << endl;
     // Find the mean of these data
     mean = 0.0;
     int i;
@@ -656,6 +664,7 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 	exit(1);
     }
 #endif
+    if (Debug) cerr << "Done." << endl;
     if (Debug && M < 30)
     {
 	cerr << "Solution a for (P+Q)a = b" << endl;
