@@ -1,0 +1,73 @@
+
+Cubic B-Spline
+--------------
+
+===== Background
+
+This is a C++ implementation of a cubic b-spline least squares and
+derivative constraint algorithm.
+
+ * The algorithm is based on the cubic spline described by Katsuyuki Ooyama
+ * in Montly Weather Review, Vol 115, October 1987.  This implementation
+ * has benefited from comparisons with a previous FORTRAN implementation by
+ * James L. Franklin, NOAA/Hurricane Research Division.  The cubic b-spline
+ * is formulated as the sum of some multiple of the basis function centered
+ * at each node in the domain.  The number of nodes is determined by the
+ * desired cutoff wavelength and a desirable number of x values per node.
+ * The basis function is continuous and differentiable up to the second
+ * degree.  A derivative constraint is included in the solution to achieve
+ * the effect of a low-pass frequency filter with the given cutoff
+ * wavelength.  The domain nodes, boundary constraints, and wavelength
+ * determine a linear system of equations, Qa=b, where a is the vector of
+ * basis function coefficients at each node.  The coefficient vector is
+ * solved by first LU factoring along the diagonally banded matrix Q in
+ * BSplineBase.  The BSpline object then computes the B vector for a set of
+ * y values and solves for the coefficient vector with the LU matrix.  Only
+ * the diagonal bands are stored in memory and calculated during LU
+ * factoring and back substitution, and the basis function is evaluated as
+ * few times as possible in computing the diagonal matrix and B vector.
+
+This work was done for meteorological research at the University
+Corporation for Atmospheric Research.  There is no warranty of any kind.
+Please see the COPYRIGHT file.
+
+===== Installation
+
+As the implementation itself is mostly template code, it is not necessary
+to build the library separately.  The template implementation can be
+included directly.  The templates can also be compiled for the usual float
+and double types into their own object modules and library (DLL on Win32).
+See the documentation for details.  The code is known to compile under the
+GNU EGCS g++ compiler (http://egcs.cygnus.com/) and Microsft Visual C++
+(Developer Studio 5.0).
+
+The distribution contains two parts.  The b-spline code itself is
+contained in the lib/ directory, while the top directory only contains a
+test driver program.  There are MS VC++ projects and/or workspaces for
+both, but they may not be current.  On UNIX, running make in the top
+directory builds only the driver program by including the template
+implementation directly.  Run make in the lib directory to build a library
+with float and double instantiations of the BSpline templates.
+
+To install the code into an include directory, all of the *.cxx and *.h
+files in lib/ must be copied into the include directory.
+
+===== Documentation
+
+There is HTML documentation for the general layout, use, and the public
+interface to the b-spline templates.  The documentation is generated from
+the source files by the Doc++ package.  A copy is distributed in the doc/
+directory.  You can browse the documentation from doc/index.html.
+
+There is no documentation (as yet) on any of the mathematical details of
+the implementation.  Refer to the Ooyama article, and there may be some
+notes in the source.
+
+===== Questions
+
+I'd be happy to try to answer any questions, and certainly happy to hear
+about any bugs or improvements.
+
+Gary Granger
+granger@ucar.edu
+May 6, 1999
