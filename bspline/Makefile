@@ -53,10 +53,13 @@ DISTSUBDIRS =
 tarfile: $(DISTFILES)
 	@echo Making file $(TARDEST)/$(TARFILE).tar.$(ZIPEXT) ; \
 	if $(LN) . $(TARFILE) ; then \
-	  tar cvhf - `ls $(DISTFILES) | sed -e 's,^,$(TARFILE)/,'` | \
+	  tar cvhf - `ls -d $(DISTFILES) | sed -e 's,^,$(TARFILE)/,'` | \
 		  $(ZIPPIPE) > $(TARDEST)/$(TARFILE).tar.$(ZIPEXT) ; \
-	  rm -f $(TARFILE) ; \
 	  echo Done making $(TARDEST)/$(TARFILE).tar.$(ZIPEXT) ; \
+	  echo Making $(TARFILE).zip ; \
+	  zip -r $(TARFILE).zip \
+	    `ls -d $(DISTFILES) | sed -e 's,^,$(TARFILE)/,'` ; \
+	  rm -f $(TARFILE) ; \
 	else \
 	  echo "Cannot make link '$(TARFILE)'!  Aborting."; \
 	  false ; \
