@@ -17,24 +17,25 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
     if (M == 0 || N==0) return 0;
 	indx.assign (M);
 
-	Matrix::size_type i,j,k,jp;
+	Matrix::size_type j,k,jp;
     Matrix::element_type t;
 	Matrix::size_type minMN = my::min(M,N);
 
     for (j=1; j<= minMN; j++)
     {
-
         // find pivot in column j and  test for singularity.
 
         jp = j;
+#if 0
         t = abs(A(j,j));
+		Matrix::size_type i;
         for (i=j+1; i<=my::min(j+bands,M); i++)
             if ( abs(A(i,j)) > t)
             {
                 jp = i;
                 t = abs(A(i,j));
             }
-
+#endif
         indx[j-1] = jp;
 
         // jp now has the index of maximum element 
@@ -59,7 +60,7 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
             //
             Matrix::element_type recp =  1.0 / A(j,j);
 
-            for (k=j+1; k<=M; k++)
+            for (k=j+1; (k <= j+bands) && (k<=M); k++)
                 A(k,j) *= recp;
         }
 
@@ -74,8 +75,8 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
 
 			Matrix::size_type ii,jj;
 
-            for (ii=j+1; ii<=M; ii++)
-                for (jj=j+1; jj<=N; jj++)
+            for (ii=j+1; (ii <= j+bands) && (ii<=M); ii++)
+                for (jj=j+1; (jj <= j+bands) && (jj<=N); jj++)
                     A(ii,jj) -= A(ii,j)*A(j,jj);
         }
     }

@@ -435,7 +435,7 @@ BSplineBase::addP ()
 bool
 BSplineBase::factor ()
 {	
-#if 0
+//#if 0
 	base->index.assign (M+1);
 	base->LU = base->Q;
 
@@ -444,7 +444,9 @@ BSplineBase::factor ()
         if (Debug) cerr << "LU_factor() failed." << endl;
 		return false;
     }
-#endif
+	if (Debug && M < 30)
+		cerr << "LU decomposition: " << endl << base->LU << endl;
+//#endif
 
 #if 0
 	if (! base->solver.upper (base->Q))
@@ -614,24 +616,24 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 		B[m] = sum * DX;
 	}
 
-	std::vector<float> &luA = s->A2;
-	std::vector<float> &sA = s->A;
+	std::vector<float> &luA = s->A;
+	std::vector<float> &sA = s->A2;
 
 	// Now solve for the A vector.
 //#if 0
-	if (! base->solver.solve (base->Q, B, sA))
-	{
-		cerr << "Solver failed." << endl;
-		exit(1);
-	}
-//#endif
-#if 0
 	luA = B;
     if (LU_solve_banded (base->LU, base->index, luA) != 0)
     {
         cerr << "LU_Solve() failed." << endl;
         exit(1);
     }
+//#endif
+#if 0
+	if (! base->solver.solve (base->Q, B, sA))
+	{
+		cerr << "Solver failed." << endl;
+		exit(1);
+	}
 #endif
 	if (Debug && M < 30)
 	{
