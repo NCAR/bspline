@@ -1,0 +1,33 @@
+
+To find "optimum" number of nodes, we want to maximize number
+of data points per node interval (which means maximizing the 
+interval size), while maximizing the number of nodes per 
+wavelength, which means minimizing the interval size.  
+
+Need to add partial quadratures to calculation of Q at boundaries.
+
+Calculation of P should only loop over the basis functions
+nearby each point X[J] which will have a contribution to the matrix
+entry, then take advantage of symmetry to avoid redundant
+calculations.
+
+The Ooyama fortran code first removes the mean from the y values before
+smoothing.  We could do the same, keeping the mean in the object state,
+and adding it back in when evaluating.
+
+When calculating mean, we can test for order in the X values and use it
+to help limit the range of X values which need to be calculated for the
+b vector (see below).
+
+In addP(), try the faster algorithm currently ifdef'd out, but add DX
+to the calculation, since that seems to be what was missing in the
+slow version.
+
+Move DX out of addP() loop over sums, and multiply it once at the left edge
+of the box currently being calculated, since those sums will be done at the end
+of the current box.
+
+Any way to limit the summations in calculating the b vector to the X data
+points which will actually produce non-zero values in the basis function?
+Is it even worth it?
+
