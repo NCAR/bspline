@@ -15,12 +15,12 @@ CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES) $(DEFINES)
 # LDFLAGS = -pg
 FFLAGS = -O
 
-.SUFFIXES: .cxx
+.SUFFIXES: .cpp
 
 OBJS = driver.o $(OOYAMA_OBJS)
 LIBS =  -lstdc++ $(FLIBS)
 
-.cxx.o:
+.cpp.o:
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 all:: driver
@@ -44,8 +44,8 @@ ZIPPIPE = gzip -c
 ZIPEXT = gz
 LN = ln -s
 DISTFILES = \
-     README COPYRIGHT Makefile driver.cxx bspline.dsw driver.dsp \
-     lib/BSpline.cxx lib/BSpline.h lib/BSplineD.cxx lib/BSplineF.cxx \
+     README COPYRIGHT Makefile driver.cpp bspline.dsw driver.dsp \
+     lib/BSpline.cpp lib/BSpline.h lib/BSplineD.cpp lib/BSplineF.cpp \
      lib/BandedMatrix.h lib/Makefile lib/BSpline.dsp lib/BSpline.dsw doc
 
 DISTSUBDIRS = 
@@ -70,4 +70,4 @@ clean::
 
 depend::
 
-driver.o: lib/BSpline.cxx lib/BSpline.h 
+driver.o: lib/BSpline.cpp lib/BSpline.h 

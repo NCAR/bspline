@@ -27,7 +27,7 @@
  */
 
 /*
- * We pre-empt the DLL macro definition in BSpline.cxx and BSpline.h
+ * We pre-empt the DLL macro definition in BSpline.cpp and BSpline.h
  * so that we can explicitly instantiate and export a template for
  * a specific type.
  */
@@ -35,7 +35,7 @@
 # define BSPLINE_DLL_ __declspec(dllexport)
 #endif
 
-#include "BSpline.cxx"
+#include "BSpline.cpp"
 
 template class BSPLINE_DLL_ BSplineBase<double>;
 template class BSPLINE_DLL_ BSpline<double>;

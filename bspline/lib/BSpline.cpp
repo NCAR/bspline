@@ -1,6 +1,6 @@
 // -*- mode: c++; c-basic-offset: 4; -*-
 //
-// BSpline.cxx: implementation of the BSplineBase class.
+// BSpline.cpp: implementation of the BSplineBase class.
 //
 //////////////////////////////////////////////////////////////////////
 /*

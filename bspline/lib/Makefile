@@ -7,7 +7,7 @@ CXXDEBUGFLAGS = -g -Wall
 
 CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES)
 
-.SUFFIXES: .cxx
+.SUFFIXES: .cpp
 
 DOCXX = doc++
 DOCXX_HEADERS = BSpline.h
@@ -17,7 +17,7 @@ OBJS = BSplineF.o BSplineD.o
 
 LIB = libbspline.a
 
-.cxx.o:
+.cpp.o:
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 all:: $(LIB)
@@ -35,4 +35,4 @@ clean::
 
 depend::
 
-$(OBJS): BSpline.cxx BandedMatrix.h BSpline.h
+$(OBJS): BSpline.cpp BandedMatrix.h BSpline.h

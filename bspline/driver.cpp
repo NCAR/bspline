@@ -28,7 +28,7 @@
  * Otherwise include the implementation so we can instantiate it.
  */
 #ifndef WIN32
-#include "BSpline.cxx"
+#include "BSpline.cpp"
 template class BSpline<double>;
 template class BSpline<float>;
 #else

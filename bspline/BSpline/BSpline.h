@@ -27,10 +27,10 @@
 #define _BSPLINEBASE_IFACE_ID "$Id$"
 
 /*
- * If including this file without the implementation (BSpline.cxx) on WIN32,
+ * If including this file without the implementation (BSpline.cpp) on WIN32,
  * it assumes the implementation will come from a DLL and thus declare dllimport.
  * To explicitly instantiate the implementation in a source file, include the 
- * _IMPLEMENTATION_ file BSpline.cxx and _NOT_ this file.
+ * _IMPLEMENTATION_ file BSpline.cpp and _NOT_ this file.
  */
 #if WIN32
 # ifndef BSPLINE_DLL_
@@ -126,7 +126,7 @@ template <class T> struct BSplineBaseP;
  * ok() method to detect when the spline solution has failed.
  *
  * The interface for the BSplineBase and BSpline templates is defined in 
- * the header file BSpline.h.  The implementation is defined in BSpline.cxx.
+ * the header file BSpline.h.  The implementation is defined in BSpline.cpp.
  * Source files which will instantiate the template should include the
  * implementation file and {\em not} the interface.  If the implementation
  * for a specific type will be linked from elsewhere, such as a
