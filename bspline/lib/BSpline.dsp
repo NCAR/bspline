@@ -111,7 +111,7 @@ SOURCE=.\BSpline.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=\bspline\BSpline\BSpline.h
+SOURCE=..\BSpline\BSpline.h
 # End Source File
 # Begin Source File
 
