@@ -136,7 +136,7 @@ main (int argc, char *argv[])
     // wavelength.
     int bc = SplineBase::BC_ZERO_SECOND;
     SplineT::Debug(1);
-    SplineT spline (x.begin(), x.size(), y.begin(), wl, bc);
+    SplineT spline (&x[0], x.size(), &y[0], wl, bc);
     if (spline.ok())
     {
 	// And finally write the curve to a file

@@ -73,13 +73,13 @@ public:
     Matrix &operator += (const Matrix &B)
     {
 	Matrix &A = *this;
-        Matrix::size_type M = A.num_rows();
-	Matrix::size_type N = A.num_cols();
+        typename Matrix::size_type M = A.num_rows();
+	typename Matrix::size_type N = A.num_cols();
 
 	assert(M==B.num_rows());
 	assert(N==B.num_cols());
 
-	Matrix::size_type i,j;
+	typename Matrix::size_type i,j;
 	for (i=0; i<M; i++)
 	    for (j=0; j<N; j++)
 		A[i][j] += B[i][j];
@@ -684,7 +684,7 @@ BSplineBase<T>::nodes (int *nn)
 	*nn = base->Nodes.size();
 
     assert (base->Nodes.size() == (unsigned)(M+1));
-    return base->Nodes.begin();
+    return &base->Nodes[0];
 }
 
 
@@ -692,7 +692,7 @@ BSplineBase<T>::nodes (int *nn)
 template <class T>
 std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
 {
-    for (std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
+    for (typename std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
 	out << *it << ", ";
     out << std::endl;
     return out;
@@ -893,5 +893,5 @@ const T *BSpline<T>::curve (int *nx)
 
     if (nx)
 	*nx = spline.size();
-    return spline.begin();
+    return &spline[0];
 }
