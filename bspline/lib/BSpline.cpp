@@ -23,6 +23,13 @@
  * http://www.gnu.org/copyleft/gpl.html.
  */
 
+/**
+ * @file
+ *
+ * This file defines the implementation for the BSpline and BSplineBase
+ * templates.
+ **/
+
 /*
  * If we're on WIN32 and the DLL macro has not been set yet, which
  * implies the interface file (BSpline.h) has not been included yet,

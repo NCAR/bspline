@@ -46,7 +46,8 @@ LN = ln -s
 DISTFILES = \
      README COPYRIGHT Makefile driver.cpp bspline.dsw driver.dsp \
      lib/BSpline.cpp BSpline/BSpline.h lib/BSplineD.cpp lib/BSplineF.cpp \
-     lib/BandedMatrix.h lib/Makefile lib/BSpline.dsp lib/BSpline.dsw doc
+     lib/BandedMatrix.h lib/Makefile lib/BSpline.dsp lib/BSpline.dsw \
+     lib/Doxyfile doc
 
 DISTSUBDIRS = 
 

@@ -26,11 +26,16 @@
 #ifndef _BSPLINEBASE_IFACE_ID
 #define _BSPLINEBASE_IFACE_ID "$Id$"
 
-/*
- * If including this file without the implementation (BSpline.cpp) on WIN32,
- * it assumes the implementation will come from a DLL and thus declare dllimport.
- * To explicitly instantiate the implementation in a source file, include the 
- * _IMPLEMENTATION_ file BSpline.cpp and _NOT_ this file.
+/**
+ * @file
+ *
+ * This file defines the BSpline library interface.
+ *
+ * If including this file without the implementation (BSpline.cpp) on
+ * WIN32, it assumes the implementation will come from a DLL and thus
+ * declares dllimport.  To explicitly instantiate the implementation in a
+ * source file, include the @em implementation file BSpline.cpp and @em not
+ * this file.  See BSplineBase class documentation for more info.
  */
 #if WIN32
 # ifndef BSPLINE_DLL_
@@ -43,22 +48,26 @@
 
 template <class T> class BSpline;
 
-// Opaque structure to hide our matrix implementation, ala
-// Cheshire cat.
+/*
+ * Opaque member structure to hide the matrix implementation.
+ */
 template <class T> struct BSplineBaseP;
 
 /**
- * Base class for a spline object containing the nodes for a given domain,
- * cutoff wavelength, and boundary condition.  To smooth a single curve,
- * the BSpline interface contains a constructor which both sets up the
- * domain and solves for the spline.  Subsequent curves over the same
- * domain can be created by apply()ing them to the BSpline object, where
- * apply() is a BSplineBase method.  [See \Ref{apply}.]  New curves can
- * also be smoothed within the same BSpline object by calling solve() with
- * the new set of y values.  [See \Ref{BSpline}.]  A BSplineBase can be
- * created on its own, in which case all of the computations dependent on
- * the x values, boundary conditions, and cutoff wavelength have already
- * been completed.
+ * @class BSplineBase
+ *
+ * The base class for a spline object containing the nodes for a given
+ * domain, cutoff wavelength, and boundary condition.
+
+ * To smooth a single curve, the BSpline interface contains a constructor
+ * which both sets up the domain and solves for the spline.  Subsequent
+ * curves over the same domain can be created by apply()ing them to the
+ * BSpline object, where apply() is a BSplineBase method.  [See apply().]
+ * New curves can also be smoothed within the same BSpline object by
+ * calling solve() with the new set of y values.  [See BSpline.]  A
+ * BSplineBase can be created on its own, in which case all of the
+ * computations dependent on the x values, boundary conditions, and cutoff
+ * wavelength have already been completed.
  *
  * The solution of the cubic b-spline is divided into two parts.  The first
  * is the setup of the domain given the x values, boundary conditions, and
@@ -73,7 +82,7 @@ template <class T> struct BSplineBaseP;
  * been solved, it can be evaluated at any x value.  The following example
  * creates a spline curve and evaluates it over the domain:
  *
-\begin{verbatim}
+@verbatim
 
     vector<float> x;
     vector<float> y;
@@ -92,7 +101,7 @@ template <class T> struct BSplineBaseP;
 	}
     }
  
-\end{verbatim}
+@endverbatim
  *
  * In the usual usage, the BSplineBase can compute a reasonable number of
  * nodes for the spline, balancing between a few desirable factors.  There
@@ -128,7 +137,7 @@ template <class T> struct BSplineBaseP;
  * The interface for the BSplineBase and BSpline templates is defined in 
  * the header file BSpline.h.  The implementation is defined in BSpline.cpp.
  * Source files which will instantiate the template should include the
- * implementation file and {\em not} the interface.  If the implementation
+ * implementation file and @em not the interface.  If the implementation
  * for a specific type will be linked from elsewhere, such as a
  * static library or Windows DLL, source files should only include the 
  * interface file.  On Windows, applications should link with the import
@@ -168,12 +177,13 @@ template <class T> struct BSplineBaseP;
  * substitution, and the basis function is evaluated as few times as
  * possible in computing the diagonal matrix and B vector.
  *
-\begin{verbatim}
-Copyright (c) 1998,1999,2001
-University Corporation for Atmospheric Research, UCAR
-\end{verbatim}
+ * @author Gary Granger (http://www.atd.ucar.edu/~granger)
  *
- * \URL[Gary Granger]{http://www.atd.ucar.edu/~granger} */
+@verbatim
+Copyright (c) 1998-2003
+University Corporation for Atmospheric Research, UCAR
+@endverbatim
+ **/
 template <class T> 
 class BSPLINE_DLL_ BSplineBase  
 {
@@ -196,18 +206,14 @@ public:
 
     /**
      * Boundary condition types.
-     *
-     * \begin{description}
-     * \item[BC_ZERO_ENDPOINTS]	Set the endpoints of the spline to zero.
-     * \item[BC_ZERO_FIRST]	Set the first derivative of the spline
-     *				to zero at the endpoints.
-     * \item[BC_ZERO_SECOND]	Set the second derivative to zero.
-     * \end{description}
      */
     enum BoundaryConditionTypes
     {
+	/// Set the endpoints of the spline to zero.
 	BC_ZERO_ENDPOINTS = 0,
+	/// Set the first derivative of the spline to zero at the endpoints.
 	BC_ZERO_FIRST = 1,
+	/// Set the second derivative to zero.
 	BC_ZERO_SECOND = 2
     };
 
@@ -218,9 +224,6 @@ public:
      * wavelength, and boundary condition type.  The parameters are the
      * same as for setDomain().  Call ok() to check whether domain
      * setup succeeded after construction.
-     *
-     * @see setDomain 
-     * @see ok
      */
     BSplineBase (const T *x, int nx, 
 		 double wl, int bc_type = BC_ZERO_SECOND,
@@ -241,9 +244,9 @@ public:
      * could not be factored.  If setup fails, the method returns false.
      *
      * @param x		The array of x values in the domain.
-     * @param nx	The number of values in the {\em x} array.
+     * @param nx	The number of values in the @p x array.
      * @param wl	The cutoff wavelength, in the same units as the
-     *			{\em x} values.  A wavelength of zero disables
+     *			@p x values.  A wavelength of zero disables
      *			the derivative constraint.
      * @param bc_type	The enumerated boundary condition type.  If
      *			omitted it defaults to BC_ZERO_SECOND.
@@ -252,7 +255,7 @@ public:
      *			calculated automatically, if possible, taking
      * 			into account the given cutoff wavelength.
      *
-     * @see ok
+     * @see ok().
      */
     bool setDomain (const T *x, int nx, double wl, 
 		    int bc_type = BC_ZERO_SECOND,
@@ -263,7 +266,7 @@ public:
      * The returned object will need to be deleted by the caller.
      * @param y The array of y values corresponding to each of the nX()
      *		x values in the domain.
-     * @see ok
+     * @see ok()
      */
     BSpline<T> *apply (const T *y);
 
@@ -354,11 +357,8 @@ template <class T> struct BSplineP;
 
 /**
  * Inherit the BSplineBase domain information and interface and add
- * smoothing.  See the \Ref{BSplineBase} documentation for a summary of the
+ * smoothing.  See the BSplineBase documentation for a summary of the
  * BSpline interface.
- *
- * @author \URL[Gary Granger]{http://www.atd.ucar.edu/~granger}
-
  */
 template <class T>
 class BSPLINE_DLL_ BSpline : public BSplineBase<T>
@@ -371,14 +371,14 @@ public:
      * If either the domain setup fails or the spline cannot be solved,
      * the state will be set to not ok.
      *
-     * @see ok
+     * @see ok().
      *
      * @param x		The array of x values in the domain.
-     * @param nx	The number of values in the {\em x} array.
+     * @param nx	The number of values in the @p x array.
      * @param y		The array of y values corresponding to each of the
      *			nX() x values in the domain.
      * @param wl	The cutoff wavelength, in the same units as the
-     *			{\em x} values.  A wavelength of zero disables
+     *			@p x values.  A wavelength of zero disables
      *			the derivative constraint.
      * @param bc_type	The enumerated boundary condition type.  If
      *			omitted it defaults to BC_ZERO_SECOND.
@@ -394,8 +394,8 @@ public:
 	     int num_nodes = 0);
 
     /**
-     * A BSpline curve can be derived from a separate Base and a set
-     * of data points over that base.
+     * A BSpline curve can be derived from a separate @p base and a set
+     * of data points @p y over that base.
      */
     BSpline (BSplineBase<T> &base, const T *y);
 
@@ -420,19 +420,19 @@ public:
 
     /**
      * Return the evaluation of the smoothed curve 
-     * at a particular x value.  If current state is not ok(), returns 0.
+     * at a particular @p x value.  If current state is not ok(), returns 0.
      */
     T evaluate (T x);
 
     /** 
-     * Return the first derivative of the spline curve at the given x.
+     * Return the first derivative of the spline curve at the given @p x.
      * Returns zero if the current state is not ok().
      */
     T slope (T x);
 
     /**
-     * Return the n-th basis coefficient, from 0 to M.  If the current
-     * state is not ok(), or n is out of range, the method returns zero.
+     * Return the @p n-th basis coefficient, from 0 to M.  If the current
+     * state is not ok(), or @p n is out of range, the method returns zero.
      */
     T coefficient (int n);
 
