@@ -10,6 +10,9 @@ CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES)
 
 .SUFFIXES: .cxx
 
+DOCXX = doc++
+DOCXX_HEADERS = BSpline.h
+
 OBJS = BSpline.o
 
 .cxx.o:
@@ -17,9 +20,12 @@ OBJS = BSpline.o
 
 all:: $(OBJS)
 
+html::
+	doc++ -d html $(DOCXX_HEADERS)
+
 clean::
 	rm -f $(OBJS)
 
 depend::
 
-BSpline.o: BandedMatrix.h BSplineLU.h BSpline.h BSplineSolver.h
+BSpline.o: BandedMatrix.h BSplineLU.h BSpline.h

@@ -128,4 +128,4 @@ separate header file.  Also, try subclassing vector<> to add an operator()
 so that the solver routines can be re-written without the [] and -1
 offsets.
 
-
+Try out doc++ on the bspline module.
