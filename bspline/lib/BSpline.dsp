@@ -44,7 +44,6 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# SUBTRACT CPP /O<none>
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -97,7 +96,7 @@ SOURCE=.\BandedMatrix.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\BSpline.cxx
+SOURCE=.\BSpline.cpp
 # End Source File
 # Begin Source File
 
@@ -105,11 +104,11 @@ SOURCE=.\BSpline.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\BSplineD.cxx
+SOURCE=.\BSplineD.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\BSplineF.cxx
+SOURCE=.\BSplineF.cpp
 # End Source File
 # End Target
 # End Project

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
 # ADD CPP /MD /W3 /GX /I "lib" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# SUBTRACT CPP /nologo /O<none>
+# SUBTRACT CPP /nologo
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -87,7 +87,7 @@ LINK32=link.exe
 # Name "driver - Win32 Debug"
 # Begin Source File
 
-SOURCE=.\driver.cxx
+SOURCE=.\driver.cpp
 # End Source File
 # End Target
 # End Project
