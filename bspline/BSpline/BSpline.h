@@ -3,6 +3,25 @@
 // BSpline.h: interface for the BSplineBase class.
 //
 //////////////////////////////////////////////////////////////////////
+/*
+ * Copyright (c) 1998,1999
+ * University Corporation for Atmospheric Research, UCAR
+ *
+ * Permission to use, copy, modify, distribute and sell this software and
+ * its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and that
+ * both that copyright notice and this permission notice appear in
+ * supporting documentation.  UCAR makes no representations about the
+ * suitability of this software for any purpose.  It is provided "as is"
+ * without express or implied warranty.
+ * 
+ * Note from the author:
+ *
+ * Where possible, you are encouraged to follow the GNU General Public
+ * License, or at least the spirit of the license, for the distribution and
+ * licensing of this software and any derived works.  See
+ * http://www.gnu.org/copyleft/gpl.html.
+ */
 
 #ifndef _BSPLINEBASE_IFACE_ID
 #define _BSPLINEBASE_IFACE_ID "$Id$"
@@ -88,25 +107,31 @@ template <class T> struct BSplineBaseP;
  * own instantiation.
  *
  * The algorithm is based on the cubic spline described by Katsuyuki Ooyama
- * in Montly Weather Review, Vol 115, October 1987 and on a previous
- * FORTRAN implementation.  The cubic b-spline is formulated as the sum of
- * some multiple of the basis function centered at each node in the domain.
- * The number of nodes is determined by the desired cutoff wavelength and a
- * desirable number of x values per node.  The basis function is continuous
- * and differentiable up to the second degree.  A derivative constraint is
- * included in the solution to achieve the effect of a low-pass frequency
- * filter with the given cutoff wavelength.  The domain nodes, boundary
- * constraints, and wavelength determine a linear system of equations,
- * Qa=b, where a is the vector of basis function coefficients at each node.
- * The coefficient vector is solved by first LU factoring along the
- * diagonally banded matrix Q in BSplineBase.  The BSpline object then
- * computes the B vector for a set of y values and solves for the
- * coefficient vector with the LU matrix.  Only the diagonal bands are
- * stored in memory and calculated during LU factoring and back
- * substitution, and the basis function is evaluated as few times as
- * possible in computing the diagonal matrix and B vector.
+ * in Montly Weather Review, Vol 115, October 1987.  This implementation
+ * has benefited from comparisons with a previous FORTRAN implementation by
+ * James L. Franklin, NOAA/Hurricane Research Division.  The cubic b-spline
+ * is formulated as the sum of some multiple of the basis function centered
+ * at each node in the domain.  The number of nodes is determined by the
+ * desired cutoff wavelength and a desirable number of x values per node.
+ * The basis function is continuous and differentiable up to the second
+ * degree.  A derivative constraint is included in the solution to achieve
+ * the effect of a low-pass frequency filter with the given cutoff
+ * wavelength.  The domain nodes, boundary constraints, and wavelength
+ * determine a linear system of equations, Qa=b, where a is the vector of
+ * basis function coefficients at each node.  The coefficient vector is
+ * solved by first LU factoring along the diagonally banded matrix Q in
+ * BSplineBase.  The BSpline object then computes the B vector for a set of
+ * y values and solves for the coefficient vector with the LU matrix.  Only
+ * the diagonal bands are stored in memory and calculated during LU
+ * factoring and back substitution, and the basis function is evaluated as
+ * few times as possible in computing the diagonal matrix and B vector.
  *
  * {\small Interface version: $Id$}
+ *
+\begin{verbatim}
+Copyright (c) 1998,1999
+University Corporation for Atmospheric Research, UCAR
+\end{verbatim}
  *
  * @author \URL[Gary Granger]{mailto:granger@atd.ucar.edu}
  * @see BSpline
@@ -278,7 +303,7 @@ protected:
 
 private:
 
-    Ratio (int&, double &, double &, double *rd = 0);
+    int Ratio (int&, double &, double &, double *rd = 0);
 
 };
 
