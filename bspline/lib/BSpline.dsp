@@ -54,6 +54,11 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
+# Begin Special Build Tool
+TargetPath=\Binaries\BSpline\Release\Lib\BSpline.dll
+SOURCE="$(InputPath)"
+PostBuild_Cmds=copy $(TargetPath)  c:\winnt\system32
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "BSpline - Win32 Debug"
 
@@ -83,6 +88,12 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
 # SUBTRACT LINK32 /nologo /verbose
+# Begin Special Build Tool
+TargetPath=\Binaries\BSpline\Debug\Lib\BSpline.dll
+SOURCE="$(InputPath)"
+PostBuild_Desc=Copy dll to system folder
+PostBuild_Cmds=copy $(TargetPath)  c:\winnt\system32
+# End Special Build Tool
 
 !ENDIF 
 
