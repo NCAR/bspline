@@ -18,8 +18,9 @@ public:
 	}
 
 	// Solve vector a for M*a = b
-	bool solve (const vector_type &b, vector_type &a)
+	bool solve (Matrix &_M, vector_type &_b, vector_type &a)
 	{
+		upper (_M, _b);
 		if (!ok)
 			return false;
 
@@ -54,36 +55,40 @@ public:
 	const Matrix *matrix () { return mp; }
 
 	// Upper triangularize and generate our auxiliary e vectors
-	bool upper (Matrix &_M)
+	bool upper (Matrix &_M, const vector_type &_b)
 	{
 		mp = &_M;
 		Matrix &M = *mp;
 		N = M.num_rows();
+		b = _b;
 		
 		// Use Gaussian elimination to convert to upper diagonal matrix.  NOTE this
 		// does no pivoting, relying heavily on the assumption of a spline matrix
-		// having exactly 7 bands ceneterd on a dominant diagonal.
-		e1.assign(N);
-		e2.assign(N);
-		e3.assign(N);
+		// having exactly 7 bands centered on a dominant diagonal.
+		//e1.assign(N);
+		//e2.assign(N);
+		//e3.assign(N);
 
 		// For each diagonal element, zero the elements in its column on the three
 		// rows beneath it.  We only need to update to the third column right of the 
 		// diagonal on the row we're multiplying/adding; everything right of that 
-		// in that row is zero.
+		// in that row is zero, and then only to the 2nd-to-last column, since the last
+		// column has only zeros above it.
 		size_type i, j;
-		for (j = 0; j < N; ++j)
+		for (j = 0; j < N-1; ++j)
 		{
+			element_type pivot = M[j][j];
+			if (pivot == 0)
+				return (ok = false);
 			for (i = j+1; (i <= j+3) && (i < N); ++i)
 			{
-				if (M[j][j] == 0)
-					return (ok = false);
-				element_type r = - (M[i][j] / M[j][j]);
+				element_type r = - (M[i][j] / pivot);
 				M[i][j] = 0;
-				for (int jj = j+1; (jj <= j + 3) && (jj < N); ++jj)
+				for (int jj = j+1; (jj <= i + 2) && (jj < N); ++jj)
 				{
 					M[i][jj] += M[j][jj] * r;
 				}
+				b[i] += b[j] * r;
 			}
 					
 			// Now calculate the e vector elements for this row.
@@ -98,7 +103,8 @@ private:
 	Matrix::size_type N;
 	bool ok;
 
-	vector_type e1, e2, e3;
+	vector_type b;
+	//vector_type e1, e2, e3;
 
 };
 

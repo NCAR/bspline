@@ -231,6 +231,36 @@ private:
 };
 
 
+/*
+ * Vector multiplication
+ */
+
+template <class Vector, class Matrix>
+Vector operator* (const Matrix &m, const Vector &v)
+{
+	Matrix::size_type M = m.num_rows();
+	Matrix::size_type N = m.num_cols();
+
+	assert (N <= v.size());
+	//if (M > v.size())
+	//	return Vector();
+
+	Vector r(N);
+	for (int i = 0; i < M; ++i)
+	{
+		Matrix::element_type sum = 0;
+		for (int j = 0; j < N; ++j)
+		{
+			sum += m[i][j] * v[j];
+		}
+		r[i] = sum;
+	}
+	return r;
+}
+
+
+
+
 
 #endif /* _BANDEDMATRIX_ID */
 
