@@ -128,7 +128,7 @@ BSplineBase::BSplineBase (const BSplineBase &bb) :
 
 
 BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) : 
-    K(1), OK(false), base(new BSplineBaseP)
+    K(2), OK(false), base(new BSplineBaseP)
 {
     setDomain (x, nx, wl, bc);
 }
@@ -157,14 +157,20 @@ BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
     if (Setup())
     {
 	if (Debug) 
+	{
 	    cerr << "Using M node intervals: " << M << " of length DX: "
 		 << DX << endl;
+	    cerr << "X min: " << xmin << " ; X max: " << xmax << endl;
+	    cerr << "Data points per interval: " << (float)NX/(float)M << endl;
+	    cerr << "Derivative constraint degree: " << K << endl;
+	}
 
 	// Now we can calculate alpha and our Q matrix
 	alpha = Alpha (waveLength);
 	if (Debug)
 	{
-	    cerr << "Alpha: " << alpha << endl;
+	    cerr << "Cutoff wavelength: " << waveLength << " ; "
+		 << "Alpha: " << alpha << endl;
 	    cerr << "Calculating Q..." << endl;
 	}
 	calculateQ ();
@@ -212,12 +218,12 @@ float
 BSplineBase::Alpha (float wl)
 {
     // K is the degree of the derivative constraint: 1, 2, or 3
-    float a = (float) (wl / (2 * PI));
+    float a = (float) (wl / (2 * PI * DX));
     a *= a;			// a^2
     if (K == 2)
-	a *= a;			// a^4
+	a = a * a;		// a^4
     else if (K == 3)
-	a *= a * a;		// a^6
+	a = a * a * a;		// a^6
     return a;
 }
 
@@ -316,22 +322,27 @@ BSplineBase::qDelta (int m1, int m2)
     // normalized basis functions
     // given a distance m nodes apart, qparts[m], 0 <= m <= 3
     // Each column is the integral over each unit domain, -2 to 2
-    static const float qparts[4][4] = 
+    static const float qparts[3][4][4] = 
     {
-	{ 0.11250f,   0.63750f,   0.63750f,   0.11250f },
-	{ 0.00000f,   0.13125f,  -0.54375f,   0.13125f },
-	{ 0.00000f,   0.00000f,  -0.22500f,  -0.22500f },
-	{ 0.00000f,   0.00000f,   0.00000f,  -0.01875f }
+	{
+	    { 0.11250f,   0.63750f,   0.63750f,   0.11250f },
+	    { 0.00000f,   0.13125f,  -0.54375f,   0.13125f },
+	    { 0.00000f,   0.00000f,  -0.22500f,  -0.22500f },
+	    { 0.00000f,   0.00000f,   0.00000f,  -0.01875f }
+	},
+	{
+	    { 0.75000f,   2.25000f,   2.25000f,   0.75000f },
+	    { 0.00000f,  -1.12500f,  -1.12500f,  -1.12500f },
+	    { 0.00000f,   0.00000f,   0.00000f,   0.00000f },
+	    { 0.00000f,   0.00000f,   0.00000f,   0.37500f }
+	},
+	{
+	    { 2.25000f,  20.25000f,  20.25000f,   2.25000f },
+	    { 0.00000f,  -6.75000f, -20.25000f,  -6.75000f },
+	    { 0.00000f,   0.00000f,   6.75000f,   6.75000f },
+	    { 0.00000f,   0.00000f,   0.00000f,  -2.25000f }
+	}
     };
-
-#ifdef notdef
-    // Simply the sums of each row above, for interior nodes
-    // where the integral is not restricted by the domain.
-    static const float qinterior[4] =
-    {
-	1.5f,	-0.28125f,	-0.450f,	-0.01875f
-    };
-#endif
 
     if (m1 > m2)
 	std::swap (m1, m2);
@@ -341,8 +352,8 @@ BSplineBase::qDelta (int m1, int m2)
 
     float q = 0.0;
     for (int m = /*my::*/max (m1-2,0); m < /*my::*/min (m1+2, M); ++m)
-	q += qparts[m2-m1][m-m1+2];
-    return q * DX * alpha;
+	q += qparts[K-1][m2-m1][m-m1+2];
+    return q/* * DX*/ * alpha; 	/* ??? */
 }
 
 
@@ -436,13 +447,13 @@ BSplineBase::addP ()
 	{
 	    float pn;
 	    float pm = Basis (m, x);
-	    float sum = pm * pm/* * DX*/;
+	    float sum = pm * pm/* * DX*/;	/* ??? */
 	    P[m][m] += sum;
 	    for (n = m+1; n <= /*my::*/min(M, m+3); ++n)
 	    {
 		pm = Basis (m, x);
 		pn = Basis (n, x);
-		sum = pm * pn/* * DX*/;
+		sum = pm * pn/* * DX*/;	/* ??? */
 		P[m][n] += sum;
 		P[n][m] += sum;
 	    }
@@ -489,7 +500,7 @@ BSplineBase::Ratio (int &ni, float &deltax, float &ratiof,
 		    float *ratiod)
 {
     deltax = (xmax - xmin) / ni;
-    ratiof = deltax / waveLength;
+    ratiof = waveLength / deltax;
     float rd = (float) NX / (float) (ni + 1);
     if (ratiod)
 	*ratiod = rd;
@@ -522,7 +533,7 @@ bool BSplineBase::Setup()
 	return (false);
     }
 
-    int ni = 9;		// Number of node intervals
+    int ni = 9;		// Number of node intervals (NX - 1)
     float deltax;
 
     if (waveLength == 0)	// Allows turning off frequency constraint
@@ -532,7 +543,7 @@ bool BSplineBase::Setup()
     }
     else
     {
-	// Minimum acceptable number of nodes per cutoff wavelength
+	// Minimum acceptable number of node intervals per cutoff wavelength.
 	static const float fmin = 2.0;
 
 	float ratiof;	// Nodes per wavelength for current deltax
@@ -542,7 +553,7 @@ bool BSplineBase::Setup()
 	    if (! Ratio (++ni, deltax, ratiof))
 		return false;
 	}
-	while (ratiof > fmin);
+	while (ratiof < fmin);
 
 	// Tweak the estimates obtained above
 	do {
@@ -644,7 +655,7 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 	{
 	    sum += (y[j] - mean) * Basis (m, base->X[j]);
 	}
-	B[m] = sum/* * DX*/;
+	B[m] = sum/* * DX*/;	/* ??? */
     }
 
     std::vector<float> &luA = s->A;
@@ -696,7 +707,8 @@ float BSpline::evaluate (float x)
     float y = 0;
     if (OK)
     {
-	for (int i = 0; i <= M; ++i)
+	int n = (int)((x - xmin)/DX);
+	for (int i = max(0,n-2); i <= min(M,n+2); ++i)
 	{
 	    y += s->A[i] * Basis (i, x);
 	}

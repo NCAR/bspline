@@ -21,54 +21,76 @@ We should be able to use the "recursive" solution from the Ooyama paper by
 first performing Gaussian elimination to conver the P+Q matrix to an upper
 diagonal matrix.  Pivoting should be unnecessary, since the diagonal should
 have the larger values and always be non-zero.  The diagonalized matrix can
-be used to solve against each B vector using the recursive method.  In fact, since
-the E vectors do not depend upon the B vector, only the F vector, we can compute
-E ahead of time also.  Problem: need B vector when performing the gaussian 
-elimination, so use LU factoring limited to the diagonal bands.
+be used to solve against each B vector using the recursive method.  In
+fact, since the E vectors do not depend upon the B vector, only the F
+vector, we can compute E ahead of time also.  Problem: need B vector when
+performing the gaussian elimination, so use LU factoring limited to the
+diagonal bands.
 
 Only the diagonals of P+Q should be stored, rather than
 the full square matrix: hence the BandedMatrix template class.
 
-The BSplineSolver can either keep a reference to M and use it back-solve for a 
-given b, else it can forget M after it has generated the e and f vectors (keeping
-the M elements needed for f in f, possibly as their inverse).  Then a Solver would
-not need any further reference to M and can still solve for given b vectors, but
-ultimately it requires more multiplications than using M directly.  (Access to M
-may be slow enough to warrant using the private vectors instead.)
+The BSplineSolver can either keep a reference to M and use it back-solve
+for a given b, else it can forget M after it has generated the e and f
+vectors (keeping the M elements needed for f in f, possibly as their
+inverse).  Then a Solver would not need any further reference to M and can
+still solve for given b vectors, but ultimately it requires more
+multiplications than using M directly.  (Access to M may be slow enough to
+warrant using the private vectors instead.)
 
-The problem with solver keeping a reference to Q, when it is copied 
-in the construction of a BSpline subclass, it will still
-refer to the Q in the BSplineBase class, rather than the new copy of BSplineBaseP
-in the subclass object.  At least using a default constructor in baseP set the
-reference to the new Q without calling upper().
+The problem with solver keeping a reference to Q, when it is copied in the
+construction of a BSpline subclass, it will still refer to the Q in the
+BSplineBase class, rather than the new copy of BSplineBaseP in the subclass
+object.  At least using a default constructor in baseP set the reference to
+the new Q without calling upper().
 
-Bug: Setup() probably in infinite loop when not enough data points for a smaller
-cutoff wavelength.
+Bug: Setup() probably in infinite loop when not enough data points for a
+smaller cutoff wavelength.
 
-Deriving the least squares between the actual and approximated u(x) results in
-a set of linear equations for A independent of DX.  This makes sense, since we could
-have divided both sides of the (P+Q)a = b equation by DX without affecting the solution.
-Oops, we still need to divide Q, or at least not include DX in the elements of Q.  Oops
-again, it seems to work without dividing Q, though I don't know what the implications are
-for the stability of the linear system.  Mathematically it makes sense since the least
-squares is just the addition of the derivative constraint, which can be minimized 
-(i.e., set to zero) separately.
+Deriving the least squares between the actual and approximated u(x) results
+in a set of linear equations for A independent of DX.  This makes sense,
+since we could have divided both sides of the (P+Q)a = b equation by DX
+without affecting the solution.  Oops, we still need to divide Q, or at
+least not include DX in the elements of Q.  Oops again, it seems to work
+without dividing Q, though I don't know what the implications are for the
+stability of the linear system.  Mathematically it makes sense since the
+least squares is just the addition of the derivative constraint, which can
+be minimized (i.e., set to zero) separately.
 
-The algorithm seems to be working well for the wind speed data I have.  I can't figure
-out Charlie's problem.  Two approaches:
+The algorithm seems to be working well for the wind speed data I have.  I
+can't figure out Charlie's problem.  Two approaches:
 
 	Copy his routine to generate test curve and use it as source data.
 
-	Try building spline on unix and linking it with FORTRAN and compare the results,
-	especially for Charlie's tests.
+	Try building spline on unix and linking it with FORTRAN and compare
+	the results, especially for Charlie's tests.
 
-Need to add kth derivatives 2 and 3, since FORTRAN code may use the higher derivatives
-and not the first as is coded now.
+Need to add kth derivatives 2 and 3, since FORTRAN code may use the higher
+derivatives and not the first as is coded now.
 
 Do the LU factorization in place in Q instead of a separate LU matrix. -- Done.
 
 Can we take advantage of X ordering in the spline evaluation also?
 
-Do a binary search to find the X nearest a node, then add up the X's before and after
-it which would have nonzero basis() values.  
+Do a binary search to find the X nearest a node, then add up the X's before
+and after it which would have nonzero basis() values.
+
+It looks like the fortran code calculates alpha as 
+
+	Z2 = YSDCPI**K, where YSDCPI = YDCWL/(PI2*DYN)
+
+In other words, if alpha is Z2, alpha includes deltax.
+
+FORTRAN code calculates the QNRBG array first.  It might be useful for
+BSpline to do the same, with each object having its own copy of the beta
+parameters and Q quadratures in place, depending upon the choice for
+boundary condition types, since they need to be computed for types other
+than 0, 1, and 2 which is all that's supported now.
+
+It looks like SPOTINO (called by SPOTVAL) only sums the node amplitudes
+which are near to the given x value.  Duh.  Changed evaluate() to only
+add the nearby nodes.
+
+It would be interesting to feed the data before and after smoothing through
+a fourier transform to see the effects of the derivative constraint.
 
