@@ -46,27 +46,20 @@ using my::abs;
 #include "BandedMatrix.h"
 #include "BSplineLU.h"
 #include "BSpline.h"
-// #include "BSplineSolver.h"
 
 template <class T> 
 void setup (T &matrix, int n);
 
-//void setup<> (C_matrix<float> &matrix, int n) { matrix.newsize (n, n); }
-
 void setup<> (BandedMatrix<float> &matrix, int n) { matrix.setup (n, 3); }
 
-// Our private state structure, which also hides our use
-// of TNT for matrices.
+// Our private state structure, which hides our use of some matrix
+// template classes.
 
-//typedef C_matrix<float> MatrixT;
 typedef BandedMatrix<float> MatrixT;
 
 struct BSplineBaseP 
 {
-    MatrixT Q;					// Holds P+Q and its factorization
-    // BSplineSolver<MatrixT> solver;
-    // MatrixT LU;					// LU factorization of P+Q
-    std::vector<MatrixT::size_type> index;
+    MatrixT Q;				// Holds P+Q and its factorization
     std::vector<float> X;
     std::vector<float> Nodes;
 };
@@ -353,7 +346,7 @@ BSplineBase::qDelta (int m1, int m2)
     float q = 0.0;
     for (int m = /*my::*/max (m1-2,0); m < /*my::*/min (m1+2, M); ++m)
 	q += qparts[K-1][m2-m1][m-m1+2];
-    return q/* * DX*/ * alpha; 	/* ??? */
+    return q * alpha;
 }
 
 
@@ -422,11 +415,6 @@ BSplineBase::calculateQ ()
 void
 BSplineBase::addP ()
 {
-#if 0
-    MatrixT P;
-    setup (P, M+1);
-    P = 0.0;
-#endif
     // Just add directly to Q's elements instead of creating a 
     // separate P and then adding
     MatrixT &P = base->Q;
@@ -447,21 +435,18 @@ BSplineBase::addP ()
 	{
 	    float pn;
 	    float pm = Basis (m, x);
-	    float sum = pm * pm/* * DX*/;	/* ??? */
+	    float sum = pm * pm;
 	    P[m][m] += sum;
 	    for (n = m+1; n <= /*my::*/min(M, m+3); ++n)
 	    {
 		pm = Basis (m, x);
 		pn = Basis (n, x);
-		sum = pm * pn/* * DX*/;	/* ??? */
+		sum = pm * pn;
 		P[m][n] += sum;
 		P[n][m] += sum;
 	    }
 	}
     }
-#if 0
-    base->Q += P;
-#endif
 }
 
 
@@ -469,27 +454,15 @@ BSplineBase::addP ()
 bool
 BSplineBase::factor ()
 {	
-    base->index.clear ();
-    base->index.resize (M+1);
     MatrixT &LU = base->Q;
 
-    if (LU_factor_banded (LU, base->index, 3) != 0)
+    if (LU_factor_banded (LU, 3) != 0)
     {
         if (Debug) cerr << "LU_factor() failed." << endl;
 	return false;
     }
     if (Debug && M < 30)
 	cerr << "LU decomposition: " << endl << LU << endl;
-
-#if 0
-    if (! base->solver.upper (base->Q))
-    {
-	if (Debug) cerr << "BSplineSolver::upper failed." << endl;
-	return false;
-    }
-    if (Debug && M < 30)
-	cerr << *base->solver.matrix();
-#endif
     return true;
 }
 
@@ -614,9 +587,6 @@ struct BSplineP
 {
     std::vector<float> spline;
     std::vector<float> A;
-#if 0
-    std::vector<float> A2;
-#endif
 };
 
 
@@ -624,18 +594,50 @@ struct BSplineP
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+
+/*
+ * This BSpline constructor constructs and sets up a new base and 
+ * solves for the spline curve coeffiecients all at once.
+ */
+BSpline::BSpline (const float *x, int nx, const float *y,
+		  float wl, int bc_type = BC_ZERO_SECOND) :
+    BSplineBase(x, nx, wl, bc_type), s(new BSplineP)
+{
+    solve (y);
+}
+
+
+
+/*
+ * Create a new spline given a BSplineBase.
+ */
 BSpline::BSpline (BSplineBase &bb, const float *y) :
     BSplineBase(bb), s(new BSplineP)
 {
+    solve (y);
+}
+
+
+
+/*
+ * (Re)calculate the spline for the given set of y values.
+ */
+bool
+BSpline::solve (const float *y)
+{
     if (! OK)
-	return;
+	return false;
+
+    // Any previously calculated curve is now invalid.
+    s->spline.clear ();
+    OK = false;
 
     // Given an array of data points over x and its precalculated
     // P+Q matrix, calculate the b vector and solve for the coefficients.
-
     std::vector<float> B(M+1);
 
     if (Debug) cerr << "Solving for B..." << endl;
+
     // Find the mean of these data
     mean = 0.0;
     int i;
@@ -655,42 +657,39 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 	{
 	    sum += (y[j] - mean) * Basis (m, base->X[j]);
 	}
-	B[m] = sum/* * DX*/;	/* ??? */
+	B[m] = sum;
     }
-
-    std::vector<float> &luA = s->A;
 
     // Now solve for the A vector.
+    std::vector<float> &luA = s->A;
     luA = B;
-    if (LU_solve_banded (base->Q, base->index, luA) != 0)
+    if (LU_solve_banded (base->Q, luA) != 0)
     {
-        cerr << "LU_Solve() failed." << endl;
-        exit(1);
+	if (Debug)
+	    cerr << "LU_Solve() failed." << endl;
     }
-#if 0
-    std::vector<float> &sA = s->A2;
-    if (! base->solver.solve (base->Q, B, sA))
+    else
     {
-	cerr << "Solver failed." << endl;
-	exit(1);
+	OK = true;
+	if (Debug) cerr << "Done." << endl;
+	if (Debug && M < 30)
+	{
+	    cerr << "Solution a for (P+Q)a = b" << endl;
+	    cerr << " b: " << B << endl;
+	    cerr << "    lu a: " << luA << endl;
+	    cerr << "(P+Q)a = " << endl << (base->Q * s->A) << endl;
+	}
     }
-#endif
-    if (Debug) cerr << "Done." << endl;
-    if (Debug && M < 30)
-    {
-	cerr << "Solution a for (P+Q)a = b" << endl;
-	cerr << " b: " << B << endl;
-	// cerr << "solver a: " << sA << endl;
-	cerr << "    lu a: " << luA << endl;
-	cerr << "(P+Q)a = " << endl << (base->Q * s->A) << endl;
-    }
+    return (OK);
 }
+
 
 
 BSpline::~BSpline()
 {
     delete s;
 }
+
 
 
 float BSpline::coefficient (int n)
@@ -700,6 +699,7 @@ float BSpline::coefficient (int n)
 	    return s->A[n];
     return 0;
 }
+
 
 
 float BSpline::evaluate (float x)
@@ -716,6 +716,7 @@ float BSpline::evaluate (float x)
     }
     return y;
 }
+
 
 
 const float *BSpline::curve (int *nx)

@@ -4,55 +4,27 @@
  * This is a modified version of R. Pozo's LU_factor template procedure from
  * the Template Numerical Toolkit.  It was modified to limit pivot searching
  * in the case of banded diagonal matrices.  The extra parameter BANDS
- * is the number of bands below the diagonal.
+ * is the number of bands below the diagonal.  Also, this routine now does
+ * NO pivoting, so the index vector has been eliminated.
  */
-template <class Matrix, class VectorSubscript>
-int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
+template <class Matrix>
+int LU_factor_banded (Matrix &A, int bands)
 {
-    // assert(A.lbound() == 1);                // currently for 1-offset
-    // assert(indx.lbound() == 1);             // vectors and matrices
-
     typename Matrix::size_type M = A.num_rows();
     typename Matrix::size_type N = A.num_cols();
 
-    if (M == 0 || N==0) return 0;
-	indx.resize (M);
-
     typename Matrix::size_type j,k,jp;
-    typename Matrix::element_type t;
     typename Matrix::size_type minMN = min(M,N);
 
     for (j=1; j<= minMN; j++)
     {
-        // find pivot in column j and  test for singularity.
-
         jp = j;
-#if 0
-        t = abs(A(j,j));
-		Matrix::size_type i;
-        for (i=j+1; i<=my::min(j+bands,M); i++)
-            if ( abs(A(i,j)) > t)
-            {
-                jp = i;
-                t = abs(A(i,j));
-            }
-#endif
-        indx[j-1] = jp;
 
         // jp now has the index of maximum element 
         // of column j, below the diagonal
 
         if ( A(jp,j) == 0 )                 
             return 1;       // factorization failed because of zero pivot
-
-
-        if (jp != j)            // swap rows j and jp
-            for (k=1; k<=N; k++)
-            {
-                t = A(j,k);
-                A(j,k) = A(jp,k);
-                A(jp,k) =t;
-            }
 
         if (j<M)                // compute elements j+1:M of jth column
         {
@@ -64,7 +36,6 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
             for (k=j+1; (k <= j+bands) && (k<=M); k++)
                 A(k,j) *= recp;
         }
-
 
         if (j < minMN)
         {
@@ -87,20 +58,16 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
 
 
 
-template <class Matrix, class Vector, class VectorSubscripts>
-int LU_solve_banded(const Matrix &A, const VectorSubscripts &indx, Vector &b)
+template <class Matrix, class Vector>
+int LU_solve_banded(const Matrix &A, Vector &b)
 {
-    //assert(A.lbound() == 1);                // currently for 1-offset
-    //assert(indx.lbound() == 1);             // vectors and matrices
-    //assert(b.lbound() == 1);
-
-	typename Matrix::size_type i,ii=0,ip,j;
-	typename Matrix::size_type n = A.num_rows();
+    typename Matrix::size_type i,ii=0,ip,j;
+    typename Matrix::size_type n = A.num_rows();
     typename Matrix::element_type sum = 0.0;
 
     for (i=1;i<=n;i++) 
     {
-        ip=indx[i-1];
+        ip=i;
         sum=b[ip-1];
         b[ip-1]=b[i-1];
         if (ii)

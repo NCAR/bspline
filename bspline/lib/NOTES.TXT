@@ -44,9 +44,6 @@ BSplineBase class, rather than the new copy of BSplineBaseP in the subclass
 object.  At least using a default constructor in baseP set the reference to
 the new Q without calling upper().
 
-Bug: Setup() probably in infinite loop when not enough data points for a
-smaller cutoff wavelength.
-
 Deriving the least squares between the actual and approximated u(x) results
 in a set of linear equations for A independent of DX.  This makes sense,
 since we could have divided both sides of the (P+Q)a = b equation by DX
@@ -65,15 +62,14 @@ can't figure out Charlie's problem.  Two approaches:
 	Try building spline on unix and linking it with FORTRAN and compare
 	the results, especially for Charlie's tests.
 
-Need to add kth derivatives 2 and 3, since FORTRAN code may use the higher
-derivatives and not the first as is coded now.
-
-Do the LU factorization in place in Q instead of a separate LU matrix. -- Done.
-
-Can we take advantage of X ordering in the spline evaluation also?
+Did the latter and discovered the alpha discrepancy described below.
+Eventually got reasonable agreement with fortran, except over significant
+data gaps.  Charlie's problem turned out to be with plot scaling.
 
 Do a binary search to find the X nearest a node, then add up the X's before
-and after it which would have nonzero basis() values.
+and after it which would have nonzero basis() values.  Basis() appears to
+dominate the profile timing because of the number of times it is called, so
+if we can reduce the number of calls, that should really help the speed.
 
 It looks like the fortran code calculates alpha as 
 
@@ -87,10 +83,22 @@ parameters and Q quadratures in place, depending upon the choice for
 boundary condition types, since they need to be computed for types other
 than 0, 1, and 2 which is all that's supported now.
 
-It looks like SPOTINO (called by SPOTVAL) only sums the node amplitudes
-which are near to the given x value.  Duh.  Changed evaluate() to only
-add the nearby nodes.
-
 It would be interesting to feed the data before and after smoothing through
 a fourier transform to see the effects of the derivative constraint.
+
+Remove the index vector for the LU factor() and solve() routines and from
+the bspline base.
+ --> Done.
+
+Add a BSpline constructor which takes the same arguments as a Base,
+constructs the base, then performs the usual spline construction.  Avoids
+copying the base, and it can still be used to apply() to new curves.
+ --> Done.
+
+How would we apply new curves with perhaps missing y values at some of the
+nodes?  We could always recalculate the base and return a spline with a
+different base, if necessary.  Else we could interpolate in simple cases?
+Just set it to zero?  Could we break up the curve into segments, and smooth
+them separately, perhaps with boundary conditions at the endpoints to
+account for the missing value?
 

@@ -119,6 +119,21 @@ struct BSplineP;
 class BSpline : public BSplineBase
 {
 public:
+    // Create a single spline with the parameters required to set up
+    // a base.
+    BSpline (const float *x, int nx, 		/* independent variable */
+	     const float *y,			/* dependent values @ ea X */
+	     float wl,				/* cutoff wavelength */
+	     int bc_type = BC_ZERO_SECOND	/* boundary condition type */
+	     );
+
+    // A BSpline curve can be derived from a separate Base and a set
+    // of data points over that base.
+    BSpline (BSplineBase &, const float *y);
+
+    // Solve the spline curve for a new set of y values
+    bool solve (const float *y);
+
     // Return the entire curve evaluated at each of the nodes.
     // The array is held by the object, and thus should not be freed and
     // is only valid while the object exists.
@@ -130,10 +145,6 @@ public:
 
     // Return the n-th basis coefficient, from 0 to M
     float coefficient (int n);
-
-    // A BSpline curve must be derived from a Base and a set
-    // of data points over that base.
-    BSpline (BSplineBase &, const float *y);
 
     virtual ~BSpline();
 
