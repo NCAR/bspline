@@ -123,3 +123,37 @@ including .h.
 Add rules to lib unix Makefile to build a bspline library which includes
 the float and double implementation modules.
 
+
+[P + yQ] A = B
+
+A is the column matrix of the coefficients Am, m = 0 to M.
+
+According to Ooyama, the elements of the (M+1)x(M+1) square matrix Q are
+the derivative constraints applied to the continuous function u(x) which we
+are trying to determine.  Thus we can use the continuous representation to
+evaluate each the non-zero integrals, which occur only for the elements
+where Qij where |i-j| < 4.  Along the diagonal of Q, for i,j >= 2 and
+i,j <= M-2, we can copy a symmetric 4x4 sub-matrix along the diagonal
+(i,i) for 2 <= i <= M-2.
+
+	[  R0   R1   R2   R3 ]
+	[  R1   R0   R1   R2 ]
+	[  R2   R1   R0   R1 ]
+        [  R3   R2   R1   R0 ]
+
+Rn is the product of the Kth derivative of Psi-sub-i and Psi-sub-j,
+where n = |i-j|.  Since for m = 2 to M-2 Psi equals Phi(x-xm/deltax),
+
+	     
+			   (k)       (k)
+	Rn = { integral [Phi  (u)][Phi  (u+n)] du over infinity } * deltax
+	     		    
+
+For example, for the 1st derivative, R0 = { 1.5 } * deltax.
+
+So we need to calculate Fn, 0 <= n <= 3, for the integral portion of Rn,
+which can be stored as a constant array.  From that we can generate the
+elements of R and Q by multiplying by the particular deltax of the dataset
+being smoothed.
+
+
