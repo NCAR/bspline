@@ -114,4 +114,12 @@ directory variable to find their directory and include that variable in all
 of their rules, then the rules can be directory independent and executed
 anywhere.
 
+To include the implementation, include .cxx, which defines the DLL symbol
+to nothing if not yet defined before including bspline.h.  To include as a
+dll, include the .h, which defaults to defining import and does not include
+implementation.  To build the dll, define DLL symbol to export before
+including .h.
+
+Add rules to lib unix Makefile to build a bspline library which includes
+the float and double implementation modules.
 
