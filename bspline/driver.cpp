@@ -5,6 +5,11 @@
 // Simple test driver for the bspline interface.
 //
 
+#include "BSpline.cxx"
+
+template class BSpline<double>;
+template class BSpline<float>;
+
 #include <iostream>
 #include <fstream>
 #include <iterator>
@@ -13,18 +18,19 @@
 
 using namespace std;
 
-#include "BSpline.cxx"
-typedef float datum;
+//typedef float datum;
+typedef double datum;
 typedef BSpline<datum> SplineT;
 typedef BSplineBase<datum> SplineBase;
+typedef BSpline<double> SplineD;
 
 static void 
-DumpSpline (vector<float> &x, vector<float> &y, SplineT &spline, ostream &out);
+DumpSpline (vector<datum> &x, vector<datum> &y, SplineT &spline, ostream &out);
 static void
 EvalSpline (SplineT &spline, ostream &out);
 #if OOYAMA
 static bool
-vic (float *xt, int nxp, float wl, int bc, float *y);
+vic (float *xt, int nxp, double wl, int bc, float *y);
 extern "C" 
 {
     void vicsetup_ (float *xt, int *nxp, float *ydcwl, int *nx, 
@@ -55,13 +61,13 @@ main (int argc, char *argv[])
     }
 	
     int step = (int) atof (argv[1]);
-    float wl = atof (argv[2]);
+    double wl = atof (argv[2]);
 
     // Read the x and y pairs from stdin
-    vector<float> x;
-    vector<float> y;
-    float f, g;
-    float base = 0;
+    vector<datum> x;
+    vector<datum> y;
+    datum f, g;
+    datum base = 0;
     int i = 0;
 
     while (cin >> f)
@@ -83,8 +89,8 @@ main (int argc, char *argv[])
     }
 
     // Subsample the arrays
-    vector<float>::iterator xi = x.begin(), yi = y.begin();
-    vector<float>::iterator xo = x.begin(), yo = y.begin();
+    vector<datum>::iterator xi = x.begin(), yi = y.begin();
+    vector<datum>::iterator xo = x.begin(), yo = y.begin();
     if (step > 1)
     {
 	while (xo < x.end() && yo < y.end())
@@ -106,17 +112,6 @@ main (int argc, char *argv[])
     // wavelength.
     int bc = SplineBase::BC_ZERO_SECOND;
     SplineT::Debug = true;
-#if 0
-    //float wl = (x.back() - x.front()) / (x.size()/3 + 1);
-    //float wl = 30.0; /*secs*/
-    SplineBase::Debug = true;
-    SplineBase bb (x.begin(), x.size(), wl, bc);
-    if (bb.ok())
-    {
-	// Now apply our y values to get the smoothed curve.
-	SplineT spline(bb, y.begin());
-    }
-#endif
     SplineT spline (x.begin(), x.size(), y.begin(), wl, bc);
     if (spline.ok())
     {
@@ -130,8 +125,15 @@ main (int argc, char *argv[])
 	cerr << "Spline setup failed." << endl;
 
 #if OOYAMA
+    // Need to copy the data into float arrays for vic().
+    vector<float> fx;
+    vector<float> fy;
+    fx.resize (x.size());
+    fy.resize (y.size());
+    std::copy (x.begin(), x.end(), fx.begin());
+    std::copy (y.begin(), y.end(), fy.begin());
     cerr << "Computing Ooyama FORTRAN results." << endl;
-    if (vic (x.begin(), x.size(), wl, bc, y.begin()))
+    if (vic (fx.begin(), fx.size(), wl, bc, fy.begin()))
     {
 	cerr << "Done." << endl;
 	ofstream vspline("ooyama.out");
@@ -139,8 +141,8 @@ main (int argc, char *argv[])
 
 	float fout, foutd;
 	int kdat = 1;
-	float xi = x.front();
-	float xs = (x.back() - x.front())/2000.0;
+	float xi = fx.front();
+	float xs = (fx.back() - fx.front())/2000.0;
 	for (int i = 0; i < 2000; ++i, xi += xs)
 	{
 	    spotval_ (&xi, &kdat, &fout, &foutd);
@@ -160,15 +162,9 @@ main (int argc, char *argv[])
 
 
 void
-DumpSpline (vector<float> &x, vector<float> &y, SplineT &spline, ostream &out)
+DumpSpline (vector<datum> &x, vector<datum> &y, SplineT &spline, ostream &out)
 {
-#ifdef notdef
-    int nx;
-    const float *x = spline.nodes (&nx);
-    const float *y2 = spline.curve ();
-    const float *end = x + nx;
-#endif
-    ostream_iterator<float> of(out, "\t ");
+    ostream_iterator<datum> of(out, "\t ");
 
     for (unsigned int i = 0; i < x.size(); ++i)
     {
@@ -184,10 +180,10 @@ DumpSpline (vector<float> &x, vector<float> &y, SplineT &spline, ostream &out)
 void
 EvalSpline (SplineT &spline, ostream &out)
 {
-    ostream_iterator<float> of(out, "\t ");
+    ostream_iterator<datum> of(out, "\t ");
 
-    float x = spline.Xmin();
-    float xs = (spline.Xmax() - x) / 2000.0;
+    datum x = spline.Xmin();
+    double xs = (spline.Xmax() - x) / 2000.0;
     for (; x <= spline.Xmax(); x += xs)
     {
 	*of++ = x;
@@ -220,7 +216,7 @@ EvalSpline (SplineT &spline, ostream &out)
 
 #if OOYAMA
 static bool
-vic (float *xt, int nxp, float wl, int bc, float *y)
+vic (float *xt, int nxp, double wl, int bc, float *y)
 {
     static float fmin = 2.0;
     int ierr;

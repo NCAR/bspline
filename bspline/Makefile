@@ -16,7 +16,8 @@ FFLAGS = -O
 .SUFFIXES: .cxx
 
 FLIBS = -L/opt/SUNWspro/SC4.0/lib -lF77 -lV77 -lM77 -lsunmath -lm
-BSPLINE = lib/BSpline.o
+#BSPLINE = lib/BSpline.o
+BSPLINE =
 OBJS = $(BSPLINE) driver.o ooyama.o
 LIBS =  -lstdc++ $(FLIBS)
 
@@ -25,7 +26,9 @@ LIBS =  -lstdc++ $(FLIBS)
 
 all:: driver
 
-driver: subdirs $(OBJS) 
+# SUBDIRS = subdirs
+
+driver: $(SUBDIRS) $(OBJS) 
 	$(CXX) -o driver $(LDFLAGS) $(OBJS) $(LIBS)
 
 subdirs:
@@ -41,4 +44,4 @@ clean::
 
 depend::
 
-driver.o: lib/BSpline.h 
+driver.o: lib/BSpline.cxx lib/BSpline.h 
