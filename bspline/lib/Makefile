@@ -29,4 +29,4 @@ clean::
 
 depend::
 
-BSpline.o: BandedMatrix.h BSplineLU.h BSpline.h
+BSpline.o: BandedMatrix.h BSpline.h
