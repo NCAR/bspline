@@ -59,9 +59,9 @@ template <class T> struct BSplineBaseP;
     vector<float> x;
     vector<float> y;
     { ... }
-    int bc = BSplineBase::BC_ZERO_SECOND;
-    BSpline::Debug = true;
-    BSpline spline (x.begin(), x.size(), y.begin(), wl, bc);
+    int bc = BSplineBase<float>::BC_ZERO_SECOND;
+    BSpline<float>::Debug = true;
+    BSpline<float> spline (x.begin(), x.size(), y.begin(), wl, bc);
     if (spline.ok())
     {
         ostream_iterator<float> of(cout, "\t ");
@@ -74,6 +74,18 @@ template <class T> struct BSplineBaseP;
     }
  
 \end{verbatim}
+ *
+ * The interface for the BSplineBase and BSpline templates is defined in 
+ * the header file BSpline.h.  The implementation is defined in BSpline.cxx.
+ * Source files which will instantiate the template should include the
+ * implementation file and {\em not} the interface.  If the implementation
+ * for a specific type will be linked from elsewhere, such as a
+ * static library or Windows DLL, source files should only include the 
+ * interface file.  On Windows, applications should link with the import
+ * library BSpline.lib and make sure BSpline.dll is on the path.  The DLL
+ * contains an implementation for BSpline<float> and BSpline<double>.
+ * For debugging, an application can include the implementation to get its
+ * own instantiation.
  *
  * The algorithm is based on the cubic spline described by Katsuyuki Ooyama
  * in Montly Weather Review, Vol 115, October 1987 and on a previous
