@@ -35,21 +35,6 @@ public:
 			setup ();
 	}
 
-#if 0
-	// Copy constructor
-	BandedMatrix (const BandedMatrix &b) : 
-		bands(0), top(b.top), bot(b.bot), N(b.N), out_of_bounds(b.out_of_bounds)
-	{
-		nbands = top - bot + 1;
-		bands = new std::vector<T>[nbands];
-		int i;
-		for (i = 0; i < nbands; ++i)
-		{
-			bands[i] = b.bands[i];
-		}
-	}
-#endif
-
 	// Copy constructor
 	BandedMatrix (const BandedMatrix &b) : bands(0)
 	{
@@ -93,21 +78,6 @@ public:
 
 	BandedMatrix<T> & operator= (const BandedMatrix<T> &b) 
 	{
-#if 0
-		if (bands) delete[] bands;
-		top = b.top;
-		bot = b.bot;
-		N = b.N;
-		out_of_bounds = b.out_of_bounds;
-		nbands = top - bot + 1;
-		bands = new std::vector<T>[nbands];
-		int i;
-		for (i = 0; i < nbands; ++i)
-		{
-			bands[i] = b.bands[i];
-		}
-		return *this;
-#endif
 		return Copy (*this, b);
 	}
 
@@ -259,6 +229,7 @@ private:
 	const BandedMatrix<T> &bm;
 	int i;
 };
+
 
 
 #endif /* _BANDEDMATRIX_ID */
