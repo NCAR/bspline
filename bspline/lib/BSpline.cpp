@@ -32,127 +32,7 @@ template <class T>
 inline const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
 }
 
-
-/*
- * This is a modified version of R. Pozo's LU_factor template procedure from
- * the Template Numerical Toolkit.  It was modified to limit pivot searching
- * in the case of banded diagonal matrices.  The extra parameter BANDS
- * is the number of bands below the diagonal.
- */
-template <class Matrix, class VectorSubscript>
-int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
-{
-    // assert(A.lbound() == 1);                // currently for 1-offset
-    // assert(indx.lbound() == 1);             // vectors and matrices
-
-	Matrix::size_type M = A.num_rows();
-	Matrix::size_type N = A.num_cols();
-
-    if (M == 0 || N==0) return 0;
-	indx.assign (M);
-
-	Matrix::size_type i=0,j=0,k=0,jp=0;
-    Matrix::element_type t;
-	Matrix::size_type minMN =  (M < N ? M : N) ;        // min(M,N);
-
-    for (j=1; j<= minMN; j++)
-    {
-
-        // find pivot in column j and  test for singularity.
-
-        jp = j;
-        t = abs(A(j,j));
-        for (i=j+1; i<=my::min(j+bands,M); i++)
-            if ( abs(A(i,j)) > t)
-            {
-                jp = i;
-                t = abs(A(i,j));
-            }
-
-        indx[j-1] = jp;
-
-        // jp now has the index of maximum element 
-        // of column j, below the diagonal
-
-        if ( A(jp,j) == 0 )                 
-            return 1;       // factorization failed because of zero pivot
-
-
-        if (jp != j)            // swap rows j and jp
-            for (k=1; k<=N; k++)
-            {
-                t = A(j,k);
-                A(j,k) = A(jp,k);
-                A(jp,k) =t;
-            }
-
-        if (j<M)                // compute elements j+1:M of jth column
-        {
-            // note A(j,j), was A(jp,p) previously which was
-            // guarranteed not to be zero (Label #1)
-            //
-            Matrix::element_type recp =  1.0 / A(j,j);
-
-            for (k=j+1; k<=M; k++)
-                A(k,j) *= recp;
-        }
-
-
-        if (j < minMN)
-        {
-            // rank-1 update to trailing submatrix:   E = E - x*y;
-            //
-            // E is the region A(j+1:M, j+1:N)
-            // x is the column vector A(j+1:M,j)
-            // y is row vector A(j,j+1:N)
-
-			Matrix::size_type ii,jj;
-
-            for (ii=j+1; ii<=M; ii++)
-                for (jj=j+1; jj<=N; jj++)
-                    A(ii,jj) -= A(ii,j)*A(j,jj);
-        }
-    }
-
-    return 0;
-}   
-
-
-
-template <class Matrix, class Vector, class VectorSubscripts>
-int LU_solve_banded(const Matrix &A, const VectorSubscripts &indx, Vector &b)
-{
-    //assert(A.lbound() == 1);                // currently for 1-offset
-    //assert(indx.lbound() == 1);             // vectors and matrices
-    //assert(b.lbound() == 1);
-
-	Matrix::size_type i,ii=0,ip,j;
-	Matrix::size_type n = A.num_rows();
-    Matrix::element_type sum = 0.0;
-
-    for (i=1;i<=n;i++) 
-    {
-        ip=indx[i-1];
-        sum=b[ip-1];
-        b[i-1]=b[i-1];
-        if (ii)
-            for (j=ii;j<=i-1;j++) 
-                sum -= A(i,j)*b[j-1];
-        else if (sum) ii=i;
-            b[i-1]=sum;
-    }
-    for (i=n;i>=1;i--) 
-    {
-        sum=b[i-1];
-        for (j=i+1;j<=n;j++) 
-            sum -= A(i,j)*b[j-1];
-        b[i-1]=sum/A(i,i);
-    }
-
-    return 0;
-}
-
-
+#include "BSplineLU.h"
 #include "BSpline.h"
 #include "BSplineSolver.h"
 
@@ -167,7 +47,7 @@ struct BSplineBaseP
 	MatrixT Q;					// Holds P+Q
 	BSplineSolver<MatrixT> solver;
 	MatrixT LU;					// LU factorization of PQ
-	std::vector<MatrixT::element_type> index;
+	std::vector<MatrixT::size_type> index;
 	std::vector<float> X;
 	std::vector<float> Nodes;
 };
@@ -218,7 +98,6 @@ BSplineBase::~BSplineBase()
 BSplineBase::BSplineBase (const BSplineBase &bb) : 
 	K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP(*bb.base))
 {
-	//Copy (bb.base->X.begin(), bb.NX, bb.waveLength);
 	xmin = bb.xmin;
 	xmax = bb.xmax;
 	alpha = bb.alpha;
@@ -364,7 +243,7 @@ BSplineBase::Basis (int m, float x)
 {
 	float y = 0;
 	float xm = xmin + (m * DX);
-	float z = abs((x - xm) / DX);
+	float z = my::abs((float)(x - xm) / (float)DX);
 	if (z < 2.0)
 	{
 		z = 2 - z;
@@ -581,6 +460,7 @@ BSplineBase::factor ()
     }
 //#endif
 
+#if 0
 	if (! base->solver.upper (base->Q))
 	{
 		if (Debug) cerr << "BSplineSolver::upper failed." << endl;
@@ -588,6 +468,7 @@ BSplineBase::factor ()
 	}
 	if (Debug && M < 30)
 		cerr << *base->solver.matrix();
+#endif
 	return true;
 }
 
@@ -733,6 +614,8 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 		mean += y[i];
 	}
 	mean = mean / (float)NX;
+	if (Debug)
+		cerr << "Mean for y: " << mean << endl;
 
 	int m, j;
 	for (m = 0; m < M+1; ++m)
@@ -749,11 +632,13 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
 	std::vector<float> &sA = s->A2;
 
 	// Now solve for the A vector.
+#if 0
 	if (! base->solver.solve (B, sA))
 	{
 		cerr << "Solver failed." << endl;
 		exit(1);
 	}
+#endif
 //#if 0
 	luA = B;
     if (LU_solve_banded (base->LU, base->index, luA) != 0)
