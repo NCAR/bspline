@@ -6,6 +6,10 @@
 #define _BSPLINESOLVER_ID "$Id$"
 
 #include <vector>
+#if WIN32
+using std::vector;
+#endif
+
 
 template <class Matrix> class BSplineSolver
 {

@@ -4,24 +4,23 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-//#include <math.h>
-
 #include <vector>
 #include <algorithm>
 #if WIN32
 #include <iostream>
-#include <ios>
-#include <iomanip>
+//#include <ios>
+//#include <iomanip>
 #endif
 
 #include <assert.h>
 
-//using namespace std;
+using namespace std;
 
-//#include <tnt.h>
-//#include <cmat.h>
-//#include <lu.h>
-
+/*
+ * These conflict with Windows if not in my namespace, but egcs does not yet
+ * support namespaces.  And I can't use Windows' abs() because
+ * it truncs the arg to an int.
+ */
 #if WIN32
 namespace my {
 #endif
@@ -173,8 +172,6 @@ BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
 	{
 	    cerr.fill(' ');
 	    cerr.precision(2);
-	    //cerr.setf(/*std::*/ios_base::right, 
-	    //	  /*std::*/ios_base::adjustfield);
 	    cerr.width(5);
 	    cerr << base->Q << endl;
 	}
