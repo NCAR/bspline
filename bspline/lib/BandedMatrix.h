@@ -20,20 +20,43 @@ public:
 
 	// Create a banded matrix with the same number of bands above and below the
 	// diagonal.
-	BandedMatrix (int _N = 1, int nbands_off_diagonal = 0)
+	BandedMatrix (int _N = 1, int nbands_off_diagonal = 0) : bands(0)
 	{
-		setup (_N, nbands_off_diagonal);
+		if (! setup (_N, nbands_off_diagonal))
+			setup ();
 	}
 
 	// Create a banded matrix by naming the first and last non-zero bands, where
 	// the diagonal is at zero, and bands below the diagonal are negative, bands
 	// above the diagonal are positive.
-	BandedMatrix (int _N, int first, int last)
+	BandedMatrix (int _N, int first, int last) : bands(0)
 	{
-		setup (_N, first, last);
+		if (! setup (_N, first, last))
+			setup ();
 	}
 
-	inline bool setup (int _N, int noff)
+#if 0
+	// Copy constructor
+	BandedMatrix (const BandedMatrix &b) : 
+		bands(0), top(b.top), bot(b.bot), N(b.N), out_of_bounds(b.out_of_bounds)
+	{
+		nbands = top - bot + 1;
+		bands = new std::vector<T>[nbands];
+		int i;
+		for (i = 0; i < nbands; ++i)
+		{
+			bands[i] = b.bands[i];
+		}
+	}
+#endif
+
+	// Copy constructor
+	BandedMatrix (const BandedMatrix &b) : bands(0)
+	{
+		Copy (*this, b);
+	}
+
+	inline bool setup (int _N = 1, int noff = 0)
 	{
 		return setup (_N, -noff, noff);
 	}
@@ -55,9 +78,9 @@ public:
 		out_of_bounds = T();
 
 		// Finally setup the diagonal vectors
-		int nbands = last - first + 1;
+		nbands = last - first + 1;
 		if (bands) delete[] bands;
-		bands = new vector<T>[nbands];
+		bands = new std::vector<T>[nbands];
 		int i;
 		for (i = 0; i < nbands; ++i)
 		{
@@ -70,18 +93,33 @@ public:
 
 	BandedMatrix<T> & operator= (const BandedMatrix<T> &b) 
 	{
+#if 0
 		if (bands) delete[] bands;
 		top = b.top;
 		bot = b.bot;
 		N = b.N;
 		out_of_bounds = b.out_of_bounds;
-		int nbands = top - bot + 1;
-		bands = new vector<T>[top - bot + 1];
+		nbands = top - bot + 1;
+		bands = new std::vector<T>[nbands];
 		int i;
 		for (i = 0; i < nbands; ++i)
 		{
 			bands[i] = b.bands[i];
 		}
+		return *this;
+#endif
+		return Copy (*this, b);
+	}
+
+	BandedMatrix<T> & operator= (const T &e)
+	{
+		int i;
+		for (i = 0; i < nbands; ++i)
+		{
+			bands[i].assign (bands[i].size(), e);
+		}
+		out_of_bounds = e;
+		return (*this);
 	}
 
 	~BandedMatrix ()
@@ -96,7 +134,24 @@ private:
 	{
 		v = (j - i) - bot;
 		e = (i >= j) ? j : i;
-		return !(v < 0 || v >= bands.size() || e < 0 || e >= bands[v].size());
+		return !(v < 0 || v >= nbands || e < 0 || e >= bands[v].size());
+	}
+
+	static BandedMatrix & Copy (BandedMatrix &a, const BandedMatrix &b)
+	{
+		if (a.bands) delete[] a.bands;
+		a.top = b.top;
+		a.bot = b.bot;
+		a.N = b.N;
+		a.out_of_bounds = b.out_of_bounds;
+		a.nbands = a.top - a.bot + 1;
+		a.bands = new std::vector<T>[a.nbands];
+		int i;
+		for (i = 0; i < a.nbands; ++i)
+		{
+			a.bands[i] = b.bands[i];
+		}
+		return a;
 	}
 
 public:
@@ -118,11 +173,26 @@ public:
 			return out_of_bounds;
 	}
 
+	inline T & operator() (int i, int j) 
+	{
+		return element (i-1,j-1);
+	}
+
+	inline const T & operator() (int i, int j) const
+	{
+		return element (i-1,j-1);
+	}
+
 	size_type num_rows() const { return N; }
 
 	size_type num_cols() const { return N; }
 
-	BandedMatrixRow<T> operator[] (int row) const
+	const BandedMatrixRow<T> operator[] (int row) const
+	{
+		return BandedMatrixRow<T>(*this, row);
+	}
+
+	BandedMatrixRow<T> operator[] (int row)
 	{
 		return BandedMatrixRow<T>(*this, row);
 	}
@@ -130,8 +200,12 @@ public:
 
 private:
 
+	//typedef std::vector<T> band_type;	// These parse under MSVC, not tested
+	//std::vector<band_type> b;
+
 	int top;
 	int bot;
+	int nbands;
 	std::vector<T> *bands;
 	//std::vector<vector<T>> bands;		// MSVC++ won't take this
 	int N;
@@ -163,16 +237,26 @@ ostream &operator<< (ostream &out, const BandedMatrix<T> &m)
 template <class T> class BandedMatrixRow
 {
 public:
+	BandedMatrixRow (const BandedMatrix<T> &_m, int _row) : bm(_m), i(_row)
+	{ }
+
 	BandedMatrixRow (BandedMatrix<T> &_m, int _row) : bm(_m), i(_row)
 	{ }
 
+	~BandedMatrixRow () {}
+
 	BandedMatrix<T>::element_type & operator[] (int j)
+	{
+		return const_cast<BandedMatrix<T> &>(bm).element (i, j);
+	}
+
+	const BandedMatrix<T>::element_type & operator[] (int j) const
 	{
 		return bm.element (i, j);
 	}
 
 private:
-	BandedMatrix<T> bm;
+	const BandedMatrix<T> &bm;
 	int i;
 };
 
