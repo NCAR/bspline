@@ -147,64 +147,50 @@ const float BSplineBase::BoundaryConditions[3][4] =
 	{	2,		-1,		-1,		2 }
 };
 
+const double BSplineBase::PI = 3.1415927;
+
+bool BSplineBase::Debug = false;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-#ifdef notdef
-BSplineBase::BSplineBase()
-{
-
-}
-#endif
-
 
 BSplineBase::~BSplineBase()
 {
-	Reset();
 	delete base;
 }
 
 
+// This is a member-wise copy except for replacing our
+// private base structure with the source's, rather than just copying
+// the pointer.  But we use the compiler's default copy constructor for
+// constructing our BSplineBaseP.
 BSplineBase::BSplineBase (const BSplineBase &bb) : 
-	K(1), BC(2), base(new BSplineBaseP)
+	K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP(*bb.base))
 {
-	Reset ();
-	Copy (bb.base->X.begin(), bb.NX, bb.waveLength);
-
+	//Copy (bb.base->X.begin(), bb.NX, bb.waveLength);
 	xmin = bb.xmin;
 	xmax = bb.xmax;
 	alpha = bb.alpha;
+	waveLength = bb.waveLength;
 	DX = bb.DX;
 	M = bb.M;
-	*base = *bb.base;
+	NX = base->X.size();
 }
 
 
-BSplineBase::BSplineBase (const float *x, int nx, float wl) : 
-	K(1), BC(2), base(new BSplineBaseP)
+BSplineBase::BSplineBase (const float *x, int nx, float wl, int bc) : 
+	K(1), base(new BSplineBaseP)
 {
-	setDomain (x, nx, wl);
+	setDomain (x, nx, wl, bc);
 }
-
-
-const double BSplineBase::PI = 3.1415927;
 
 
 // Methods
 
 
-void
-BSplineBase::Reset ()
-{
-	// Release memory and re-initialize members
-	base->X.resize(0);
-	waveLength = 0.0;
-}
-
-
-
+#ifdef notdef
 void
 BSplineBase::Copy (const float *x, int nx, float wl)
 {
@@ -217,39 +203,72 @@ BSplineBase::Copy (const float *x, int nx, float wl)
 	}
 	waveLength = wl;
 }
+#endif
 
 
-void
-BSplineBase::setDomain (const float *x, int nx, float wl)
+bool
+BSplineBase::setDomain (const float *x, int nx, float wl, int bc)
 {
 	// If called while we have an existing array, release it.
-	Reset ();
-	Copy (x, nx, wl);
-
-	// The Setup() method determines the number of nodes.
-	Setup();
-
-	// Now we can calculate alpha and our Q matrix
-	alpha = Alpha (waveLength);
-	cerr << "Alpha: " << alpha << endl;
-
-	cerr << "Calculating Q..." << endl;
-	calculateQ ();
-	//cerr << "Array Q after calculation." << endl;
-	//cerr << Q;
-
-	cerr << "Calculating P..." << endl;
-	addP ();
-	if (M < 30)
+	//Copy (x, nx, wl);
+	OK = false;
+	BC = bc;
+	waveLength = wl;
+	if (nx <= 0 || x == 0)
 	{
-		cerr << "Array Q after addition of P." << endl;
-		cerr << base->Q;
+		return false;
 	}
+		
+	// Copy the x array into our storage.
+	base->X.resize (nx);
+	std::copy (x, x+nx, base->X.begin());
+	NX = base->X.size();
 
-	// Now perform the LU factorization on Q
-	cerr << "Beginning LU factoring of P+Q..." << endl;
-	factor ();
-	cerr << "Done." << endl;
+	// The Setup() method determines the number and size of node intervals.
+	if (Setup())
+	{
+		if (Debug) 
+			cerr << "Using M node intervals: " << M << " of length DX: "
+				 << DX << endl;
+
+		// Now we can calculate alpha and our Q matrix
+		alpha = Alpha (waveLength);
+		if (Debug)
+		{
+			cerr << "Alpha: " << alpha << endl;
+			cerr << "Calculating Q..." << endl;
+		}
+		calculateQ ();
+		if (Debug && M < 30)
+		{
+			cerr.fill(' ');
+			cerr.precision(2);
+			cerr.setf(std::ios_base::right, std::ios_base::adjustfield);
+			cerr.width(5);
+			cerr << base->Q << endl;
+		}
+	
+		if (Debug) cerr << "Calculating P..." << endl;
+		addP ();
+		if (Debug && M < 30)
+		{
+			cerr << "Array Q after addition of P." << endl;
+			cerr << base->Q;
+		}
+
+		// Now perform the LU factorization on Q
+		if (Debug) cerr << "Beginning LU factoring of P+Q..." << endl;
+		if (! factor ())
+		{
+			if (Debug) cerr << "Factoring failed." << endl;
+		}
+		else
+		{
+			if (Debug) cerr << "Done." << endl;
+			OK = true;
+		}
+	}
+	return OK;
 }
 
 
@@ -416,7 +435,6 @@ BSplineBase::calculateQ ()
 	C_matrix<float> &Q = base->Q;
 	Q.newsize (M+1,M+1);
 	Q = 0.0;
-	//return;
 
 	// First fill in the q values without the boundary constraints.
 	int i;
@@ -465,15 +483,6 @@ BSplineBase::calculateQ ()
 			Q[j][i] = (Q[i][j] += q);
 		}
 	}
-
-	if (M < 30)
-	{
-		cerr.fill(' ');
-		cerr.precision(2);
-		cerr.setf(std::ios_base::right, std::ios_base::adjustfield);
-		cerr.width(5);
-		cerr << Q << endl;
-	}
 }
 
 
@@ -517,7 +526,7 @@ BSplineBase::addP ()
 
 
 
-void
+bool
 BSplineBase::factor ()
 {	
 	base->index.newsize (M+1);
@@ -525,9 +534,10 @@ BSplineBase::factor ()
 
     if (LU_factor_banded (base->LU, base->index, 3) != 0)
     {
-        cerr << "LU_factor() failed." << endl;
-		exit (1);
+        if (Debug) cerr << "LU_factor() failed." << endl;
+		return false;
     }
+	return true;
 }
 
 	
@@ -548,7 +558,7 @@ BSplineBase::Ratio (int &ni, float &deltax, float &ratiof,
 /*
  * Return zero if this fails, non-zero otherwise.
  */
-int BSplineBase::Setup()
+bool BSplineBase::Setup()
 {
 	std::vector<float> &X = base->X;
 	
@@ -567,7 +577,7 @@ int BSplineBase::Setup()
 
 	if (waveLength > xmax - xmin)
 	{
-		return (0);
+		return (false);
 	}
 
 	// Minimum acceptable number of nodes per cutoff wavelength
@@ -580,7 +590,7 @@ int BSplineBase::Setup()
 
 	do {
 		if (! Ratio (++ni, deltax, ratiof))
-			return 0;
+			return false;
 	}
 	while (ratiof > fmin);
 
@@ -599,8 +609,7 @@ int BSplineBase::Setup()
 	M = ni;
 	DX = deltax;
 
-	cerr << "Using M node intervals: " << M << " of length DX: " << DX << endl;
-	return (1);
+	return (true);
 }
 
 
@@ -675,15 +684,16 @@ BSpline::BSpline (BSplineBase &bb, const float *y) :
         cerr << "LU_Solve() failed." << endl;
         exit(1);
     }
-#ifdef notdef
-    cerr << "Solution a for (P+Q)a = b" << endl;
-    cerr << " b: " << B << endl;
-    cerr << " a: " << s->A << endl;
+	if (Debug && M < 30)
+	{
+	    cerr << "Solution a for (P+Q)a = b" << endl;
+		cerr << " b: " << B << endl;
+		cerr << " a: " << s->A << endl;
 
-    cerr << "A*x should be the vector b, ";
-    cerr << "residual [s->A*x - b]: " << endl;
-	cerr << matmult(base->Q, s->A) - B << endl;
-#endif
+	    cerr << "A*x should be the vector b, ";
+		cerr << "residual [s->A*x - b]: " << endl;
+		cerr << matmult(base->Q, s->A) - B << endl;
+	}
 }
 
 

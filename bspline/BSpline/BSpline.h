@@ -24,10 +24,22 @@ public:
 	// Class members
 	static const double PI;
 
+	static bool Debug;					/* True enables debug messages */
+	
+	// Boundary condition types
+	enum
+	{
+		BC_ZERO_ENDPOINTS = 0,			/* zero function value at endpoints */
+		BC_ZERO_FIRST = 1,				/* zero first derivative */
+		BC_ZERO_SECOND = 2				/* zero second derivative */
+	};
+
 public:
 
-	BSplineBase (const float *x, int nx, float wl /*cutoff wavelength*/);
-	/* BSplineBase (); */
+	BSplineBase (const float *x, int nx, 
+				 float wl,							/* cutoff wavelength */
+				 int bc_type = BC_ZERO_SECOND		/* boundary condition type */
+				 );
 
 	// The copy constructor, which is especially used by the
 	// BSpline subclass constructor.
@@ -36,13 +48,15 @@ public:
 	virtual ~BSplineBase();
 
 	int nX () { return NX; }
-	void setDomain (const float *x, int nx, float wl);
+	bool setDomain (const float *x, int nx, float wl, 
+				    int bc_type = BC_ZERO_SECOND);
 
 	BSpline *apply (const float *y);
 	const float *nodes (int *nnodes);
 	float Xmin () { return xmin; }
 	float Xmax () { return xmin + (M * DX); }
 	float Alpha (float wavelength);
+	bool ok () { return OK; }
 
 protected:
 
@@ -58,17 +72,18 @@ protected:
 	int M;				// Number of intervals (M+1 nodes)
 	float DX;			// Interval length in same units as X
 	float alpha;
+	bool OK;
 	BSplineBaseP *base;	// Hide more complicated state members
 						// from the public interface.
 
-	void Copy (const float *x, int nx, float wl);
-	void Reset ();
-	int Setup ();
+	//void Copy (const float *x, int nx, float wl);
+	//void Reset ();
+	bool Setup ();
 	void calculateQ ();
 	float qDelta (int m1, int m2);
 	float Beta (int m);
 	void addP ();
-	void factor ();
+	bool factor ();
 	float Basis (int m, float x);
 
 	static const float BoundaryConditions[3][4];
@@ -106,7 +121,7 @@ protected:
 
 	// Our hidden state structure
 	BSplineP *s;
-	float mean;			// Fit without mean but add it in later
+	float mean;			// Fit without mean and add it in later
 
 };
 

@@ -31,3 +31,16 @@ Any way to limit the summations in calculating the b vector to the X data
 points which will actually produce non-zero values in the basis function?
 Is it even worth it?
 
+We should be able to use the "recursive" solution from the Ooyama paper by
+first performing Gaussian elimination to conver the P+Q matrix to an upper
+diagonal matrix.  Pivoting should be unnecessary, since the diagonal should
+have the larger values and always be non-zero.  The diagonalized matrix can
+be used to solve against each B vector using the recursive method.  In fact, since
+the E vectors do not depend upon the B vector, only the F vector, we can compute
+E ahead of time also.  And only the diagonals of P+Q should be stored, rather than
+the full square matrix.
+
+Bug: Setup() probably in infinite loop when not enough data points for a smaller
+cutoff wavelength.
+
+
