@@ -12,15 +12,15 @@ int LU_factor_banded ( Matrix &A, VectorSubscript &indx, int bands)
     // assert(A.lbound() == 1);                // currently for 1-offset
     // assert(indx.lbound() == 1);             // vectors and matrices
 
-	typename Matrix::size_type M = A.num_rows();
-	typename Matrix::size_type N = A.num_cols();
+    typename Matrix::size_type M = A.num_rows();
+    typename Matrix::size_type N = A.num_cols();
 
     if (M == 0 || N==0) return 0;
 	indx.resize (M);
 
-	typename Matrix::size_type j,k,jp;
-	typename Matrix::element_type t;
-	typename Matrix::size_type minMN = min(M,N);
+    typename Matrix::size_type j,k,jp;
+    typename Matrix::element_type t;
+    typename Matrix::size_type minMN = min(M,N);
 
     for (j=1; j<= minMN; j++)
     {
