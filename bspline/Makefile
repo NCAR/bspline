@@ -4,26 +4,40 @@
 CXX = /scr/pigpen/granger/egcs-1.0.3a-5.6/bin/gcc
 #CXX = /scr/pigpen/granger/egcs-1.0.1/bin/gcc
 
-CXXDEBUGFLAGS = -g -Wall
+CXXDEBUGFLAGS = -g -O -Wall -pg
 
+# Include comparison with Ooyama FORTRAN implementation on sun
+DEFINES = -DOOYAMA
 INCLUDES = -I./lib
-CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES)
+CXXFLAGS = $(CXXDEBUGFLAGS) $(INCLUDES) $(DEFINES)
+LDFLAGS = -pg
+FFLAGS = -O
 
 .SUFFIXES: .cxx
 
-OBJS = driver.o
-LIBS = lib/BSpline.o -lstdc++
+FLIBS = -L/opt/SUNWspro/SC4.0/lib -lF77 -lV77 -lM77 -lsunmath -lm
+BSPLINE = lib/BSpline.o
+OBJS = $(BSPLINE) driver.o ooyama.o
+LIBS =  -lstdc++ $(FLIBS)
 
 .cxx.o:
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 all:: driver
 
-driver: $(OBJS)
+driver: $(OBJS) 
 	$(CXX) -o driver $(LDFLAGS) $(OBJS) $(LIBS)
+
+$(BSPLINE):
+	@set -x; cd lib; \
+	$(MAKE) $(MFLAGS) LDFLAGS='$(LDFLAGS)' \
+		CXXDEBUGFLAGS='$(CXXDEBUGFLAGS)' all
 
 clean::
 	rm -f $(OBJS)
+
+clean::
+	cd lib; $(MAKE) $(MFLAGS) clean
 
 depend::
 
