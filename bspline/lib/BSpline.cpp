@@ -187,10 +187,11 @@ BSplineBase<T>::BSplineBase (const BSplineBase<T> &bb) :
 
 
 template <class T>
-BSplineBase<T>::BSplineBase (const T *x, int nx, double wl, int bc) : 
+BSplineBase<T>::BSplineBase (const T *x, int nx, double wl, int bc,
+			     int num_nodes) : 
     K(2), OK(false), base(new BSplineBaseP<T>)
 {
-    setDomain (x, nx, wl, bc);
+    setDomain (x, nx, wl, bc, num_nodes);
 }
 
 
@@ -199,7 +200,8 @@ BSplineBase<T>::BSplineBase (const T *x, int nx, double wl, int bc) :
 
 template <class T>
 bool
-BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc)
+BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc,
+			   int num_nodes)
 {
     if (nx <= 0 || x == 0 || wl < 0 || bc < 0 || bc > 2)
     {
@@ -215,7 +217,7 @@ BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc)
     NX = base->X.size();
 
     // The Setup() method determines the number and size of node intervals.
-    if (Setup())
+    if (Setup(num_nodes))
     {
 	if (Debug()) 
 	{
@@ -224,7 +226,9 @@ BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc)
 	    std::cerr << "X min: " << xmin << " ; X max: " << xmax 
 		      << std::endl;
 	    std::cerr << "Data points per interval: " << (float)NX/(float)M 
-		 << std::endl;
+		      << std::endl;
+	    std::cerr << "Nodes per wavelength: " 
+		      << (float)waveLength/(float)DX << std::endl;
 	    std::cerr << "Derivative constraint degree: " << K << std::endl;
 	}
 
@@ -233,7 +237,7 @@ BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc)
 	if (Debug())
 	{
 	    std::cerr << "Cutoff wavelength: " << waveLength << " ; "
-		 << "Alpha: " << alpha << std::endl;
+		      << "Alpha: " << alpha << std::endl;
 	    std::cerr << "Calculating Q..." << std::endl;
 	}
 	calculateQ ();
@@ -562,25 +566,34 @@ BSplineBase<T>::factor ()
 	
 
 template <class T>
-inline int 
-BSplineBase<T>::Ratio (int &ni, double &deltax, double &ratiof,
-		       double *ratiod)
+inline double
+BSplineBase<T>::Ratiod (int &ni, double &deltax, double &ratiof)
 {
     deltax = (xmax - xmin) / ni;
     ratiof = waveLength / deltax;
-    double rd = (double) NX / (double) (ni + 1);
-    if (ratiod)
-	*ratiod = rd;
-    return (rd >= 1.0);
+    double ratiod = (double) NX / (double) (ni + 1);
+    return ratiod;
 }
 
 
-/*
- * Return zero if this fails, non-zero otherwise.
- */
+// Setup the number of nodes (and hence deltax) for the given domain and
+// cutoff wavelength.  According to Ooyama, the derivative constraint
+// approximates a lo-pass filter if the cutoff wavelength is about 4*deltax
+// or more, but it should at least be 2*deltax.  We can increase the number
+// of nodes to increase the number of nodes per cutoff wavelength.
+// However, to get a reasonable representation of the data, the setup
+// enforces at least as many nodes as data points in the domain.  (This
+// constraint assumes reasonably even distribution of data points, since
+// its really the density of data points which matters.)
+//
+// Return zero if the setup fails, non-zero otherwise.
+//
+// The algorithm in this routine is mostly taken from the FORTRAN
+// implementation by James Franklin, NOAA/HRD.
+//
 template <class T>
 bool 
-BSplineBase<T>::Setup()
+BSplineBase<T>::Setup(int num_nodes)
 {
     std::vector<T> &X = base->X;
 	
@@ -597,18 +610,23 @@ BSplineBase<T>::Setup()
 	    xmax = X[i];
     }
 
-    if (waveLength > xmax - xmin)
-    {
-	return (false);
-    }
-
-    int ni = 9;		// Number of node intervals (NX - 1)
+    int ni = 9;			// Number of node intervals (NX - 1)
     double deltax;
 
-    if (waveLength == 0)	// Allows turning off frequency constraint
+    if (num_nodes >= 2)
     {
+	// We've been told explicitly the number of intervals to use.
+	ni = num_nodes - 1;
+    }
+    else if (waveLength == 0)
+    {
+	// Turn off frequency constraint and just set one node interval per
+	// data point.
 	ni = NX;
-	deltax = (xmax - xmin) / (double)NX;
+    }
+    else if (waveLength > xmax - xmin)
+    {
+	return (false);
     }
     else
     {
@@ -618,18 +636,26 @@ BSplineBase<T>::Setup()
 	double ratiof;	// Nodes per wavelength for current deltax
 	double ratiod;	// Points per node interval
 
+	// Increase the number of node intervals until we reach the minimum
+	// number of intervals per cutoff wavelength, but only as long as 
+	// we can maintain at least one point per interval.
 	do {
-	    if (! Ratio (++ni, deltax, ratiof))
+	    if (Ratiod (++ni, deltax, ratiof) < 1.0)
 		return false;
 	}
 	while (ratiof < fmin);
 
-	// Tweak the estimates obtained above
+	// Now increase the number of intervals until we have at least 4
+	// intervals per cutoff wavelength, but only as long as we can
+	// maintain at least 2 points per node interval.  There's also no
+	// point to increasing the number of intervals if we already have
+	// 15 or more nodes per cutoff wavelength.
+	// 
 	do {
-	    if (! Ratio (++ni, deltax, ratiof, &ratiod) || 
+	    if ((ratiod = Ratiod (++ni, deltax, ratiof)) < 1.0 || 
 		ratiof > 15.0)
 	    {
-		Ratio (--ni, deltax, ratiof);
+		--ni;
 		break;
 	    }
 	}
@@ -638,7 +664,7 @@ BSplineBase<T>::Setup()
 
     // Store the calculations in our state
     M = ni;
-    DX = deltax;
+    DX = (xmax - xmin) / ni;
 
     return (true);
 }
@@ -700,8 +726,8 @@ struct BSplineP
  */
 template <class T>
 BSpline<T>::BSpline (const T *x, int nx, const T *y,
-		     double wl, int bc_type) :
-    BSplineBase<T>(x, nx, wl, bc_type), s(new BSplineP<T>)
+		     double wl, int bc_type, int num_nodes) :
+    BSplineBase<T>(x, nx, wl, bc_type, num_nodes), s(new BSplineP<T>)
 {
     solve (y);
 }

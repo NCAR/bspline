@@ -116,23 +116,25 @@ template <class T> struct BSplineBaseP;
  * The basis function is continuous and differentiable up to the second
  * degree.  A derivative constraint is included in the solution to achieve
  * the effect of a low-pass frequency filter with the given cutoff
- * wavelength.  The domain nodes, boundary constraints, and wavelength
- * determine a linear system of equations, Qa=b, where a is the vector of
- * basis function coefficients at each node.  The coefficient vector is
- * solved by first LU factoring along the diagonally banded matrix Q in
- * BSplineBase.  The BSpline object then computes the B vector for a set of
- * y values and solves for the coefficient vector with the LU matrix.  Only
- * the diagonal bands are stored in memory and calculated during LU
- * factoring and back substitution, and the basis function is evaluated as
- * few times as possible in computing the diagonal matrix and B vector.
+ * wavelength.  The derivative constraint can be disabled by specifying a
+ * wavelength value of zero, which reduces the analysis to a least squares
+ * fit to a cubic b-spline.  The domain nodes, boundary constraints, and
+ * wavelength determine a linear system of equations, Qa=b, where a is the
+ * vector of basis function coefficients at each node.  The coefficient
+ * vector is solved by first LU factoring along the diagonally banded
+ * matrix Q in BSplineBase.  The BSpline object then computes the B vector
+ * for a set of y values and solves for the coefficient vector with the LU
+ * matrix.  Only the diagonal bands are stored in memory and calculated
+ * during LU factoring and back substitution, and the basis function is
+ * evaluated as few times as possible in computing the diagonal matrix and
+ * B vector.
  *
 \begin{verbatim}
-Copyright (c) 1998,1999
+Copyright (c) 1998,1999,2001
 University Corporation for Atmospheric Research, UCAR
 \end{verbatim}
  *
- * \URL[Gary Granger]{http://www.atd.ucar.edu/~granger}
- */
+ * \URL[Gary Granger]{http://www.atd.ucar.edu/~granger} */
 template <class T> 
 class BSPLINE_DLL_ BSplineBase  
 {
@@ -182,7 +184,8 @@ public:
      * @see ok
      */
     BSplineBase (const T *x, int nx, 
-		 double wl, int bc_type = BC_ZERO_SECOND);
+		 double wl, int bc_type = BC_ZERO_SECOND,
+		 int num_nodes = 0);
 
     /// Copy constructor
     BSplineBase (const BSplineBase &);
@@ -201,14 +204,20 @@ public:
      * @param x		The array of x values in the domain.
      * @param nx	The number of values in the {\em x} array.
      * @param wl	The cutoff wavelength, in the same units as the
-     *			{\em x} values.
+     *			{\em x} values.  A wavelength of zero disables
+     *			the derivative constraint.
      * @param bc_type	The enumerated boundary condition type.  If
      *			omitted it defaults to BC_ZERO_SECOND.
+     * @param num_nodes The number of nodes to use for the cubic b-spline.
+     *			If less than 2 a reasonable number will be
+     *			calculated automatically, if possible, taking
+     * 			into account the given cutoff wavelength.
      *
      * @see ok
      */
     bool setDomain (const T *x, int nx, double wl, 
-		    int bc_type = BC_ZERO_SECOND);
+		    int bc_type = BC_ZERO_SECOND,
+		    int num_nodes = 0);
 
     /**
      * Create a BSpline smoothed curve for the given set of NX y values.
@@ -272,7 +281,7 @@ protected:
     // Provided
     double waveLength;	// Cutoff wavelength (l sub c)
     int NX;
-    int K;	// Degree of derivative constraint (currently fixed at 1)
+    int K;	// Degree of derivative constraint (currently fixed at 2)
     int BC;			// Boundary conditions type (0,1,2)
 
     // Derived
@@ -285,7 +294,7 @@ protected:
     Base *base;			// Hide more complicated state members
     				// from the public interface.
 
-    bool Setup ();
+    bool Setup (int num_nodes = 0);
     void calculateQ ();
     double qDelta (int m1, int m2);
     double Beta (int m);
@@ -297,10 +306,7 @@ protected:
     static const double BoundaryConditions[3][4];
     static const double PI;
 
-private:
-
-    int Ratio (int&, double &, double &, double *rd = 0);
-
+    double Ratiod (int&, double &, double &);
 };
 
 
@@ -333,14 +339,20 @@ public:
      * @param y		The array of y values corresponding to each of the
      *			nX() x values in the domain.
      * @param wl	The cutoff wavelength, in the same units as the
-     *			{\em x} values.
+     *			{\em x} values.  A wavelength of zero disables
+     *			the derivative constraint.
      * @param bc_type	The enumerated boundary condition type.  If
      *			omitted it defaults to BC_ZERO_SECOND.
+     * @param num_nodes The number of nodes to use for the cubic b-spline.
+     *			If less than 2 a "reasonable" number will be
+     *			calculated automatically, taking into account
+     *			the given cutoff wavelength.
      */
     BSpline (const T *x, int nx, 		/* independent variable */
 	     const T *y,			/* dependent values @ ea X */
 	     double wl,				/* cutoff wavelength */
-	     int bc_type = BC_ZERO_SECOND);
+	     int bc_type = BC_ZERO_SECOND,
+	     int num_nodes = 0);
 
     /**
      * A BSpline curve can be derived from a separate Base and a set
