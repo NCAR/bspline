@@ -92,7 +92,7 @@ LINK32=link.exe
 TargetPath=\Binaries\BSpline\Debug\Lib\BSpline.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy dll to system folder
-PostBuild_Cmds=copy $(TargetPath)  c:\winnt\system32
+PostBuild_Cmds=copy $(TargetPath)  c:\windows\system32
 # End Special Build Tool
 
 !ENDIF 
