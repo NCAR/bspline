@@ -22,7 +22,6 @@ class BSplineBase
 {
 public:
 	// Class members
-	static float Alpha (float wavelength);
 	static const double PI;
 
 public:
@@ -43,6 +42,7 @@ public:
 	const float *nodes (int *nnodes);
 	float Xmin () { return xmin; }
 	float Xmax () { return xmin + (M * DX); }
+	float Alpha (float wavelength);
 
 protected:
 
@@ -65,6 +65,8 @@ protected:
 	void Reset ();
 	int Setup ();
 	void calculateQ ();
+	float qDelta (int m1, int m2);
+	float Beta (int m);
 	void addP ();
 	void factor ();
 	float Basis (int m, float x);

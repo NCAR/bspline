@@ -263,9 +263,9 @@ BSplineBase::Alpha (float wl)
 	// K is the degree of the derivative constraint: 1, 2, or 3
 	float a = (float) (wl / (2 * PI));
 	a *= a;				// a^2
-	if (k == 2)
+	if (K == 2)
 		a *= a;			// a^4
-	else if (k == 3)
+	else if (K == 3)
 		a *= a * a;		// a^6
 	return a;
 }
@@ -470,12 +470,6 @@ BSplineBase::calculateQ ()
 		}
 	}
 
-	cerr.fill(' ');
-	cerr.precision(2);
-	cerr.setf(std::ios_base::right, std::ios_base::adjustfield);
-	cerr.width(5);
-	cerr << Q << endl;
-
 	// Now add the boundary constraints:
 	// First the upper left corner.
 	float b1, b2, q;
@@ -487,31 +481,39 @@ BSplineBase::calculateQ ()
 			b2 = Beta(j);
 			assert (j-i >= 0 && j - i < 4);
 			q = 0.0;
-				qdelta[j-i];
 			if (i+1 < 4)
-				q += b2*qdelta[i+1];
+				q += b2*qDelta(-1,i);
 			if (j+1 < 4)
-				q += b1*qdelta[j+1];
-			q += b1*b2*qdelta[0];
-			Q[j][i] = Q[i][j] = q;
+				q += b1*qDelta(-1,j);
+			q += b1*b2*qDelta(-1,-1);
+			Q[j][i] = (Q[i][j] += q);
 		}
 	}
 
 	// Now the lower right
 	for (i = M-1; i <= M; ++i)
 	{
-		b1 = Beta[i - (M-1)];
+		b1 = Beta(i);
 		for (int j = i - 3; j <= i; ++j)
 		{
-			b2 = (j >= M - 1) ? Beta[j - (M-1)] : 0;
-			q = qdelta[i-j];
+			b2 = Beta(j);
+			q = 0.0;
 			if (M+1-i < 4)
-				q += b2*qdelta[M+1-i];
+				q += b2*qDelta(i,M+1);
 			if (M+1-j < 4)
-				q += b1*qdelta[M+1-j];
-			q += b1*b2*qdelta[0];
-			Q[j][i] = Q[i][j] = q;
+				q += b1*qDelta(j,M+1);
+			q += b1*b2*qDelta(M+1,M+1);
+			Q[j][i] = (Q[i][j] += q);
 		}
+	}
+
+	if (M < 30)
+	{
+		cerr.fill(' ');
+		cerr.precision(2);
+		cerr.setf(std::ios_base::right, std::ios_base::adjustfield);
+		cerr.width(5);
+		cerr << Q << endl;
 	}
 }
 
