@@ -71,6 +71,14 @@ and after it which would have nonzero basis() values.  Basis() appears to
 dominate the profile timing because of the number of times it is called, so
 if we can reduce the number of calls, that should really help the speed.
 
+We're getting 524568 calls to Basis with parameters 2 15 < wdir.  Refining
+addP() more closely brings it down to 132075.  Much better.  Looping over X
+to sum B elements results in 19024 calls.  Even better.  I don't think
+sorting will give us any benefits; forget about it.  Refining range of
+Basis calls in evaluate gets us to 17781.  That looks like the smallest
+I'll get it.  Besides the fortran call to invmtx, the i/o is dominating the
+process time.
+
 It looks like the fortran code calculates alpha as 
 
 	Z2 = YSDCPI**K, where YSDCPI = YDCWL/(PI2*DYN)
@@ -102,3 +110,11 @@ Just set it to zero?  Could we break up the curve into segments, and smooth
 them separately, perhaps with boundary conditions at the endpoints to
 account for the missing value?
 
+To be rigorous, I need to be able to prove that I only need to calculate
+the LU factorization on the diagonal bands, and that pivoting is
+unnecessary because the diagonal will always dominate.  Ooyama casually
+mentions this in the paper I think.
+
+Compute and solve the B vector in place, rather than copying into the A
+first.
+ --> Done.

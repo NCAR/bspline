@@ -415,31 +415,29 @@ BSplineBase::calculateQ ()
 void
 BSplineBase::addP ()
 {
-    // Just add directly to Q's elements instead of creating a 
-    // separate P and then adding
+    // Add directly to Q's elements
     MatrixT &P = base->Q;
     std::vector<float> &X = base->X;
 
     // For each data point, sum the product of the nearest, non-zero Basis
     // nodes
-    int m, n, i;
+    int mx, m, n, i;
     for (i = 0; i < NX; ++i)
     {
 	// Which node does this put us in?
-	float x = X[i];
-	m = (int)((x - xmin) / DX);
+	float &x = X[i];
+	mx = (int)((x - xmin) / DX);
 
-	// Loop over the upper triangle of the 5x5 array of basis functions,
-	// and add in the products on each side of diagonal.
-	for (m = /*my::*/max(0, m-2); m <= /*my::*/min(M, m+2); ++m)
+	// Loop over the upper triangle of nonzero basis functions,
+	// and add in the products on each side of the diagonal.
+	for (m = /*my::*/max(0, mx-1); m <= /*my::*/min(M, mx+2); ++m)
 	{
 	    float pn;
 	    float pm = Basis (m, x);
 	    float sum = pm * pm;
 	    P[m][m] += sum;
-	    for (n = m+1; n <= /*my::*/min(M, m+3); ++n)
+	    for (n = m+1; n <= /*my::*/min(M, mx+2); ++n)
 	    {
-		pm = Basis (m, x);
 		pn = Basis (n, x);
 		sum = pm * pn;
 		P[m][n] += sum;
@@ -634,7 +632,10 @@ BSpline::solve (const float *y)
 
     // Given an array of data points over x and its precalculated
     // P+Q matrix, calculate the b vector and solve for the coefficients.
-    std::vector<float> B(M+1);
+    std::vector<float> &B = s->A;
+    std::vector<float> &A = s->A;
+    A.clear ();
+    A.resize (M+1);
 
     if (Debug) cerr << "Solving for B..." << endl;
 
@@ -649,21 +650,28 @@ BSpline::solve (const float *y)
     if (Debug)
 	cerr << "Mean for y: " << mean << endl;
 
-    int m, j;
-    for (m = 0; m < M+1; ++m)
+    int mx, m, j;
+    for (j = 0; j < NX; ++j)
     {
-	float sum = 0.0;
-	for (j = 0; j < NX; ++j)
+	// Which node does this put us in?
+	float &xj = base->X[j];
+	float yj = y[j] - mean;
+	mx = (int)((xj - xmin) / DX);
+
+	for (m = max(0,mx-1); m <= min(mx+2,M); ++m)
 	{
-	    sum += (y[j] - mean) * Basis (m, base->X[j]);
+	    B[m] += yj * Basis (m, xj);
 	}
-	B[m] = sum;
     }
 
-    // Now solve for the A vector.
-    std::vector<float> &luA = s->A;
-    luA = B;
-    if (LU_solve_banded (base->Q, luA) != 0)
+    if (Debug && M < 30)
+    {
+	cerr << "Solution a for (P+Q)a = b" << endl;
+	cerr << " b: " << B << endl;
+    }
+
+    // Now solve for the A vector in place.
+    if (LU_solve_banded (base->Q, A) != 0)
     {
 	if (Debug)
 	    cerr << "LU_Solve() failed." << endl;
@@ -674,10 +682,8 @@ BSpline::solve (const float *y)
 	if (Debug) cerr << "Done." << endl;
 	if (Debug && M < 30)
 	{
-	    cerr << "Solution a for (P+Q)a = b" << endl;
-	    cerr << " b: " << B << endl;
-	    cerr << "    lu a: " << luA << endl;
-	    cerr << "(P+Q)a = " << endl << (base->Q * s->A) << endl;
+	    cerr << " a: " << A << endl;
+	    cerr << "LU factor of (P+Q) = " << endl << base->Q << endl;
 	}
     }
     return (OK);
@@ -708,7 +714,7 @@ float BSpline::evaluate (float x)
     if (OK)
     {
 	int n = (int)((x - xmin)/DX);
-	for (int i = max(0,n-2); i <= min(M,n+2); ++i)
+	for (int i = max(0,n-1); i <= min(M,n+2); ++i)
 	{
 	    y += s->A[i] * Basis (i, x);
 	}
