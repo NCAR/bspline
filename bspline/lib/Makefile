@@ -15,19 +15,26 @@ DOCXX_HEADERS = BSpline.h
 DOCXX_HTMLDIR = /net/global/www/homes/granger/bspline
 
 # OBJS = BSpline.o
-OBJS =
+OBJS = BSplineF.o BSplineD.o
+
+LIB = libbspline.a
 
 .cxx.o:
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
-all:: $(OBJS)
+all:: $(LIB)
+
+$(LIB): $(OBJS)
+	rm -f $(LIB)
+	ar crv $(LIB) $(OBJS)
+	ranlib $(LIB)
 
 html::
 	doc++ -d $(DOCXX_HTMLDIR) $(DOCXX_HEADERS)
 
 clean::
-	rm -f $(OBJS)
+	rm -f $(OBJS) core *~
 
 depend::
 
-BSpline.o: BandedMatrix.h BSpline.h
+$(OBJS): BSpline.cxx BandedMatrix.h BSpline.h
