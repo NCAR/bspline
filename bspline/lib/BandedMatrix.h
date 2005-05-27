@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 template <class T> class BandedMatrixRow;
 
