@@ -78,14 +78,30 @@ main (int argc, char *argv[])
 	 << SplineBase::ImplVersion() << endl;
 	
 	// Sub-sampling and cutoff wavelength come from command-line
-    if (argc != 3)
+    if (argc < 3 || argc > 4)
     {
-	cerr << "Usage: " << argv[0] << " <step> <cutoff>" << endl;
+	cerr << "Usage: " << argv[0] << " <step> <cutoff> [<bc>]" << endl;
+	cerr << "  <step> is the number of points to skip in the input.\n"
+	     << "  <cutoff> is the cutoff wavelength.\n"
+	     << "  <bc> is the boundary condition--0, 1, or 2--meaning zero\n"
+	     << "       the 0th, 1st, or 2nd derivative at the end points.\n";
 	exit (1);
     }
 	
     int step = (int) atof (argv[1]);
     double wl = atof (argv[2]);
+    int bc = SplineBase::BC_ZERO_SECOND;
+    if (argc == 4)
+    {
+	int optbc = atoi(argv[3]);
+	if (0 <= optbc && optbc <= 2)
+	{
+	    bc = optbc;
+	}
+    }
+    cerr << "Using step interval " << step
+	 << ", cutoff frequency " << wl
+	 << ", and boundary condition type " << bc << "\n";
 
     // Read the x and y pairs from stdin
     vector<datum> x;
@@ -134,7 +150,6 @@ main (int argc, char *argv[])
 		
     // Create our bspline base on the X vector with a simple 
     // wavelength.
-    int bc = SplineBase::BC_ZERO_SECOND;
     SplineT::Debug(1);
     SplineT spline (&x[0], x.size(), &y[0], wl, bc);
     if (spline.ok())
