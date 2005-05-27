@@ -390,7 +390,7 @@ public:
     BSpline (const T *x, int nx, 		/* independent variable */
 	     const T *y,			/* dependent values @ ea X */
 	     double wl,				/* cutoff wavelength */
-	     int bc_type = BC_ZERO_SECOND,
+	     int bc_type = BSplineBase<T>::BC_ZERO_SECOND,
 	     int num_nodes = 0);
 
     /**
@@ -438,7 +438,17 @@ public:
 
     virtual ~BSpline();
 
+    using BSplineBase<T>::Debug;
+
 protected:
+
+    using BSplineBase<T>::OK;
+    using BSplineBase<T>::M;
+    using BSplineBase<T>::NX;
+    using BSplineBase<T>::DX;
+    using BSplineBase<T>::base;
+    using BSplineBase<T>::xmin;
+    using BSplineBase<T>::xmax;
 
     // Our hidden state structure
     BSplineP<T> *s;
