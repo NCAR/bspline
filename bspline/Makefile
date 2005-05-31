@@ -50,6 +50,7 @@ DISTFILES = \
      README COPYRIGHT Makefile driver.cpp bspline.dsw driver.dsp \
      lib/BSpline.cpp BSpline/BSpline.h lib/BSplineD.cpp lib/BSplineF.cpp \
      lib/BandedMatrix.h lib/Makefile lib/BSpline.dsp lib/BSpline.dsw \
+     sample.temps sample.txt sample.wdir sample.wspd plots.R \
      lib/Doxyfile doc
 
 DISTSUBDIRS = 
