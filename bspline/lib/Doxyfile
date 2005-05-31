@@ -1,6 +1,6 @@
 
 PROJECT_NAME           = "dataspace"
-PROJECT_NUMBER         = "Version 1.2"
+PROJECT_NUMBER         = "Version 1.3"
 HTML_OUTPUT            = ../doc
 
 PROJECT_NAME           = "BSpline Library"

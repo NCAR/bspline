@@ -98,5 +98,5 @@ release::
 	fi
 
 publish:: release
-	mv -f $(TARFILE).tar.gz $(PUBDIR)
+	mv -f $(TARFILE).tar.gz $(TARFILE).zip $(PUBDIR)
 
