@@ -22,6 +22,74 @@ notes in the source.
 The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
 
+@section samples Samples
+
+The top source directory contains several sample data files for the driver
+program.  The sample.txt file contains an example of dropsonde data.  From
+that file, three fields have been extracted into separate files:
+
+- sample.wdir	Wind direction
+- sample.wspd Wind speed
+- sample.temps Temperature
+
+Each file is a simple text format with two columns.  The first column is
+time, the second is the field measurement.  This is the format which the
+example driver program expects.  Any text file with alternating X and Y
+values will work in the driver program.
+
+To run the driver program, pipe the data into the standard input, and pass
+the @p step, @p cutoff, and @p boundary-condition options on the command
+line.
+
+@code
+BSpline interface version: $Id$
+BSpline implementation version: $Id$
+Usage: ./driver <step> <cutoff> [<bc>]
+  <step> is the number of points to skip in the input.
+  <cutoff> is the cutoff wavelength.
+  <bc> is the boundary condition--0, 1, or 2--meaning zero
+       the 0th, 1st, or 2nd derivative at the end points.
+@endcode
+
+For example:
+
+@code
+./driver 1 5 2 < sample.temps
+@endcode
+
+The driver produces two output files:
+
+- spline.out:	The computed spline function evaluated at 2000 evenly-spaced
+		points along the X domain.  The first column is the X value,
+		the second is the spline evaluation at that point, and the 
+		third is the evaluation of the spline's first derivative.
+- input.out:	This output contains the original input data in the first
+		and second columns, and the third column holds the spline
+		function evaluated on the original X values.
+
+The R (@url http://www.r-project.org) script runs the driver program on the
+sample temperatures over a range of boundary conditions and cutoff
+frequencies.  The results are plotted in 6 PNG images.
+
+<table border='2'>
+<tr><th>Cutoff</th><th>BC 0</th><th>BC 1</th><th>BC 2</th></tr>
+<tr><td>5</td><td><a href='plot-1.png'>plot-1.png</a></td>
+              <td><a href='plot-2.png'>plot-2.png</a></td>
+              <td><a href='plot-3.png'>plot-3.png</a></td></tr>
+<tr><td>30</td><td><a href='plot-4.png'>plot-4.png</a></td>
+              <td><a href='plot-5.png'>plot-5.png</a></td>
+              <td><a href='plot-6.png'>plot-6.png</a></td></tr>
+</table>
+
+Note that for boundary condition 0, the endpoints are not at zero as might
+be expected.  The spline algorithm first removes the mean from the input
+data to improve the matrix calculations, and the mean is added back in when
+evaluating the spline at any point.  Thus the endpoints for boundary
+condition 0 will actually be the mean value of the input range.  If you
+need to force the endpoints to be zero, remove the mean from the data
+before computing the spline, or else change the source code for computing
+the spline.
+
 @section releasenotes Release Notes
 
 This release updates the code to compile with GCC 3.2, which enforces more
