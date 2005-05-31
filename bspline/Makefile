@@ -61,7 +61,7 @@ tarfile: $(DISTFILES)
 		  $(ZIPPIPE) > $(TARDEST)/$(TARFILE).tar.$(ZIPEXT) ; \
 	  echo Done making $(TARDEST)/$(TARFILE).tar.$(ZIPEXT) ; \
 	  echo Making $(TARFILE).zip ; \
-	  zip -r $(TARFILE).zip \
+	  zip -r $(TARDEST)/$(TARFILE).zip \
 	    `ls -d $(DISTFILES) | sed -e 's,^,$(TARFILE)/,'` ; \
 	  rm -f $(TARFILE) ; \
 	else \
@@ -85,7 +85,8 @@ driver.o: lib/BSpline.cpp BSpline/BSpline.h
 tag::
 	@if [ x$(VERSION) = xdev ]; \
 	then echo "Need a VERSION string."; exit 1 ; \
-	else cvs tag -l $(CVSOPTS) Version_$(VERSION) ; fi
+	else cvs tag -l $(CVSOPTS) Version_$(VERSION) . lib BSpline ooyama ;\
+	fi
 
 release::
 	@if [ x$(VERSION) = xdev ]; then \
