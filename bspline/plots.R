@@ -12,11 +12,11 @@ filename = "sample.temps"
 temps[,1] <- temps[,1] - temps[1,1]
 input = temps 
 
-postscript("plots.ps")
-par(mfrow=c(7,1))
-plot(input[,1], input[,2], type="p", main="Input Temperatures",
-	xlab="Seconds", ylab="Temperature (Celsisus)")
-
+graphics.off()
+# postscript("plots.ps")
+png("plot-%d.png", width=600, height=800)
+# x11()
+par(mfrow=c(2,1))
 for (cutoff in c(5, 30)) {
 for (bc in c(0, 1, 2)) {
 
@@ -27,9 +27,12 @@ for (bc in c(0, 1, 2)) {
 		dimnames=list(c(), c("time","smoothed","deriv")))
 	input = matrix(scan("input.out"), ncol=3, byrow=1,
 		dimnames=list(c(), c("time","input","smoothed")))
-	plot(spline[,1], spline[,2], type="p",
+	plot(input[,1], input[,2], type="p", main="Input Temperatures",
+		xlab="Seconds", ylab="Temp (C)")
+	plot(spline[,1], spline[,2], type="l",
 		main=paste("Smoothed Temperatures: bc=",bc,"cutoff=",cutoff),
-		xlab="Seconds", ylab="Temperature (Celsisus)")
+		xlab="Seconds", ylab="Temp (C)")
 }
 }
 
+graphics.off()
