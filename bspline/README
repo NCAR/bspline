@@ -10,6 +10,16 @@ BSplineBase class.
 @author Gary Granger (http://www.atd.ucar.edu/~granger)
 @date May 31, 2005
 
+@section download Download
+
+The source should be available for download from here:
+
+- http://www.atd.ucar.edu/~granger/bpsline/
+
+This documentation is also online here:
+
+- http://www.atd.ucar.edu/~granger/bpsline/doc/
+
 @section documentation Documentation
 
 For an overview of the library and its usage, see the documentation for the
