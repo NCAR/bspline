@@ -22,6 +22,32 @@ notes in the source.
 The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
 
+@section releasenotes Release Notes
+
+<h2>Release 1_3</h2>
+
+This release builds against GCC 4.0.  Names in the BSplineBase template
+base class needed to be declared in the BSpline subclass scope, now that
+GCC enforces the standard rule about non-template-type-dependent names
+being resolved when templates are declared.
+
+The driver program now takes an optional third command-line argument for
+setting the boundary condition type.
+
+There is an R script for generating plots of several combinations of the
+cutoff and boundary condition options to the driver program.  See @ref 
+samples for details.
+
+<h2>Release 1_2</h2>
+
+This release updates the code to compile with GCC 3.2, which enforces more
+standards compliance like the use of 'typename'.  Also the GNU libstdc++ no
+longer uses pointers as vector iterators, so occurences of
+vector<>::begin() have been replaced with &(vector[0])
+
+Lastly, in this release the C++ filename extension has been changed from
+cxx to cpp.
+
 @section samples Samples
 
 The top source directory contains several sample data files for the driver
@@ -67,7 +93,7 @@ The driver produces two output files:
 		and second columns, and the third column holds the spline
 		function evaluated on the original X values.
 
-The R (@url http://www.r-project.org) script runs the driver program on the
+The R (http://www.r-project.org) script runs the driver program on the
 sample temperatures over a range of boundary conditions and cutoff
 frequencies.  The results are plotted in 6 PNG images.
 
@@ -89,16 +115,6 @@ condition 0 will actually be the mean value of the input range.  If you
 need to force the endpoints to be zero, remove the mean from the data
 before computing the spline, or else change the source code for computing
 the spline.
-
-@section releasenotes Release Notes
-
-This release updates the code to compile with GCC 3.2, which enforces more
-standards compliance like the use of 'typename'.  Also the GNU libstdc++ no
-longer uses pointers as vector iterators, so occurences of
-vector<>::begin() have been replaced with &(vector[0])
-
-Lastly, in this release the C++ filename extension has been changed from
-cxx to cpp.
 
 @section background Background
 
