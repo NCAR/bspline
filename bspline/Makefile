@@ -98,5 +98,10 @@ release::
 	fi
 
 publish:: release
-	mv -f $(TARFILE).tar.gz $(TARFILE).zip $(PUBDIR)
+	mv -f $(TARFILE).tar.$(ZIPEXT) $(TARFILE).zip $(PUBDIR) ; \
+	(cd $(PUBDIR) ; rm -rf $(TARFILE); \
+	 tar zxf $(TARFILE).tar.$(ZIPEXT) $(TARFILE)/doc ;\
+	 rm -rf doc ;\
+	 mv $(TARFILE)/doc . ; rmdir $(TARFILE))
+
 
