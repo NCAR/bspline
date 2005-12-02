@@ -180,7 +180,7 @@ template <class T> struct BSplineBaseP;
  * @author Gary Granger (http://www.atd.ucar.edu/~granger)
  *
 @verbatim
-Copyright (c) 1998-2003
+Copyright (c) 1998-2005
 University Corporation for Atmospheric Research, UCAR
 @endverbatim
  **/

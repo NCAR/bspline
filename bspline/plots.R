@@ -17,7 +17,7 @@ graphics.off()
 png("plot-%d.png", width=600, height=800)
 # x11()
 par(mfrow=c(2,1))
-for (cutoff in c(5, 30)) {
+for (cutoff in c(5, 30, 0)) {
 for (bc in c(0, 1, 2)) {
 
 	cmd = paste("driver 1", cutoff, bc, "<", filename)

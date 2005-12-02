@@ -78,29 +78,37 @@ main (int argc, char *argv[])
 	 << SplineBase::ImplVersion() << endl;
 	
 	// Sub-sampling and cutoff wavelength come from command-line
-    if (argc < 3 || argc > 4)
+    if (argc < 3 || argc > 5)
     {
-	cerr << "Usage: " << argv[0] << " <step> <cutoff> [<bc>]" << endl;
+	cerr << "Usage: " << argv[0] << " <step> <cutoff> [<bc> [<n>]]\n";
 	cerr << "  <step> is the number of points to skip in the input.\n"
 	     << "  <cutoff> is the cutoff wavelength.\n"
 	     << "  <bc> is the boundary condition--0, 1, or 2--meaning zero\n"
-	     << "       the 0th, 1st, or 2nd derivative at the end points.\n";
+	     << "       the 0th, 1st, or 2nd derivative at the end points.\n"
+	     << "  <n> sets the number of spline nodes rather than computing\n"
+	     << "      a default.\n";
 	exit (1);
     }
 	
     int step = (int) atof (argv[1]);
     double wl = atof (argv[2]);
     int bc = SplineBase::BC_ZERO_SECOND;
-    if (argc == 4)
+    int num_nodes = 0;
+    if (argc >= 4)
     {
 	int optbc = atoi(argv[3]);
 	if (0 <= optbc && optbc <= 2)
 	{
 	    bc = optbc;
 	}
+	if (argc > 4)
+	{
+	    num_nodes = atoi(argv[4]);
+	}
     }
     cerr << "Using step interval " << step
 	 << ", cutoff frequency " << wl
+	 << ", number of nodes " << num_nodes
 	 << ", and boundary condition type " << bc << "\n";
 
     // Read the x and y pairs from stdin
@@ -151,7 +159,7 @@ main (int argc, char *argv[])
     // Create our bspline base on the X vector with a simple 
     // wavelength.
     SplineT::Debug(1);
-    SplineT spline (&x[0], x.size(), &y[0], wl, bc);
+    SplineT spline (&x[0], x.size(), &y[0], wl, bc, num_nodes);
     if (spline.ok())
     {
 	// And finally write the curve to a file
@@ -205,14 +213,19 @@ void
 DumpSpline (vector<datum> &x, vector<datum> &y, SplineT &spline, ostream &out)
 {
     ostream_iterator<datum> of(out, "\t ");
+    datum variance = 0;
 
     for (unsigned int i = 0; i < x.size(); ++i)
     {
 	*of++ = x[i];
 	*of++ = y[i];
-	*of++ = spline.evaluate (x[i]);
+	datum ys = spline.evaluate (x[i]);
+	*of++ = ys;
+	variance += (ys - y[i])*(ys - y[i]);
 	out << endl;
     }
+    variance /= (datum)x.size();
+    cerr << "Variance: " << variance << endl;
 }
 
 

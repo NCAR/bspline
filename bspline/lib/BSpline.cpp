@@ -619,14 +619,19 @@ BSplineBase<T>::Setup(int num_nodes)
 
     if (num_nodes >= 2)
     {
-	// We've been told explicitly the number of intervals to use.
+	// We've been told explicitly the number of nodes to use.
 	ni = num_nodes - 1;
+	if (waveLength == 0)
+	{
+	    waveLength = 1.0;
+	}
     }
     else if (waveLength == 0)
     {
-	// Turn off frequency constraint and just set one node interval per
+	// Turn off frequency constraint and just set two node intervals per
 	// data point.
-	ni = NX;
+	ni = NX * 2;
+	waveLength = 1;
     }
     else if (waveLength > xmax - xmin)
     {
