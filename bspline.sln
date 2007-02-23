@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BSpline", "lib\BSpline.vcproj", "{B7EC1C78-6895-4951-824A-07F042BCB416}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "driver", "driver.vcproj", "{E0FD65BF-9ECE-4C34-A12F-E26ABC630612}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7EC1C78-6895-4951-824A-07F042BCB416} = {B7EC1C78-6895-4951-824A-07F042BCB416}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{B7EC1C78-6895-4951-824A-07F042BCB416}.Debug.ActiveCfg = Debug|Win32
+		{B7EC1C78-6895-4951-824A-07F042BCB416}.Debug.Build.0 = Debug|Win32
+		{B7EC1C78-6895-4951-824A-07F042BCB416}.Release.ActiveCfg = Release|Win32
+		{B7EC1C78-6895-4951-824A-07F042BCB416}.Release.Build.0 = Release|Win32
+		{E0FD65BF-9ECE-4C34-A12F-E26ABC630612}.Debug.ActiveCfg = Debug|Win32
+		{E0FD65BF-9ECE-4C34-A12F-E26ABC630612}.Debug.Build.0 = Debug|Win32
+		{E0FD65BF-9ECE-4C34-A12F-E26ABC630612}.Release.ActiveCfg = Release|Win32
+		{E0FD65BF-9ECE-4C34-A12F-E26ABC630612}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
