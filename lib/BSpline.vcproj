@@ -162,7 +162,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="c:/Binaries/BSpline/Debug/Lib/BSpline.dll"
+				OutputFile="c:/Binaries/BSpline/Debug/Lib/BSplined.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="c:/Binaries/BSpline/Debug/Lib/BSpline.pdb"
