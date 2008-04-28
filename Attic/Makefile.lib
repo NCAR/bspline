@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile 3971 2003-09-24 19:19:38Z granger $
 #
 
 INCLUDES = -I../BSpline

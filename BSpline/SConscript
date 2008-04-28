@@ -1,0 +1,13 @@
+
+tools = ['default',]
+env = Environment(tools = tools)
+
+sources = Split('''
+BSplineD.cpp
+BSplineF.cpp
+''')
+
+bsplinelib = env.Library('bspline', sources)
+
+env.Default(bsplinelib)
+
