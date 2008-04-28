@@ -48,6 +48,6 @@ Run doxygen in the top directory, where it will find the
 Doxygen configuration file:
    doxygen
    
-This will produce html formatted documentation in he docs/ directory.
-Open docs/index.html with your favorite browser.
+This will produce html formatted documentation in he doc/ directory.
+Open doc/index.html with your favorite browser.
 
