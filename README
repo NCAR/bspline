@@ -1,0 +1,53 @@
+This is the source distribution for the NCAR/EOL BSpline 
+library. 
+
+--Background--
+The BSpline package provides an implementation of 
+a Cubic B-Spline method devised by Vic Ooyama, and brought 
+to our attention by James Franklin. Franklin employed 
+the B-Spline for general purpose filtering in his
+dropsonde quality control processing program, known
+as "editsonde".
+
+NCAR used Franklin's code, and a paper published 
+by Ooyama, to build this generic B-Spline class 
+library.
+
+--Legal--
+See BSpline/lgpl.txt for the disclaimer on the use of
+this software. 
+
+--Organization--
+BSpline - contains the source code to create a bspline library,
+and a header file to access the BSpline from your code.
+
+Tests - contains several subdirectories with code for evaluating
+the code. The C++ directory is the only one that is currently compiled
+and known to work. The R directory contains code for plotting
+results using the R statistical langauge. The Fortran directory contains
+code for some unknown application.
+
+Design - Contains notes and and some original Ooyama code.
+
+Attic - Contains some obsolete artifacts. We will probably 
+get rid of this directory before long.
+
+--Building--
+Scons (http://www.scons.org) is required to build BSpline.
+
+BSpline is built by running scons in the top directory:
+    scons
+
+This will create BSpline/libbspline.a and Tests/C++/driver. The librry 
+will contain float and double instantiations of the BSpline
+templates.
+
+--Documentation--
+The BSpline code is documented using the Doxygen embedded comments.
+Run doxygen in the top directory, where it will find the 
+Doxygen configuration file:
+   doxygen
+   
+This will produce html formatted documentation in he docs/ directory.
+Open docs/index.html with your favorite browser.
+
