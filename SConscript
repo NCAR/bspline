@@ -1,2 +1,2 @@
 SConscript('BSpline/SConscript')
-SConscript('Tests/SConscript')
+SConscript('Test/SConscript')
