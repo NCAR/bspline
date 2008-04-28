@@ -1,0 +1,8 @@
+function retval = weight0 (n, frac)
+	f = 2 * n * pi / (2 * length(n) + 1);
+	wt = sin (n * pi * frac);
+	wt = wt ./ (pi * n);
+	wt = wt .* sin(f);
+	wt = wt ./ f;
+	retval = wt;
+endfunction

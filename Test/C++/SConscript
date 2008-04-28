@@ -1,0 +1,13 @@
+
+tools = ['default',]
+env = Environment(tools = tools)
+env.AppendUnique(CPPPATH='#/BSpline')
+
+
+sources = Split('''
+driver.cpp
+''')
+
+driver = env.Program('driver', sources)
+
+env.Default(driver)
