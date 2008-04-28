@@ -4,7 +4,7 @@ PROJECT_NUMBER         = "Version 1.4"
 HTML_OUTPUT            = ../doc
 
 PROJECT_NAME           = "BSpline Library"
-INPUT                  = ./ README
+INPUT                  = ./ BSpline.dox
 GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
 PAPER_TYPE             = letter

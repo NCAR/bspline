@@ -6,9 +6,9 @@ BSplineBase class.
 
 /**
 @mainpage Cubic B-Spline
-@version Version_1_3
+@version Version_1_4
 @author Gary Granger (http://www.atd.ucar.edu/~granger)
-@date May 31, 2005
+@date April 28, 2008
 
 @section download Download
 
@@ -33,6 +33,13 @@ The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
 
 @section releasenotes Release Notes
+
+<h2>Release 1_4</h2>
+
+The source tree was rearranged to make it a little more comprehensible to 
+outside users. The DLL build functionality was removed, as it just doesn't 
+seem necessary to add this complication. The Makefile build system was replaced 
+with Scons (http://www.scons.org).
 
 <h2>Release 1_3</h2>
 
