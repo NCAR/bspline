@@ -30,17 +30,6 @@
  * templates.
  **/
 
-/*
- * If we're on WIN32 and the DLL macro has not been set yet, which
- * implies the interface file (BSpline.h) has not been included yet,
- * assume only the implementation is wanted and empty the DLL macro
- * before including the interface.
- */
-#if WIN32
-# ifndef BSPLINE_DLL_
-#  define BSPLINE_DLL_
-# endif
-#endif /* WIN32 */
 
 #include "BSpline.h"
 #include "BandedMatrix.h"

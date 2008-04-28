@@ -5,7 +5,7 @@
 // Simple test driver for the bspline interface.
 //
 /*
- * Copyright (c) 1998,1999
+ * Copyright (c) 1998,1999,2008
  * University Corporation for Atmospheric Research, UCAR
  *
  * Permission to use, copy, modify, distribute and sell this software and
@@ -27,13 +27,9 @@
 /* On WIN32 just get the interface and link with the DLL.
  * Otherwise include the implementation so we can instantiate it.
  */
-#ifndef WIN32
 #include "BSpline.cpp"
 template class BSpline<double>;
 template class BSpline<float>;
-#else
-#include "BSpline.h"
-#endif /*WIN32*/
 
 #include <iostream>
 #include <fstream>

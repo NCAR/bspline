@@ -31,20 +31,7 @@
  *
  * This file defines the BSpline library interface.
  *
- * If including this file without the implementation (BSpline.cpp) on
- * WIN32, it assumes the implementation will come from a DLL and thus
- * declares dllimport.  To explicitly instantiate the implementation in a
- * source file, include the @em implementation file BSpline.cpp and @em not
- * this file.  See BSplineBase class documentation for more info.
  */
-#if WIN32
-# ifndef BSPLINE_DLL_
-#  define BSPLINE_DLL_ __declspec(dllimport)
-# endif
-#else
-# define BSPLINE_DLL_
-#endif /* WIN32 */
-
 
 template <class T> class BSpline;
 
@@ -185,7 +172,7 @@ University Corporation for Atmospheric Research, UCAR
 @endverbatim
  **/
 template <class T> 
-class BSPLINE_DLL_ BSplineBase  
+class BSplineBase  
 {
 public:
     // Datum type
@@ -361,7 +348,7 @@ template <class T> struct BSplineP;
  * BSpline interface.
  */
 template <class T>
-class BSPLINE_DLL_ BSpline : public BSplineBase<T>
+class BSpline : public BSplineBase<T>
 {
 public:
     /**
