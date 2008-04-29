@@ -25,6 +25,8 @@
 
 /// Instantiate a double version of BSpline
 template class  BSplineBase<double>;
+template class BSpline<double>;
 
 /// Instantiate a float version of BSpline
 template class  BSplineBase<float>;
+template class BSpline<float>;

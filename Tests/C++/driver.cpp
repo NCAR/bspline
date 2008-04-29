@@ -24,12 +24,7 @@
  * http://www.gnu.org/copyleft/gpl.html.
  */
 
-/* On WIN32 just get the interface and link with the DLL.
- * Otherwise include the implementation so we can instantiate it.
- */
-#include "BSpline.cpp"
-template class BSpline<double>;
-template class BSpline<float>;
+#include "BSpline/BSpline.h"
 
 #include <iostream>
 #include <fstream>

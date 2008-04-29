@@ -2,7 +2,8 @@
 tools = ['default',]
 env = Environment(tools = tools)
 env.AppendUnique(CPPPATH='#/BSpline')
-
+env.AppendUnique(LIBPATH=['#/BSpline/BSpline', ])
+env.AppendUnique(LIBS=['bspline',])
 
 sources = Split('''
 driver.cpp
