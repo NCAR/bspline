@@ -1,7 +1,13 @@
 
 tools = ['default',]
 env = Environment(tools = tools)
-env.AppendUnique(CPPPATH='#/BSpline')
+# provide two paths for CPP and the linker, since
+# sometimes BSpline will be the top level scons
+# directory, and other times BSpline will live 
+# one directory down within another project.
+env.AppendUnique(CPPPATH=['#/',])
+env.AppendUnique(CPPPATH=['#/BSpline',])
+env.AppendUnique(LIBPATH=['#/BSpline', ])
 env.AppendUnique(LIBPATH=['#/BSpline/BSpline', ])
 env.AppendUnique(LIBS=['bspline',])
 
