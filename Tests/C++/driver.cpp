@@ -73,12 +73,19 @@ main (int argc, char *argv[])
     if (argc < 3 || argc > 5)
     {
 	cerr << "Usage: " << argv[0] << " <step> <cutoff> [<bc> [<n>]]\n";
-	cerr << "  <step> is the number of points to skip in the input.\n"
-	     << "  <cutoff> is the cutoff wavelength.\n"
+	cerr << "  Read x,y pairs from stdin.\n"
+         << "\n"
+         << "  <step> is the number of points to skip in the input.\n"
+	     << "  <cutoff> is the cutoff wavelength, in the same units as x.\n"
 	     << "  <bc> is the boundary condition--0, 1, or 2--meaning zero\n"
 	     << "       the 0th, 1st, or 2nd derivative at the end points.\n"
 	     << "  <n> sets the number of spline nodes rather than computing\n"
-	     << "      a default.\n";
+	     << "      a default.\n"
+         << "\n"
+         << "  Results (x, y, new y, slope y) for each input x will be written \n"
+         << "  to the file \"input.out\".\n"
+         << "  Another file (\"spline.out\") will contain results interpolated for 2000\n"
+         << "  points across the x range.\n";
 	exit (1);
     }
 	
@@ -213,6 +220,8 @@ DumpSpline (vector<datum> &x, vector<datum> &y, SplineT &spline, ostream &out)
 	*of++ = y[i];
 	datum ys = spline.evaluate (x[i]);
 	*of++ = ys;
+    datum slope = spline.slope(x[i]);
+    *of++ = slope;
 	variance += (ys - y[i])*(ys - y[i]);
 	out << endl;
     }
