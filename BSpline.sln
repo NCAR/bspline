@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BSpline", "BSpline\BSpline.vcproj", "{F995D254-2431-46AB-90DD-0DD6408DF43C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C++", "Tests\C++\C++.vcproj", "{5147A4DD-9BBF-46F3-BD79-C52D1DD71326}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F995D254-2431-46AB-90DD-0DD6408DF43C} = {F995D254-2431-46AB-90DD-0DD6408DF43C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F995D254-2431-46AB-90DD-0DD6408DF43C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F995D254-2431-46AB-90DD-0DD6408DF43C}.Debug|Win32.Build.0 = Debug|Win32
+		{F995D254-2431-46AB-90DD-0DD6408DF43C}.Release|Win32.ActiveCfg = Release|Win32
+		{F995D254-2431-46AB-90DD-0DD6408DF43C}.Release|Win32.Build.0 = Release|Win32
+		{5147A4DD-9BBF-46F3-BD79-C52D1DD71326}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5147A4DD-9BBF-46F3-BD79-C52D1DD71326}.Debug|Win32.Build.0 = Debug|Win32
+		{5147A4DD-9BBF-46F3-BD79-C52D1DD71326}.Release|Win32.ActiveCfg = Release|Win32
+		{5147A4DD-9BBF-46F3-BD79-C52D1DD71326}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
