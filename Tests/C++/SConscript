@@ -11,8 +11,7 @@ env.AppendUnique(CPPPATH=['#/',])
 env.AppendUnique(CPPPATH=['#/BSpline',])
 
 # some linkers don't like missing library search paths:
-if os.path.exists('#/BSpline'):
-   env.AppendUnique(LIBPATH=['#/BSpline', ])
+env.AppendUnique(LIBPATH=['#/BSpline', ])
 if os.path.exists('#/BSpline/BSpline'):
    env.AppendUnique(LIBPATH=['#/BSpline/BSpline', ])
 env.AppendUnique(LIBS=['bspline',])
