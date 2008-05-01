@@ -110,8 +110,10 @@ struct BSplineBaseP
 };
 
 
-// For now, hardcoding type 1 boundary conditions, 
-// which constrains the derivative to zero at the endpoints.
+// This array contains the beta parameter for the boundary condition
+// constraints.  The boundary condition type--0, 1, or 2--is the first
+// index into the array, followed by the index of the endpoints.  See the
+// Beta() method.
 template <class T>
 const double BSplineBase<T>::BoundaryConditions[3][4] = 
 { 
