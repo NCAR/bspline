@@ -1,3 +1,4 @@
+import os
 
 tools = ['default',]
 env = Environment(tools = tools)
@@ -5,10 +6,15 @@ env = Environment(tools = tools)
 # sometimes BSpline will be the top level scons
 # directory, and other times BSpline will live 
 # one directory down within another project.
+
 env.AppendUnique(CPPPATH=['#/',])
 env.AppendUnique(CPPPATH=['#/BSpline',])
-env.AppendUnique(LIBPATH=['#/BSpline', ])
-env.AppendUnique(LIBPATH=['#/BSpline/BSpline', ])
+
+# some linkers don't like missing library search paths:
+if os.path.exists('#/BSpline'):
+   env.AppendUnique(LIBPATH=['#/BSpline', ])
+if os.path.exists('#/BSpline/BSpline'):
+   env.AppendUnique(LIBPATH=['#/BSpline/BSpline', ])
 env.AppendUnique(LIBS=['bspline',])
 
 sources = Split('''
