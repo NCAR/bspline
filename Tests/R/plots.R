@@ -20,10 +20,12 @@ par(mfrow=c(2,1))
 for (cutoff in c(5, 30, 0)) {
 for (bc in c(0, 1, 2)) {
 
-	cmd = paste("driver 1", cutoff, bc, "<", filename)
+	cmd = paste("../C++/driver 1", cutoff, bc, "<", filename)
 	cat(cmd, "\n")
 	system(cmd)
-	spline = matrix(scan("spline.out"), ncol=3, byrow=1,
+	output = paste("spline-", cutoff, "-", bc, ".out", sep="")
+	system(paste("mv -f spline.out", output))
+	spline = matrix(scan(output), ncol=3, byrow=1,
 		dimnames=list(c(), c("time","smoothed","deriv")))
 	input = matrix(scan("input.out"), ncol=3, byrow=1,
 		dimnames=list(c(), c("time","input","smoothed")))
