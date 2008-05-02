@@ -20,6 +20,6 @@ sources = Split('''
 driver.cpp
 ''')
 
-driver = env.Program('driver', sources)
+bspline = env.Program('bspline', sources)
 
-env.Default(driver)
+env.Default(bspline)
