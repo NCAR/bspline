@@ -17,7 +17,8 @@ if os.path.exists('#/BSpline/BSpline'):
 env.AppendUnique(LIBS=['bspline',])
 
 sources = Split('''
-driver.cpp
+bspline.cpp
+options.cpp
 ''')
 
 bspline = env.Program('bspline', sources)

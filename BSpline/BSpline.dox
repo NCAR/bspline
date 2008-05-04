@@ -34,12 +34,21 @@ The HTML documentation is generated from the source files by Doxygen
 
 @section releasenotes Release Notes
 
+<h2>Release 1_5</h2>
+
+Added the BSplinePlus<T> class, derived from BSpline<T>. 
+This allows the user to  specify blending at the endpoints 
+of the spline, so that the  normal BSpline bondary conditions can 
+be thwarted.
+
 <h2>Release 1_4</h2>
 
 The source tree was rearranged to make it a little more comprehensible to 
 outside users. The DLL build functionality was removed, as it just doesn't 
 seem necessary to add this complication. The Makefile build system was replaced 
 with Scons (http://www.scons.org).
+
+The driver program was renamed to bspline.
 
 <h2>Release 1_3</h2>
 

@@ -29,8 +29,6 @@
  * This file defines the implementation for the BSpline and BSplineBase
  * templates.
  **/
-
-
 #include "BSpline.h"
 #include "BandedMatrix.h"
 
@@ -38,7 +36,6 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
-
 #include <assert.h>
 
 /*
@@ -60,8 +57,7 @@ public:
     static inline 
     const T& max (const T& a, const T& b) { return (a > b) ? a : b; }
 };
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 class Matrix : public BandedMatrix<T>
 {
@@ -94,8 +90,7 @@ public:
     }
 
 };
-
-
+//////////////////////////////////////////////////////////////////////
 // Our private state structure, which hides our use of some matrix
 // template classes.
 
@@ -108,7 +103,7 @@ struct BSplineBaseP
     std::vector<T> X;
     std::vector<T> Nodes;
 };
-
+//////////////////////////////////////////////////////////////////////
 
 // This array contains the beta parameter for the boundary condition
 // constraints.  The boundary condition type--0, 1, or 2--is the first
@@ -122,7 +117,7 @@ const double BSplineBase<T>::BoundaryConditions[3][4] =
     {	0,		1,		1,		0 },
     {	2,		-1,		-1,		2 }
 };
-
+//////////////////////////////////////////////////////////////////////
 
 template <class T>
 inline bool BSplineBase<T>::Debug (int on)
@@ -132,20 +127,18 @@ inline bool BSplineBase<T>::Debug (int on)
 	debug = (on > 0);
     return debug;
 }
-
+//////////////////////////////////////////////////////////////////////
 
 template <class T>
 const double BSplineBase<T>::PI = 3.1415927;
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 const char *
 BSplineBase<T>::ImplVersion()
 {
     return ("$Id$");
 }
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 const char *
 BSplineBase<T>::IfaceVersion()
@@ -153,18 +146,15 @@ BSplineBase<T>::IfaceVersion()
     return (_BSPLINEBASE_IFACE_ID);
 }
 
-	
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
 
 template <class T>
 BSplineBase<T>::~BSplineBase()
 {
     delete base;
 }
-
 
 // This is a member-wise copy except for replacing our
 // private base structure with the source's, rather than just copying
@@ -182,8 +172,7 @@ BSplineBase<T>::BSplineBase (const BSplineBase<T> &bb) :
     M = bb.M;
     NX = base->X.size();
 }
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 BSplineBase<T>::BSplineBase (const T *x, int nx, double wl, int bc,
 			     int num_nodes) : 
@@ -192,10 +181,8 @@ BSplineBase<T>::BSplineBase (const T *x, int nx, double wl, int bc,
     setDomain (x, nx, wl, bc, num_nodes);
 }
 
-
+//////////////////////////////////////////////////////////////////////
 // Methods
-
-
 template <class T>
 bool
 BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc,
@@ -274,9 +261,7 @@ BSplineBase<T>::setDomain (const T *x, int nx, double wl, int bc,
     }
     return OK;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * Calculate the alpha parameter given a wavelength.
  */
@@ -293,8 +278,7 @@ BSplineBase<T>::Alpha (double wl)
 	a = a * a * a;		// a^6
     return a;
 }
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * Return the correct beta value given the node index.  The value depends
  * on the node index and the current boundary condition type.
@@ -311,9 +295,7 @@ BSplineBase<T>::Beta (int m)
     assert (0 <= m && m <= 3);
     return BoundaryConditions[BC][m];
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * Given an array of y data points defined over the domain
  * of x data points in this BSplineBase, create a BSpline
@@ -325,8 +307,7 @@ BSplineBase<T>::apply (const T *y)
 {
     return new BSpline<T> (*this, y);
 }
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * Evaluate the closed basis function at node m for value x,
  * using the parameters for the current boundary conditions.
@@ -355,9 +336,7 @@ BSplineBase<T>::Basis (int m, T x)
 
     return y;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * Evaluate the deriviative of the closed basis function at node m for
  * value x, using the parameters for the current boundary conditions.
@@ -391,10 +370,7 @@ BSplineBase<T>::DBasis (int m, T x)
 
     return dy;
 }
-
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 double
 BSplineBase<T>::qDelta (int m1, int m2)
@@ -440,9 +416,7 @@ BSplineBase<T>::qDelta (int m1, int m2)
 	q += qparts[K-1][m2-m1][m-m1+2];
     return q * alpha;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 void
 BSplineBase<T>::calculateQ ()
@@ -501,9 +475,7 @@ BSplineBase<T>::calculateQ ()
 	}
     }
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 void
 BSplineBase<T>::addP ()
@@ -539,9 +511,7 @@ BSplineBase<T>::addP ()
 	}
     }
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 bool
 BSplineBase<T>::factor ()
@@ -557,9 +527,7 @@ BSplineBase<T>::factor ()
 	std::cerr << "LU decomposition: " << std::endl << LU << std::endl;
     return true;
 }
-
-	
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 inline double
 BSplineBase<T>::Ratiod (int &ni, double &deltax, double &ratiof)
@@ -569,8 +537,7 @@ BSplineBase<T>::Ratiod (int &ni, double &deltax, double &ratiof)
     double ratiod = (double) NX / (double) (ni + 1);
     return ratiod;
 }
-
-
+//////////////////////////////////////////////////////////////////////
 // Setup the number of nodes (and hence deltax) for the given domain and
 // cutoff wavelength.  According to Ooyama, the derivative constraint
 // approximates a lo-pass filter if the cutoff wavelength is about 4*deltax
@@ -668,8 +635,7 @@ BSplineBase<T>::Setup(int num_nodes)
 
     return (true);
 }
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 const T *
 BSplineBase<T>::nodes (int *nn)
@@ -689,9 +655,7 @@ BSplineBase<T>::nodes (int *nn)
     assert (base->Nodes.size() == (unsigned)(M+1));
     return &base->Nodes[0];
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
 {
@@ -700,9 +664,7 @@ std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
     out << std::endl;
     return out;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 // BSpline Class
 //////////////////////////////////////////////////////////////////////
@@ -714,11 +676,9 @@ struct BSplineP
     std::vector<T> A;
 };
 
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
 
 /*
  * This BSpline constructor constructs and sets up a new base and 
@@ -731,9 +691,7 @@ BSpline<T>::BSpline (const T *x, int nx, const T *y,
 {
     solve (y);
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * Create a new spline given a BSplineBase.
  */
@@ -743,9 +701,7 @@ BSpline<T>::BSpline (BSplineBase<T> &bb, const T *y) :
 {
     solve (y);
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 /*
  * (Re)calculate the spline for the given set of y values.
  */
@@ -819,17 +775,13 @@ BSpline<T>::solve (const T *y)
     }
     return (OK);
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 BSpline<T>::~BSpline()
 {
     delete s;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 T BSpline<T>::coefficient (int n)
 {
@@ -838,9 +790,7 @@ T BSpline<T>::coefficient (int n)
 	    return s->A[n];
     return 0;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 T BSpline<T>::evaluate (T x)
 {
@@ -856,9 +806,7 @@ T BSpline<T>::evaluate (T x)
     }
     return y;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 T BSpline<T>::slope (T x)
 {
@@ -873,9 +821,7 @@ T BSpline<T>::slope (T x)
     }
     return dy;
 }
-
-
-
+//////////////////////////////////////////////////////////////////////
 template <class T>
 const T *BSpline<T>::curve (int *nx)
 {
@@ -898,3 +844,86 @@ const T *BSpline<T>::curve (int *nx)
 	*nx = spline.size();
     return &spline[0];
 }
+//////////////////////////////////////////////////////////////////////
+// BSplinePlus Class
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+/*
+ * This BSpline constructor constructs and sets up a new base and 
+ * solves for the spline curve coeffiecients all at once.
+ */
+template <class T>
+BSplinePlus<T>::BSplinePlus (const T *x, 
+                             int nx, 
+                             const T *y,
+                             double wl, 
+                             int bc_type, 
+                             int num_nodes,
+                             BLENDMODE blendMode,
+                             T blendSpan) :
+    BSpline<T>(x, nx, y, wl, bc_type, num_nodes),
+    _blendMode(blendMode),
+    _blendSpan(blendSpan)
+{
+}
+//////////////////////////////////////////////////////////////////////
+/*
+ * Create a new spline given a BSplineBase.
+ */
+template <class T>
+BSplinePlus<T>::BSplinePlus (BSplineBase<T> &bb, const T *y) :
+    BSpline<T>(bb, y)
+{
+}
+//////////////////////////////////////////////////////////////////////
+/*
+ * (Re)calculate the spline for the given set of y values.
+ */
+template <class T>
+bool
+BSplinePlus<T>::solve (const T *y)
+{
+    bool ok = BSpline<T>::solve(y);
+    
+    if (!ok)
+        return false;
+
+    return (true);
+}
+//////////////////////////////////////////////////////////////////////
+template <class T>
+BSplinePlus<T>::~BSplinePlus()
+{
+}
+//////////////////////////////////////////////////////////////////////
+template <class T>
+T BSplinePlus<T>::evaluate (T x)
+{
+    T y = BSpline<T>::evaluate(x);
+
+    return y;
+}
+//////////////////////////////////////////////////////////////////////
+template <class T>
+T BSplinePlus<T>::slope (T x)
+{
+
+    T dy = BSpline<T>::slope(x);
+    
+    return dy;
+}
+//////////////////////////////////////////////////////////////////////
+template <class T>
+const T *BSplinePlus<T>::curve (int *nx)
+{
+    const T* c = BSpline<T>::curve(nx);
+    
+    if (!c)
+        return 0;
+
+    return c;
+}
+

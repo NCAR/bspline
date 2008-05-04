@@ -17,30 +17,47 @@ library.
 See BSpline/lgpl.txt for the disclaimer on the use of
 this software. 
 
+--Requirements--
+BSpline builds on Windows, Linux and Mac. Build environments
+for each operating system are:
+
+Windows: Microsoft Visual Studio 2005
+Linux: scons and g++
+Mac: scons and g++ (both provided by Xcode)
+
+BSpline uses the doxygen documentation system. Doxygen is
+not required to build BSpline, but if available it can be used
+to create html formatted documentation.
+
 --Organization--
-BSpline - contains the source code to create a bspline library,
+BSpline/ - contains the source code to create a bspline library,
 and a header file to access the BSpline from your code.
 
-Tests - contains several subdirectories with code for evaluating
+Tests/ - contains several subdirectories with code for evaluating
 the code. The C++ directory is the only one that is currently compiled
 and known to work. The R directory contains code for plotting
 results using the R statistical langauge. The Fortran directory contains
 code for some unknown application.
 
-Design - Contains notes and and some original Ooyama code.
+Design/ - Contains notes and and some original Ooyama code.
 
-Attic - Contains some obsolete artifacts. We will probably 
+Attic/ - Contains some obsolete artifacts. We will probably 
 get rid of this directory before long.
 
 --Building--
-Scons (http://www.scons.org) is required to build BSpline.
+Linux/Mac:
+Scons (http://www.scons.org) is used to build BSpline.
 
 BSpline is built by running scons in the top directory:
     scons
 
-This will create BSpline/libbspline.a and Tests/C++/driver. The librry 
+This will create BSpline/libbspline.a and Tests/C++/bspline. The librry 
 will contain float and double instantiations of the BSpline
 templates.
+
+Windows: 
+A Visual Studio solution (bspline.sln) is provided for building the
+same products.
 
 --Documentation--
 The BSpline code is documented using the Doxygen embedded comments.
@@ -48,6 +65,6 @@ Run doxygen in the top directory, where it will find the
 Doxygen configuration file:
    doxygen
    
-This will produce html formatted documentation in he doc/ directory.
+This will produce html formatted documentation in the doc/ directory.
 Open doc/index.html with your favorite browser.
 

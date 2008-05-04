@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 /*
- * Copyright (c) 1998,1999
+ * Copyright (c) 1998-2008
  * University Corporation for Atmospheric Research, UCAR
  *
  * Permission to use, copy, modify, distribute and sell this software and
@@ -23,10 +23,15 @@
 
 #include "BSpline.cpp"
 
-/// Instantiate a double version of BSpline
+/// Instatiate the spline bases
 template class  BSplineBase<double>;
-template class BSpline<double>;
-
-/// Instantiate a float version of BSpline
 template class  BSplineBase<float>;
+
+/// Instantiate BSpline
+template class BSpline<double>;
 template class BSpline<float>;
+
+/// Instantiate BSplinePlus
+template class BSplinePlus<double>;
+template class BSplinePlus<float>;
+
