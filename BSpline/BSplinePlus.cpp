@@ -1,5 +1,4 @@
-#include "BSpline.h"
-#include "BandedMatrix.h"
+#include "BSplinePlus.h"
 
 #include <vector>
 #include <algorithm>
