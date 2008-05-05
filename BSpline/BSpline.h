@@ -448,7 +448,8 @@ protected:
  * Inherits the BSpline. Allows the BSpline boundary 
  * conditions to be overriden with a blending scheme.
  * See the BSpline documentation for a summary of the
- * BSpline interface.
+ * BSpline interface. Note that for BSplinePluse, @em the 
+ * x values must be in ascending order.
  */
 template <class T>
 class BSplinePlus : public BSpline<T>
@@ -462,6 +463,9 @@ public:
      * The y values must correspond to each of the values in the x array.
      * If either the domain setup fails or the spline cannot be solved,
      * the state will be set to not ok.
+     * 
+     * The blending pan must be smaller than half the total span of
+     * the spline.
      *
      * @see ok().
      *
@@ -534,7 +538,15 @@ protected:
     BLENDMODE _blendMode;
     /// The span over which the blending occurs
     T _blendSpan;
-
+    /// The index of the first x value that is past the start (left side)
+    /// blending interval. Will be undefined for blend mode == BLENDNONE os
+    /// blend mode == BLENDFINISH
+    T _blendXleftIndex;
+    /// The index of the first x value that is before the finish (right side)
+    /// blending interval. Will be undefined for blend mode == BLENDNONE os
+    /// blend mode == BLENDSTART
+    T _blendXrightIndex;
+    
 };
 
 #endif // !defined _BSPLINEBASE_IFACE_ID

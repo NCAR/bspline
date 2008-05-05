@@ -66,7 +66,7 @@ extern "C"
 static const char
         * optv[] =
             { "s:step        <step interval>",
-                    "w:wavelength  <spline wavelength>",
+                    "w:wavelength  <spline wavelength (required)>",
                     "d:degree      <bc derivative degree (0,1,2)>",
                     "n:nodes       <specify number of nodes (n)>",
                     "b:blendmode   <blending mode (none, start, end, both)> (requires blendlength)",
@@ -90,6 +90,9 @@ void parseCommandLine(int argc,
     *num_nodes = 0;
     *blendmode = BSplinePlus<double>::BLENDNONE;
     *blendlength = -1;
+    
+    // indicate that the wavelength has not been set
+    *wavelength = -1.0;
 
     bool err = false;
     const char *optarg;
@@ -174,11 +177,15 @@ void parseCommandLine(int argc,
         }
     }
 
+    // wavelength must be supplied
+    if (*wavelength < 0)
+        err++;
+    
     // if blending is requested, there must be a blendlength
     if (*blendmode != BSplinePlus<double>::BLENDNONE && *blendlength == -1)
         err++;
 
-    // if blendlength is specified, blending must be requested
+    // if blendlength is ot specified, blending must not be requested
     if (*blendmode == BSplinePlus<double>::BLENDNONE && *blendlength != -1)
         err++;
 
