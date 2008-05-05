@@ -176,22 +176,3 @@ template<class T> T BSpline<T>::slope(T x) {
     }
     return dy;
 }
-//////////////////////////////////////////////////////////////////////
-template<class T> const T *BSpline<T>::curve(int *nx) {
-    if (!OK)
-        return 0;
-
-    // If we already have the curve calculated, don't do it again.
-    std::vector<T> &spline = s->spline;
-    if (spline.size() == 0) {
-        spline.reserve(M+1);
-        for (int n = 0; n <= M; ++n) {
-            T x = xmin + (n * DX);
-            spline.push_back(evaluate(x));
-        }
-    }
-
-    if (nx)
-        *nx = spline.size();
-    return &spline[0];
-}

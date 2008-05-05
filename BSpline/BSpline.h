@@ -87,16 +87,6 @@ public:
     bool solve (const T *y);
 
     /**
-     * Return the entire curve evaluated at each of the nodes.
-     * The array is held by the object, and thus should not be freed and
-     * is only valid while the object exists.
-     * If the current state is not ok(), the method returns zero.
-     *
-     * @param nx  If non-zero, returns the number of points in the curve.
-     */
-    const T *curve (int *nx = 0);
-
-    /**
      * Return the evaluation of the smoothed curve 
      * at a particular @p x value.  If current state is not ok(), returns 0.
      */

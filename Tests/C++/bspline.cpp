@@ -24,7 +24,7 @@
  * http://www.gnu.org/copyleft/gpl.html.
  */
 
-#include "BSpline/BSpline.h"
+#include "BSpline/BSplinePlus.h"
 #include "options.h"
 
 #include <iostream>
