@@ -26,6 +26,8 @@
 #ifndef _BSPLINEBASE_IFACE_ID
 #define _BSPLINEBASE_IFACE_ID "$Id$"
 
+#include <vector>
+
 /**
  * @file
  *
@@ -541,12 +543,15 @@ protected:
     /// The index of the first x value that is past the start (left side)
     /// blending interval. Will be undefined for blend mode == BLENDNONE os
     /// blend mode == BLENDFINISH
-    T _blendXleftIndex;
+    int _blendXleftIndex;
     /// The index of the first x value that is before the finish (right side)
     /// blending interval. Will be undefined for blend mode == BLENDNONE os
     /// blend mode == BLENDSTART
-    T _blendXrightIndex;
-    
+    int _blendXrightIndex;
+    /// weighting factors to be applied to the points in the series
+    /// Weighting of one preserves the spline calculation, a zero 
+    /// gives full weight to the input data
+    std::vector<double> _blendWeights;    
 };
 
 #endif // !defined _BSPLINEBASE_IFACE_ID

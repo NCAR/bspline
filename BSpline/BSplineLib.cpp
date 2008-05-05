@@ -21,17 +21,19 @@
  * http://www.gnu.org/copyleft/gpl.html.
  */
 
+#include "BSplineBase.cpp"
 #include "BSpline.cpp"
+#include "BSplinePlus.cpp"
 
-/// Instatiate the spline bases
+/// Instantiate BSplineBase for a library
 template class  BSplineBase<double>;
 template class  BSplineBase<float>;
 
-/// Instantiate BSpline
+/// Instantiate BSpline for a library
 template class BSpline<double>;
 template class BSpline<float>;
 
-/// Instantiate BSplinePlus
+/// Instantiate BSplinePlus for a library
 template class BSplinePlus<double>;
 template class BSplinePlus<float>;
 
