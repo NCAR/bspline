@@ -67,10 +67,11 @@ static const char
         * optv[] =
             { "s:step        <step interval>",
                     "w:wavelength  <spline wavelength (required)>",
-                    "d:degree      <bc derivative degree (0,1,2)>",
+                    "b:bcdegree    <bc derivative degree (0,1,2)>",
                     "n:nodes       <specify number of nodes (n)>",
-                    "b:blendmode   <blending mode (none, start, end, both)> (requires blendlength)",
+                    "m:blendmode   <blending mode (none, start, end, both)> (requires blendlength)",
                     "l:blendlength <length> (requires blendmode)",
+                    "d|debug       <enable diagnostic output>"
                     "h|help        <print this help>",
                     NULL };
 
@@ -82,7 +83,8 @@ void parseCommandLine(int argc,
                       int* bc,
                       int* num_nodes,
                       BSplinePlus<double>::BLENDMODE* blendmode,
-                      double* blendlength) {
+                      double* blendlength,
+                      bool* debug) {
 
     // initialize the optional parameters
     *step = 0;
@@ -90,6 +92,7 @@ void parseCommandLine(int argc,
     *num_nodes = 0;
     *blendmode = BSplinePlus<double>::BLENDNONE;
     *blendlength = -1;
+    *debug = false;
     
     // indicate that the wavelength has not been set
     *wavelength = -1.0;
@@ -121,7 +124,7 @@ void parseCommandLine(int argc,
                 err++;
             break;
         }
-        case 'd': {
+        case 'b': {
             if (optarg) {
                 int degree = atoi(optarg);
                 switch (degree) {
@@ -147,7 +150,7 @@ void parseCommandLine(int argc,
                 err++;
             break;
         }
-        case 'b': {
+        case 'm': {
             if (optarg)
                 if (!strcmp(optarg, "none"))
                     *blendmode = BSplinePlus<double>::BLENDNONE;
@@ -168,6 +171,10 @@ void parseCommandLine(int argc,
                 *blendlength = atof(optarg);
             else
                 err++;
+            break;
+        }
+        case 'd': {
+            *debug = true;
             break;
         }
         default: {
@@ -211,6 +218,7 @@ int main(int argc,
     int num_nodes;
     BSplinePlus<double>::BLENDMODE blendmode;
     double blendlength;
+    bool debug;
 
     parseCommandLine(argc,
                      argv,
@@ -219,11 +227,14 @@ int main(int argc,
                       &bc,
                       &num_nodes,
                       &blendmode,
-                      &blendlength);
+                      &blendlength,
+                      &debug);
 
-    cerr << "Using step interval " << step << ", cutoff frequency "
+    if (debug) {
+        cout << "Using step interval " << step << ", cutoff frequency "
             << wavelength << ", number of nodes " << num_nodes
             << ", and boundary condition type " << bc << "\n";
+    }
 
     // Read the x and y pairs from stdin
     vector<datum> x;
@@ -266,7 +277,8 @@ int main(int argc,
 
     // Create our bspline base on the X vector with a simple 
     // wavelength.
-    SplineT::Debug(1);
+    if (debug)
+        SplineT::Debug(1);
     SplineT spline(&x[0],
                    x.size(),
                    &y[0],
