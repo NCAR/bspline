@@ -376,7 +376,7 @@ void DumpSpline(vector<datum> &x,
                 SplineT &spline,
                 ostream &out)
 {
-    ostream_iterator<datum> of(out, "\t ");
+    ostream_iterator<datum> of(out, "  ");
     datum variance = 0;
 
     for (unsigned int i = 0; i < x.size(); ++i) {
