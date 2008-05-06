@@ -30,7 +30,6 @@ template<class T> BSplinePlus<T>::BSplinePlus(const T *x,
     BSpline<T>(x, nx, y, wl, bc_type, num_nodes), _blendMode(blendMode),
             _blendSpan(blendSpan)
 {
-
     // setup the blending artifacts.
     initBlending(y);
 
@@ -46,7 +45,9 @@ template<class T> BSplinePlus<T>::BSplinePlus(BSplineBase<T> &bb,
                                               T blendspan) :
     BSpline<T>(bb, y), _blendMode(blendmode), _blendSpan(blendspan)
 {
-
+    if (!OK)
+        return;
+    
     // setup the blending artifacts.
     initBlending(y);
 }
@@ -54,7 +55,6 @@ template<class T> BSplinePlus<T>::BSplinePlus(BSplineBase<T> &bb,
 //////////////////////////////////////////////////////////////////////
 template<class T> void BSplinePlus<T>::initBlending(const T* y)
 {
-
     // verify that the x values are ordered
     for (unsigned int i = 1; i < NX; i++) {
         assert(base->X[i-1] < base->X[i]);

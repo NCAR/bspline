@@ -107,6 +107,7 @@ template<class T> class BSplinePlus : public BSpline<T> {
         /// The right x value where blending begins
         T _xRight;
         
+        using BSplineBase<T>::OK;
         using BSplineBase<T>::NX;
         using BSplineBase<T>::base;
         using BSplineBase<T>::xmin;

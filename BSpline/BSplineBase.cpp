@@ -13,30 +13,36 @@
  * This class simulates a namespace for private symbols used by this template
  * implementation which should not pollute the global namespace.
  */
-class my {
+class my
+{
     public:
         template<class T> static inline
-        T abs(const T t) {
+        T abs(const T t)
+        {
             return (t < 0) ? -t : t;
         }
 
         template<class T> static inline
         const T& min(const T& a,
-                     const T& b) {
+                     const T& b)
+        {
             return (a < b) ? a : b;
         }
 
         template<class T> static inline
         const T& max(const T& a,
-                     const T& b) {
+                     const T& b)
+        {
             return (a > b) ? a : b;
         }
 };
 
 //////////////////////////////////////////////////////////////////////
-template<class T> class Matrix : public BandedMatrix<T> {
+template<class T> class Matrix : public BandedMatrix<T>
+{
     public:
-        Matrix &operator +=(const Matrix &B) {
+        Matrix &operator +=(const Matrix &B)
+        {
             Matrix &A = *this;
             typename Matrix::size_type M = A.num_rows();
             typename Matrix::size_type N = A.num_cols();
@@ -51,11 +57,13 @@ template<class T> class Matrix : public BandedMatrix<T> {
             return A;
         }
 
-        inline Matrix & operator=(const Matrix &b) {
+        inline Matrix & operator=(const Matrix &b)
+        {
             return Copy(*this, b);
         }
 
-        inline Matrix & operator=(const T &e) {
+        inline Matrix & operator=(const T &e)
+        {
             BandedMatrix<T>::operator= (e);
             return *this;
         }
@@ -65,7 +73,8 @@ template<class T> class Matrix : public BandedMatrix<T> {
     // Our private state structure, which hides our use of some matrix
     // template classes.
 
-template<class T> struct BSplineBaseP {
+template<class T> struct BSplineBaseP
+{
         typedef Matrix<T> MatrixT;
 
         MatrixT Q; // Holds P+Q and its factorization
@@ -81,21 +90,25 @@ template<class T> struct BSplineBaseP {
 // Beta() method.
 template<class T> const double BSplineBase<T>::BoundaryConditions[3][4] =
     {
-    //  0       1       M-1     M
-        { -4,
-                -1,
-                -1,
-                -4 },
-                { 0,
+            //  0       1       M-1     M
+                {
+                        -4,
+                        -1,
+                        -1,
+                        -4 },
+                {
+                        0,
                         1,
                         1,
                         0 },
-                { 2,
+                {
+                        2,
                         -1,
                         -1,
                         2 } };
 //////////////////////////////////////////////////////////////////////
-template<class T> inline bool BSplineBase<T>::Debug(int on) {
+template<class T> inline bool BSplineBase<T>::Debug(int on)
+{
     static bool debug = false;
     if (on >= 0)
         debug = (on > 0);
@@ -105,12 +118,14 @@ template<class T> inline bool BSplineBase<T>::Debug(int on) {
 //////////////////////////////////////////////////////////////////////
 template<class T> const double BSplineBase<T>::PI = 3.1415927;
 //////////////////////////////////////////////////////////////////////
-template<class T> const char * BSplineBase<T>::ImplVersion() {
+template<class T> const char * BSplineBase<T>::ImplVersion()
+{
     return ("$Id: BSpline.cpp 6352 2008-05-05 04:40:39Z martinc $");
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> const char * BSplineBase<T>::IfaceVersion() {
+template<class T> const char * BSplineBase<T>::IfaceVersion()
+{
     return (_BSPLINEBASE_IFACE_ID);
 }
 
@@ -118,7 +133,8 @@ template<class T> const char * BSplineBase<T>::IfaceVersion() {
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-template<class T> BSplineBase<T>::~BSplineBase() {
+template<class T> BSplineBase<T>::~BSplineBase()
+{
     delete base;
 }
 
@@ -127,7 +143,8 @@ template<class T> BSplineBase<T>::~BSplineBase() {
 // the pointer.  But we use the compiler's default copy constructor for
 // constructing our BSplineBaseP.
 template<class T> BSplineBase<T>::BSplineBase(const BSplineBase<T> &bb) :
-    K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP<T>(*bb.base)) {
+    K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP<T>(*bb.base))
+{
     xmin = bb.xmin;
     xmax = bb.xmax;
     alpha = bb.alpha;
@@ -142,7 +159,8 @@ template<class T> BSplineBase<T>::BSplineBase(const T *x,
                                               double wl,
                                               int bc,
                                               int num_nodes) :
-    K(2), OK(false), base(new BSplineBaseP<T>) {
+    K(2), NX(0), OK(false), base(new BSplineBaseP<T>)
+{
     setDomain(x, nx, wl, bc, num_nodes);
 }
 
@@ -152,84 +170,78 @@ template<class T> bool BSplineBase<T>::setDomain(const T *x,
                                                  int nx,
                                                  double wl,
                                                  int bc,
-                                                 int num_nodes) {
-    if (nx <= 0 || x == 0 || wl< 0 || bc< 0 || bc> 2){
-    return false;
-}
-OK = false;
-waveLength = wl;
-BC = bc;
-
-// Copy the x array into our storage.
-base->X.resize (nx);
-std::copy (x, x+nx, base->X.begin());
-NX = base->X.size();
-
-// The Setup() method determines the number and size of node intervals.
-if (Setup(num_nodes))
+                                                 int num_nodes) 
 {
-    if (Debug())
-    {
-        std::cerr << "Using M node intervals: " << M << " of length DX: "
-        << DX << std::endl;
-        std::cerr << "X min: " << xmin << " ; X max: " << xmax
-        << std::endl;
-        std::cerr << "Data points per interval: " << (float)NX/(float)M
-        << std::endl;
-        std::cerr << "Nodes per wavelength: "
-        << (float)waveLength/(float)DX << std::endl;
-        std::cerr << "Derivative constraint degree: " << K << std::endl;
+    if ((nx <= 0) || (x == 0) || (wl< 0) || (bc< 0) || (bc> 2)) {
+        return false;
     }
+    OK = false;
+    waveLength = wl;
+    BC = bc;
+    // Copy the x array into our storage.
+    base->X.resize(nx);
+    std::copy(x, x+nx, base->X.begin());
+    NX = base->X.size();
 
-    // Now we can calculate alpha and our Q matrix
-    alpha = Alpha (waveLength);
-    if (Debug())
-    {
-        std::cerr << "Cutoff wavelength: " << waveLength << " ; "
-        << "Alpha: " << alpha << std::endl;
-        std::cerr << "Calculating Q..." << std::endl;
-    }
-    calculateQ ();
-    if (Debug() && M < 30)
-    {
-        std::cerr.fill(' ');
-        std::cerr.precision(2);
-        std::cerr.width(5);
-        std::cerr << base->Q << std::endl;
-    }
+    // The Setup() method determines the number and size of node intervals.
+    if (Setup(num_nodes)) {
+        if (Debug()) {
+            std::cerr << "Using M node intervals: " << M << " of length DX: "
+                    << DX << std::endl;
+            std::cerr << "X min: " << xmin << " ; X max: " << xmax << std::endl;
+            std::cerr << "Data points per interval: " << (float)NX/(float)M
+                    << std::endl;
+            std::cerr << "Nodes per wavelength: " << (float)waveLength
+                    /(float)DX << std::endl;
+            std::cerr << "Derivative constraint degree: " << K << std::endl;
+        }
 
-    if (Debug()) std::cerr << "Calculating P..." << std::endl;
-    addP ();
-    if (Debug())
-    {
-        std::cerr << "Done." << std::endl;
-        if (M < 30)
-        {
-            std::cerr << "Array Q after addition of P." << std::endl;
-            std::cerr << base->Q;
+        // Now we can calculate alpha and our Q matrix
+        alpha = Alpha(waveLength);
+        if (Debug()) {
+            std::cerr << "Cutoff wavelength: " << waveLength << " ; "
+                    << "Alpha: " << alpha << std::endl;
+            std::cerr << "Calculating Q..." << std::endl;
+        }
+        calculateQ();
+        if (Debug() && M < 30) {
+            std::cerr.fill(' ');
+            std::cerr.precision(2);
+            std::cerr.width(5);
+            std::cerr << base->Q << std::endl;
+        }
+
+        if (Debug())
+            std::cerr << "Calculating P..." << std::endl;
+        addP();
+        if (Debug()) {
+            std::cerr << "Done." << std::endl;
+            if (M < 30) {
+                std::cerr << "Array Q after addition of P." << std::endl;
+                std::cerr << base->Q;
+            }
+        }
+
+        // Now perform the LU factorization on Q
+        if (Debug())
+            std::cerr << "Beginning LU factoring of P+Q..." << std::endl;
+        if (!factor()) {
+            if (Debug())
+                std::cerr << "Factoring failed." << std::endl;
+        } else {
+            if (Debug())
+                std::cerr << "Done." << std::endl;
+            OK = true;
         }
     }
-
-    // Now perform the LU factorization on Q
-    if (Debug()) std::cerr << "Beginning LU factoring of P+Q..."
-    << std::endl;
-    if (! factor ())
-    {
-        if (Debug()) std::cerr << "Factoring failed." << std::endl;
-    }
-    else
-    {
-        if (Debug()) std::cerr << "Done." << std::endl;
-        OK = true;
-    }
-}
-return OK;
+    return OK;
 }
 //////////////////////////////////////////////////////////////////////
 /*
  * Calculate the alpha parameter given a wavelength.
  */
-template<class T> double BSplineBase<T>::Alpha(double wl) {
+template<class T> double BSplineBase<T>::Alpha(double wl)
+{
     // K is the degree of the derivative constraint: 1, 2, or 3
     double a = (double) (wl / (2 * PI * DX));
     a *= a; // a^2
@@ -244,7 +256,8 @@ template<class T> double BSplineBase<T>::Alpha(double wl) {
  * Return the correct beta value given the node index.  The value depends
  * on the node index and the current boundary condition type.
  */
-template<class T> inline double BSplineBase<T>::Beta(int m) {
+template<class T> inline double BSplineBase<T>::Beta(int m)
+{
     if (m > 1 && m < M-1)
         return 0.0;
     if (m >= M-1)
@@ -259,7 +272,8 @@ template<class T> inline double BSplineBase<T>::Beta(int m) {
  * of x data points in this BSplineBase, create a BSpline
  * object which contains the smoothed curve for the y array.
  */
-template<class T> BSpline<T> * BSplineBase<T>::apply(const T *y) {
+template<class T> BSpline<T> * BSplineBase<T>::apply(const T *y)
+{
     return new BSpline<T> (*this, y);
 }
 //////////////////////////////////////////////////////////////////////
@@ -268,7 +282,8 @@ template<class T> BSpline<T> * BSplineBase<T>::apply(const T *y) {
  * using the parameters for the current boundary conditions.
  */
 template<class T> double BSplineBase<T>::Basis(int m,
-                                               T x) {
+                                               T x)
+{
     double y = 0;
     double xm = xmin + (m * DX);
     double z = my::abs((double)(x - xm) / (double)DX);
@@ -294,7 +309,8 @@ template<class T> double BSplineBase<T>::Basis(int m,
  * value x, using the parameters for the current boundary conditions.
  */
 template<class T> double BSplineBase<T>::DBasis(int m,
-                                                T x) {
+                                                T x)
+{
     double dy = 0;
     double xm = xmin + (m * DX);
     double delta = (double)(x - xm) / (double)DX;
@@ -332,54 +348,66 @@ template<class T> double BSplineBase<T>::qDelta(int m1,
     // Each column is the integral over each unit domain, -2 to 2
     static const double qparts[3][4][4] =
         {
-            {
-                { 0.11250,
-                        0.63750,
-                        0.63750,
-                        0.11250 },
-                        { 0.00000,
-                                0.13125,
-                                -0.54375,
-                                0.13125 },
-                        { 0.00000,
-                                0.00000,
-                                -0.22500,
-                                -0.22500 },
-                        { 0.00000,
-                                0.00000,
-                                0.00000,
-                                -0.01875 } },
                     {
-                        { 0.75000,
-                                2.25000,
-                                2.25000,
-                                0.75000 },
-                                { 0.00000,
+                                {
+                                        0.11250,
+                                        0.63750,
+                                        0.63750,
+                                        0.11250 },
+                                {
+                                        0.00000,
+                                        0.13125,
+                                        -0.54375,
+                                        0.13125 },
+                                {
+                                        0.00000,
+                                        0.00000,
+                                        -0.22500,
+                                        -0.22500 },
+                                {
+                                        0.00000,
+                                        0.00000,
+                                        0.00000,
+                                        -0.01875 } },
+                    {
+                                {
+                                        0.75000,
+                                        2.25000,
+                                        2.25000,
+                                        0.75000 },
+                                {
+                                        0.00000,
                                         -1.12500,
                                         -1.12500,
                                         -1.12500 },
-                                { 0.00000,
+                                {
+                                        0.00000,
                                         0.00000,
                                         0.00000,
                                         0.00000 },
-                                { 0.00000,
+                                {
+                                        0.00000,
                                         0.00000,
                                         0.00000,
                                         0.37500 } },
                     {
-                        { 2.25000,
-                                20.25000,
-                                20.25000,
-                                2.25000 },
-                                { 0.00000,
+                                {
+                                        2.25000,
+                                        20.25000,
+                                        20.25000,
+                                        2.25000 },
+                                {
+                                        0.00000,
                                         -6.75000,
                                         -20.25000,
                                         -6.75000 },
-                                { 0.00000,
+                                {
+                                        0.00000,
                                         0.00000,
                                         6.75000,
                                         6.75000 },
-                                { 0.00000,
+                                {
+                                        0.00000,
                                         0.00000,
                                         0.00000,
                                         -2.25000 } } };
@@ -396,7 +424,8 @@ template<class T> double BSplineBase<T>::qDelta(int m1,
     return q * alpha;
 }
 //////////////////////////////////////////////////////////////////////
-template<class T> void BSplineBase<T>::calculateQ() {
+template<class T> void BSplineBase<T>::calculateQ()
+{
     Matrix<T> &Q = base->Q;
     Q.setup(M+1, 3);
     Q = 0;
@@ -446,7 +475,8 @@ template<class T> void BSplineBase<T>::calculateQ() {
     }
 }
 //////////////////////////////////////////////////////////////////////
-template<class T> void BSplineBase<T>::addP() {
+template<class T> void BSplineBase<T>::addP()
+{
     // Add directly to Q's elements
     Matrix<T> &P = base->Q;
     std::vector<T> &X = base->X;
@@ -476,7 +506,8 @@ template<class T> void BSplineBase<T>::addP() {
     }
 }
 //////////////////////////////////////////////////////////////////////
-template<class T> bool BSplineBase<T>::factor() {
+template<class T> bool BSplineBase<T>::factor()
+{
     Matrix<T> &LU = base->Q;
 
     if (LU_factor_banded(LU, 3) != 0) {
@@ -491,7 +522,8 @@ template<class T> bool BSplineBase<T>::factor() {
 //////////////////////////////////////////////////////////////////////
 template<class T> inline double BSplineBase<T>::Ratiod(int &ni,
                                                        double &deltax,
-                                                       double &ratiof) {
+                                                       double &ratiof)
+{
     deltax = (xmax - xmin) / ni;
     ratiof = waveLength / deltax;
     double ratiod = (double) NX / (double) (ni + 1);
@@ -513,7 +545,8 @@ template<class T> inline double BSplineBase<T>::Ratiod(int &ni,
 // The algorithm in this routine is mostly taken from the FORTRAN
 // implementation by James Franklin, NOAA/HRD.
 //
-template<class T> bool BSplineBase<T>::Setup(int num_nodes) {
+template<class T> bool BSplineBase<T>::Setup(int num_nodes)
+{
     std::vector<T> &X = base->X;
 
     // Find the min and max of the x domain
@@ -580,7 +613,8 @@ template<class T> bool BSplineBase<T>::Setup(int num_nodes) {
     return (true);
 }
 //////////////////////////////////////////////////////////////////////
-template<class T> const T * BSplineBase<T>::nodes(int *nn) {
+template<class T> const T * BSplineBase<T>::nodes(int *nn)
+{
     if (base->Nodes.size() == 0) {
         base->Nodes.reserve(M+1);
         for (int i = 0; i <= M; ++i) {
@@ -596,7 +630,8 @@ template<class T> const T * BSplineBase<T>::nodes(int *nn) {
 }
 //////////////////////////////////////////////////////////////////////
 template<class T> std::ostream &operator<<(std::ostream &out,
-                                           const std::vector<T> &c) {
+                                           const std::vector<T> &c)
+{
     for (typename std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
         out << *it << ", ";
     out << std::endl;
