@@ -29,6 +29,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <iterator>
 #include <vector>
 #include <string>
@@ -39,14 +40,13 @@ using namespace std;
 typedef double datum;
 typedef BSplinePlus<datum> SplineT;
 typedef BSplineBase<datum> SplineBase;
-typedef BSpline<double> SplineD;
 
 void DumpSpline(vector<datum> &x,
                 vector<datum> &y,
                 SplineT &spline,
-                ostream &out);
-static void EvalSpline(SplineT &spline,
-                       ostream &out);
+                ostream* out,
+                bool debug);
+
 #if OOYAMA
 static bool
 vic (float *xt, int nxp, double wl, int bc, float *y);
@@ -65,7 +65,9 @@ extern "C"
 ///////////////////////////////////////////////////////////////////////////////
 static const char
         * optv[] =
-            {       "i:input       <input file>",
+            {
+                    "i:input       <input file>",
+                    "o:output       <output file>",
                     "w:wavelength  <spline wavelength> (required)",
                     "s:step        <step interval>",
                     "b:bcdegree    <bc derivative degree (0,1,2)>",
@@ -80,6 +82,7 @@ static const char
 void parseCommandLine(int argc,
                       char * const argv[],
                       std::string& infile,
+                      std::string& outfile,
                       int& step,
                       double& wavelength,
                       int& bc,
@@ -111,17 +114,29 @@ void parseCommandLine(int argc,
         {
         case 'h':
             {
+                // Some basics first
+                cout << "BSpline interface version: "
+                        << SplineBase::IfaceVersion() << endl;
+                cout << "BSpline implementation version: "
+                        << SplineBase::ImplVersion() << endl;
                 opts.usage(std::cout, "");
                 exit(0);
                 break;
             }
         case 'i':
-        {
-            if (optarg)
-                infile = std::string(optarg);
-            else
-                err++;
-        }
+            {
+                if (optarg)
+                    infile = std::string(optarg);
+                else
+                    err++;
+            }
+        case 'o':
+            {
+                if (optarg)
+                    outfile = std::string(optarg);
+                else
+                    err++;
+            }
         case 's':
             {
                 if (optarg)
@@ -229,12 +244,8 @@ int main(int argc,
          char *argv[])
 {
 
-    // Some basics first
-    cout << "BSpline interface version: " << SplineBase::IfaceVersion() << endl;
-    cout << "BSpline implementation version: " << SplineBase::ImplVersion()
-            << endl;
-
     std::string infile;
+    std::string outfile;
     int step;
     double wavelength;
     int bc;
@@ -246,13 +257,14 @@ int main(int argc,
     parseCommandLine(argc,
                      argv,
                      infile,
-                      step,
-                      wavelength,
-                      bc,
-                      num_nodes,
-                      blendmode,
-                      blendlength,
-                      debug);
+                     outfile,
+                     step,
+                     wavelength,
+                     bc,
+                     num_nodes,
+                     blendmode,
+                     blendlength,
+                     debug);
 
     if (debug) {
         cout << "Using step interval " << step << ", cutoff frequency "
@@ -267,17 +279,29 @@ int main(int argc,
     datum base = 0;
     int i = 0;
 
+    // input file
     std::istream* instream;
     if (infile.size() > 0)
         instream = new std::ifstream(infile.c_str());
     else
         instream = &std::cin;
-    
     if (!*instream) {
         std::cerr << "Unable to open " << infile << "\n";
         exit(1);
     }
-    
+
+    // output file
+    std::ostream* outstream;
+    if (outfile.size() > 0)
+        outstream = new std::ofstream(outfile.c_str());
+    else
+        outstream = &std::cout;
+    if (!*outstream) {
+        std::cerr << "Unable to open " << outfile << "\n";
+        exit(1);
+    }
+
+    // read data
     while (*instream >> f) {
         if (++i == 1) {
             base = f;
@@ -324,10 +348,7 @@ int main(int argc,
                    blendlength);
     if (spline.ok()) {
         // And finally write the curve to a file
-        ofstream fspline("input.out");
-        DumpSpline(x, y, spline, fspline);
-        ofstream fcurve("spline.out");
-        EvalSpline(spline, fcurve);
+        DumpSpline(x, y, spline, outstream, debug);
     } else
         cerr << "Spline setup failed." << endl;
 
@@ -367,45 +388,38 @@ int main(int argc,
 
     if (infile.size())
         delete instream;
-    
+    if (outfile.size())
+        delete outstream;
+
     return 0;
 }
 
 void DumpSpline(vector<datum> &x,
                 vector<datum> &y,
                 SplineT &spline,
-                ostream &out)
+                ostream* out,
+                bool debug)
 {
-    ostream_iterator<datum> of(out, "  ");
+    int width = 15;
+    
+    // write column headings
+    *out << "x, y, spline(x), slope(spline(x))\n";
+    
     datum variance = 0;
 
     for (unsigned int i = 0; i < x.size(); ++i) {
-        *of++ = x[i];
-        *of++ = y[i];
+        *out << x[i] << ", ";
+        *out << y[i] << ", ";
         datum ys = spline.evaluate(x[i]);
-        *of++ = ys;
+        *out << ys << ", ";
         datum slope = spline.slope(x[i]);
-        *of++ = slope;
+        *out << slope;
+        *out << endl;
         variance += (ys - y[i])*(ys - y[i]);
-        out << endl;
     }
     variance /= (datum)x.size();
-    cerr << "Variance: " << variance << endl;
-}
-
-void EvalSpline(SplineT &spline,
-                ostream &out)
-{
-    ostream_iterator<datum> of(out, "\t ");
-
-    datum x = spline.Xmin();
-    double xs = (spline.Xmax() - x) / 2000.0;
-    for (; x <= spline.Xmax(); x += xs) {
-        *of++ = x;
-        *of++ = spline.evaluate(x);
-        *of++ = spline.slope(x);
-        out << endl;
-    }
+    if (debug)
+        cerr << "Variance: " << variance << endl;
 }
 
 /*
