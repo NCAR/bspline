@@ -7,6 +7,7 @@ env = Environment(tools = tools)
 # directory, and other times BSpline will live 
 # one directory down within another project.
 
+env.Append(CCFLAGS=['-g',])
 env.AppendUnique(CPPPATH=['#/',])
 env.AppendUnique(CPPPATH=['#/BSpline',])
 

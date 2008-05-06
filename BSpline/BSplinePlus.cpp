@@ -113,7 +113,8 @@ template<class T> T BSplinePlus<T>::evaluate(T x)
         // calculate out the blending ratio
         T factor = (x-xmin)/_blendSpan;
         // blend the spline value and the original value
-        y = factor*y + (1.0-factor)*originalY;
+        T newY = factor*y + (1.0-factor)*originalY;
+        y = newY;
     } else if (x > _xRight && x <= xmax) {
         // blend the right (Finish) side of the series
         
@@ -123,7 +124,8 @@ template<class T> T BSplinePlus<T>::evaluate(T x)
         // calculate out the blending ratio
         T factor = (xmax-x)/_blendSpan;
         // blend the spline value and the original value
-        y = factor*y + (1.0-factor)*originalY;
+        T newY = factor*y + (1.0-factor)*originalY;
+        y = newY;
     }
 
     return y;
@@ -151,6 +153,7 @@ template<class T> T BSplinePlus<T>::interpLeft(T x)
                 T factor = (x - base->X[i])/(base->X[i+1]-base->X[i]);
                 T increment = factor*deltaY;
                 result = _y[i] + increment;
+                break;
             }
         }
     }
@@ -171,6 +174,7 @@ template<class T> T BSplinePlus<T>::interpRight(T x)
                 T factor = (base->X[i]-x)/(base->X[i]-base->X[i-1]);
                 T increment = factor*deltaY;
                 result = _y[i] - increment;
+                break;
             }
         }
     }

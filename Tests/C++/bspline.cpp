@@ -65,37 +65,40 @@ extern "C"
 ///////////////////////////////////////////////////////////////////////////////
 static const char
         * optv[] =
-            { "s:step        <step interval>",
-                    "w:wavelength  <spline wavelength (required)>",
+            {       "i:input       <input file> (required)",
+                    "w:wavelength  <spline wavelength> (required)",
+                    "s:step        <step interval>",
                     "b:bcdegree    <bc derivative degree (0,1,2)>",
                     "n:nodes       <specify number of nodes (n)>",
                     "m:blendmode   <blending mode (none, start, end, both)> (requires blendlength)",
                     "l:blendlength <length> (requires blendmode)",
                     "d|debug       <enable diagnostic output>"
-                    "h|help        <print this help>",
+                        "h|help        <print this help>",
                     NULL };
 
 ///////////////////////////////////////////////////////////////////////////////
 void parseCommandLine(int argc,
                       char * const argv[],
-                      int* step,
-                      double* wavelength,
-                      int* bc,
-                      int* num_nodes,
-                      BSplinePlus<double>::BLENDMODE* blendmode,
-                      double* blendlength,
-                      bool* debug) {
+                      std::string& infile,
+                      int& step,
+                      double& wavelength,
+                      int& bc,
+                      int& num_nodes,
+                      BSplinePlus<double>::BLENDMODE& blendmode,
+                      double& blendlength,
+                      bool& debug)
+{
 
     // initialize the optional parameters
-    *step = 0;
-    *bc = SplineBase::BC_ZERO_SECOND;
-    *num_nodes = 0;
-    *blendmode = BSplinePlus<double>::BLENDNONE;
-    *blendlength = -1;
-    *debug = false;
-    
+    step = 0;
+    bc = SplineBase::BC_ZERO_SECOND;
+    num_nodes = 0;
+    blendmode = BSplinePlus<double>::BLENDNONE;
+    blendlength = -1;
+    debug = false;
+
     // indicate that the wavelength has not been set
-    *wavelength = -1.0;
+    wavelength = -1.0;
 
     bool err = false;
     const char *optarg;
@@ -104,96 +107,117 @@ void parseCommandLine(int argc,
     OptArgvIter iter(--argc, ++argv);
 
     while (optchar = opts(iter, optarg) ) {
-        switch (optchar) {
-        case 'h': {
-            opts.usage(std::cout, "");
-            exit(0);
-            break;
-        }
-        case 's': {
+        switch (optchar)
+        {
+        case 'h':
+            {
+                opts.usage(std::cout, "");
+                exit(0);
+                break;
+            }
+        case 'i':
+        {
             if (optarg)
-                *step = atoi(optarg);
+                infile = std::string(optarg);
             else
                 err++;
-            break;
         }
-        case 'w': {
-            if (optarg)
-                *wavelength = atof(optarg);
-            else
-                err++;
-            break;
-        }
-        case 'b': {
-            if (optarg) {
-                int degree = atoi(optarg);
-                switch (degree) {
-                case 0:
-                    *bc = SplineBase::BC_ZERO_ENDPOINTS;
-                    break;
-                case 1:
-                    *bc = SplineBase::BC_ZERO_FIRST;
-                    break;
-                case 2:
-                default:
-                    *bc = SplineBase::BC_ZERO_SECOND;
-                    break;
-                }
-            } else
-                err++;
-            break;
-        }
-        case 'n': {
-            if (optarg)
-                *num_nodes = atoi(optarg);
-            else
-                err++;
-            break;
-        }
-        case 'm': {
-            if (optarg)
-                if (!strcmp(optarg, "none"))
-                    *blendmode = BSplinePlus<double>::BLENDNONE;
-                else if (!strcmp(optarg, "start"))
-                    *blendmode = BSplinePlus<double>::BLENDSTART;
-                else if (!strcmp(optarg, "finish"))
-                    *blendmode = BSplinePlus<double>::BLENDFINISH;
-                else if (!strcmp(optarg, "both"))
-                    *blendmode = BSplinePlus<double>::BLENDBOTH;
+        case 's':
+            {
+                if (optarg)
+                    step = atoi(optarg);
                 else
                     err++;
-            else
-                err++;
-            break;
-        }
-        case 'l': {
-            if (optarg)
-                *blendlength = atof(optarg);
-            else
-                err++;
-            break;
-        }
-        case 'd': {
-            *debug = true;
-            break;
-        }
-        default: {
-            ++err;
-        }
+                break;
+            }
+        case 'w':
+            {
+                if (optarg)
+                    wavelength = atof(optarg);
+                else
+                    err++;
+                break;
+            }
+        case 'b':
+            {
+                if (optarg) {
+                    int degree = atoi(optarg);
+                    switch (degree)
+                    {
+                    case 0:
+                        bc = SplineBase::BC_ZERO_ENDPOINTS;
+                        break;
+                    case 1:
+                        bc = SplineBase::BC_ZERO_FIRST;
+                        break;
+                    case 2:
+                    default:
+                        bc = SplineBase::BC_ZERO_SECOND;
+                        break;
+                    }
+                } else
+                    err++;
+                break;
+            }
+        case 'n':
+            {
+                if (optarg)
+                    num_nodes = atoi(optarg);
+                else
+                    err++;
+                break;
+            }
+        case 'm':
+            {
+                if (optarg)
+                    if (!strcmp(optarg, "none"))
+                        blendmode = BSplinePlus<double>::BLENDNONE;
+                    else if (!strcmp(optarg, "start"))
+                        blendmode = BSplinePlus<double>::BLENDSTART;
+                    else if (!strcmp(optarg, "finish"))
+                        blendmode = BSplinePlus<double>::BLENDFINISH;
+                    else if (!strcmp(optarg, "both"))
+                        blendmode = BSplinePlus<double>::BLENDBOTH;
+                    else
+                        err++;
+                else
+                    err++;
+                break;
+            }
+        case 'l':
+            {
+                if (optarg)
+                    blendlength = atof(optarg);
+                else
+                    err++;
+                break;
+            }
+        case 'd':
+            {
+                debug = true;
+                break;
+            }
+        default:
+            {
+                ++err;
+            }
             break;
         }
     }
 
     // wavelength must be supplied
-    if (*wavelength < 0)
+    if (wavelength < 0)
+        err++;
+
+    if (infile.size() == 0)
         err++;
     
     // if blending is requested, there must be a blendlength
-    if (*blendmode != BSplinePlus<double>::BLENDNONE && *blendlength == -1)
+    if (blendmode != BSplinePlus<double>::BLENDNONE && blendlength == -1)
         err++;
 
     // if blendlength is ot specified, blending must not be requested
-    if (*blendmode == BSplinePlus<double>::BLENDNONE && *blendlength != -1)
+    if (blendmode == BSplinePlus<double>::BLENDNONE && blendlength != -1)
         err++;
 
     if (err) {
@@ -205,13 +229,15 @@ void parseCommandLine(int argc,
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc,
-         char *argv[]) {
+         char *argv[])
+{
 
     // Some basics first
     cout << "BSpline interface version: " << SplineBase::IfaceVersion() << endl;
     cout << "BSpline implementation version: " << SplineBase::ImplVersion()
             << endl;
 
+    std::string infile;
     int step;
     double wavelength;
     int bc;
@@ -222,18 +248,19 @@ int main(int argc,
 
     parseCommandLine(argc,
                      argv,
-                      &step,
-                      &wavelength,
-                      &bc,
-                      &num_nodes,
-                      &blendmode,
-                      &blendlength,
-                      &debug);
+                     infile,
+                      step,
+                      wavelength,
+                      bc,
+                      num_nodes,
+                      blendmode,
+                      blendlength,
+                      debug);
 
     if (debug) {
         cout << "Using step interval " << step << ", cutoff frequency "
-            << wavelength << ", number of nodes " << num_nodes
-            << ", and boundary condition type " << bc << "\n";
+                << wavelength << ", number of nodes " << num_nodes
+                << ", and boundary condition type " << bc << "\n";
     }
 
     // Read the x and y pairs from stdin
@@ -243,13 +270,20 @@ int main(int argc,
     datum base = 0;
     int i = 0;
 
-    while (cin >> f) {
+    std::ifstream instream(infile.c_str());
+    
+    if (!instream) {
+        std::cerr << "Unable to open " << infile << "\n";
+        exit(1);
+    }
+    
+    while (instream >> f) {
         if (++i == 1) {
             base = f;
         }
         f -= base;
 
-        if (cin >> g) {
+        if (instream >> g) {
             x.push_back(f);
             y.push_back(g);
             // cout << x.back() << " " << y.back() << endl;
@@ -281,7 +315,7 @@ int main(int argc,
         SplineT::Debug(1);
     SplineT spline(&x[0],
                    x.size(),
-                   &y[0],
+                    &y[0],
                    wavelength,
                    bc,
                    num_nodes,
@@ -309,7 +343,7 @@ int main(int argc,
     {
         cerr << "Done." << endl;
         ofstream vspline("ooyama.out");
-        ostream_iterator<float> of(vspline, "\t ");
+        ostream_iterator<float> of(vspline, "  ");
 
         float fout, foutd;
         int kdat = 1;
@@ -336,7 +370,8 @@ int main(int argc,
 void DumpSpline(vector<datum> &x,
                 vector<datum> &y,
                 SplineT &spline,
-                ostream &out) {
+                ostream &out)
+{
     ostream_iterator<datum> of(out, "\t ");
     datum variance = 0;
 
@@ -355,7 +390,8 @@ void DumpSpline(vector<datum> &x,
 }
 
 void EvalSpline(SplineT &spline,
-                ostream &out) {
+                ostream &out)
+{
     ostream_iterator<datum> of(out, "\t ");
 
     datum x = spline.Xmin();
