@@ -129,6 +129,7 @@ void parseCommandLine(int argc,
                     infile = std::string(optarg);
                 else
                     err++;
+                break;
             }
         case 'o':
             {
@@ -136,6 +137,7 @@ void parseCommandLine(int argc,
                     outfile = std::string(optarg);
                 else
                     err++;
+                break;
             }
         case 's':
             {
@@ -281,25 +283,27 @@ int main(int argc,
 
     // input file
     std::istream* instream;
-    if (infile.size() > 0)
+    if (infile.size() > 0) {
         instream = new std::ifstream(infile.c_str());
+        if (!*instream) {
+            std::cerr << "Unable to open " << infile << "\n";
+            exit(1);
+        }
+    }
     else
         instream = &std::cin;
-    if (!*instream) {
-        std::cerr << "Unable to open " << infile << "\n";
-        exit(1);
-    }
 
     // output file
     std::ostream* outstream;
-    if (outfile.size() > 0)
+    if (outfile.size() > 0) {
         outstream = new std::ofstream(outfile.c_str());
+        if (!*outstream) {
+            std::cerr << "Unable to open " << outfile << "\n";
+            exit(1);
+        }
+    }
     else
         outstream = &std::cout;
-    if (!*outstream) {
-        std::cerr << "Unable to open " << outfile << "\n";
-        exit(1);
-    }
 
     // read data
     while (*instream >> f) {
@@ -311,7 +315,6 @@ int main(int argc,
         if (*instream >> g) {
             x.push_back(f);
             y.push_back(g);
-            // cout << x.back() << " " << y.back() << endl;
         } else
             break;
     }
