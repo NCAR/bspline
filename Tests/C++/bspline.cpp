@@ -65,7 +65,7 @@ extern "C"
 ///////////////////////////////////////////////////////////////////////////////
 static const char
         * optv[] =
-            {       "i:input       <input file> (required)",
+            {       "i:input       <input file>",
                     "w:wavelength  <spline wavelength> (required)",
                     "s:step        <step interval>",
                     "b:bcdegree    <bc derivative degree (0,1,2)>",
@@ -209,9 +209,6 @@ void parseCommandLine(int argc,
     if (wavelength < 0)
         err++;
 
-    if (infile.size() == 0)
-        err++;
-    
     // if blending is requested, there must be a blendlength
     if (blendmode != BSplinePlus<double>::BLENDNONE && blendlength == -1)
         err++;
@@ -270,20 +267,24 @@ int main(int argc,
     datum base = 0;
     int i = 0;
 
-    std::ifstream instream(infile.c_str());
+    std::istream* instream;
+    if (infile.size() > 0)
+        instream = new std::ifstream(infile.c_str());
+    else
+        instream = &std::cin;
     
-    if (!instream) {
+    if (!*instream) {
         std::cerr << "Unable to open " << infile << "\n";
         exit(1);
     }
     
-    while (instream >> f) {
+    while (*instream >> f) {
         if (++i == 1) {
             base = f;
         }
         f -= base;
 
-        if (instream >> g) {
+        if (*instream >> g) {
             x.push_back(f);
             y.push_back(g);
             // cout << x.back() << " " << y.back() << endl;
@@ -364,6 +365,9 @@ int main(int argc,
     }
 #endif /* OOYAMA */
 
+    if (infile.size())
+        delete instream;
+    
     return 0;
 }
 
