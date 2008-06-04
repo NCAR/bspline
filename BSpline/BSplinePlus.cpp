@@ -78,7 +78,7 @@ template<class T> void BSplinePlus<T>::initBlending(const T* y)
         modeNames[BLENDFINISH] = "finish";
         modeNames[BLENDBOTH] = "both";
 
-        std::cout << "Blending mode: " << modeNames[_blendMode] << "\n";
+        std::cout << "Blending mode: " << modeNames[_blendMode].c_str() << "\n";
         std::cout << "Blending span: " << _blendSpan
                 << "(in same units as x)\n";
         std::cout << "Blend start from " << xmin << " to " << _xLeft <<"\n";

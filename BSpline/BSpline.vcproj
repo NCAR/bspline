@@ -154,6 +154,10 @@
 				RelativePath=".\BSplineLib.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\BSplinePlus.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -166,6 +170,10 @@
 			</File>
 			<File
 				RelativePath=".\BSpline.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BSplinePlus.h"
 				>
 			</File>
 		</Filter>
