@@ -1,27 +1,10 @@
-//
-//
-// $Id: options.cpp 3698 2003-09-23 20:07:15Z martinc $
-//
-//////////////////////////////////////////////////////////////////////
-/*
- * Copyright (c) 2003
- * University Corporation for Atmospheric Research, UCAR
- *
- * Permission to use, copy, modify, distribute and sell this software and
- * its documentation for any purpose is hereby granted without fee,
- * provided that the above copyright notice appear in all copies and that
- * both that copyright notice and this permission notice appear in
- * supporting documentation.  UCAR makes no representations about the
- * suitability of this software for any purpose.  It is provided "as is"
- * without express or implied warranty.
- * 
- * Note from the author:
- *
- * Where possible, you are encouraged to follow the GNU General Public
- * License, or at least the spirit of the license, for the distribution and
- * licensing of this software and any derived works.  See
- * http://www.gnu.org/copyleft/gpl.html.
- */
+/************************************************************************\
+	Copyright 2008 University Corporation for Atmospheric Research.
+	All rights reserved.
+	Use of this code is subject to UCAR's standard Terms of Use,
+	which can be found at http://www.ucar.edu/legal/terms_of_use.shtml .
+	By using this source code, you agree to abide by those Terms of Use.
+\*************************************************************************/
 
 // ****************************************************************************
 // ^FILE: options.c - implement the functions defined in <options.h>
@@ -55,7 +38,6 @@
 
 #endif
 
-// #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -66,10 +48,8 @@ extern "C" {
 }
 
 static const char ident[] = "@(#)Options  1.05" ;
-
    // I need a portable version of "tolower" that does NOT modify
    // non-uppercase characters.
-   //
 #define  TOLOWER(c)  (isupper(c) ? tolower(c) : c)
 
    // Use this to shut the compiler up about NULL strings
@@ -79,47 +59,39 @@ static const char ident[] = "@(#)Options  1.05" ;
 
   // If you are using <stdio.h> then you need this stuff!
   // If you are using <iostream.h> then #ifdef this stuff out
-  //
-
 
 #ifdef  USE_STDIO
 
    // Implement just enough of ostream to get this file to compile
-   //
 
 static const char endl = '\n' ;
 
 class  ostream {
 public:
+	// Default constructor.
    ostream(FILE * fileptr) : fp(fileptr) {}
 
-   ostream &
-   operator<<(char ch);
+   ostream & operator<<(char ch);
 
-   ostream &
-   operator<<(const char * str);
+   ostream & operator<<(const char * str);
 
-   ostream &
-   write(const char * buf, unsigned bufsize);
+   ostream & write(const char * buf, unsigned bufsize);
 
 private:
    FILE * fp;
 } ;
 
-ostream &
-ostream::operator<<(char ch) {
+ostream & ostream::operator<<(char ch) {
    fputc(ch, fp);
    return *this;
 }
 
-ostream &
-ostream::operator<<(const char * str) {
+ostream & ostream::operator<<(const char * str) {
    fputs(str, fp);
    return *this;
 }
 
-ostream &
-ostream::write(const char * buf, unsigned ) {
+ostream & ostream::write(const char * buf, unsigned ) {
    fputs(buf, fp);
    return *this;
 }
@@ -231,8 +203,7 @@ OptIstreamIter::~OptIstreamIter(void) {
    delete  tok_iter;
 }
 
-const char *
-OptIstreamIter::curr(void) {
+const char * OptIstreamIter::curr(void) {
 #ifdef  USE_STDIO
    return  NULLSTR;
 #else
@@ -244,8 +215,7 @@ OptIstreamIter::curr(void) {
 #endif  /* USE_STDIO */
 }
 
-void
-OptIstreamIter::next(void) {
+void OptIstreamIter::next(void) {
 #ifdef  USE_STDIO
    return;
 #else
@@ -257,8 +227,7 @@ OptIstreamIter::next(void) {
 #endif  /* USE_STDIO */
 }
 
-const char *
-OptIstreamIter::operator()(void) {
+const char * OptIstreamIter::operator()(void) {
 #ifdef  USE_STDIO
    return  NULLSTR;
 #else
@@ -298,7 +267,7 @@ OptIstreamIter::fill(void) {
 
 // **************************************************** Options class utilities
 
-   // Is this option-char null?
+   // Check whether this is an option-char null
 inline static int
 isNullOpt(char optchar) {
    return  ((! optchar) || isspace(optchar) || (! isprint(optchar)));
@@ -393,8 +362,7 @@ public:
    // NOTE: use default destructor!
 
       // Assign to another OptionSpec
-   OptionSpec &
-   operator=(const OptionSpec & cp) {
+   OptionSpec & operator=(const OptionSpec & cp) {
       if (this != &cp) {
          spec = cp.spec;
          hidden = cp.hidden;
@@ -403,8 +371,7 @@ public:
    }
 
       // Assign to a string
-   OptionSpec &
-   operator=(const char * decl) {
+   OptionSpec & operator=(const char * decl) {
       if (spec != decl) {
          spec = decl;
          hidden = 0;
@@ -417,64 +384,52 @@ public:
    operator const char*() { return  isHiddenOpt() ? (spec - 1) : spec; }
 
       // Is this option NULL?
-   int
-   isNULL(void) const { return ((spec == NULL) || (spec == NULL_spec)); }
+   int isNULL(void) const { return ((spec == NULL) || (spec == NULL_spec)); }
 
-      // Is this options incorrectly specified?
-   int
-   isSyntaxError(const char * name) const;
+      // Check whether this options is incorrectly specified
+   int isSyntaxError(const char * name) const;
 
       // See if this is a Hidden option
-   int
-   isHiddenOpt(void) const { return  hidden; }
+   int isHiddenOpt(void) const { return  hidden; }
 
       // Get the corresponding option-character
-   char
-   OptChar(void) const { return  *spec; }
+   char OptChar(void) const { return  *spec; }
 
       // Get the corresponding long-option string
-   const char *
-   LongOpt(void) const {
+   const char * LongOpt(void) const {
        return  (spec[1] && spec[2] && (! isspace(spec[2]))) ? (spec + 2) : NULLSTR;
    }
 
-      // Does this option require an argument?
-   int
-   isValRequired(void) const {
+      // Check whether this option requires an argument
+   int isValRequired(void) const {
       return  ((spec[1] == ':') || (spec[1] == '+'));
    }
 
       // Does this option take an optional argument?
-   int
-   isValOptional(void) const {
+   int isValOptional(void) const {
       return  ((spec[1] == '?') || (spec[1] == '*'));
    }
 
       // Does this option take no arguments?
-   int
-   isNoArg(void) const {
+   int isNoArg(void) const {
       return  ((spec[1] == '|') || (! spec[1]));
    }
 
       // Can this option take more than one argument?
-   int
-   isList(void) const {
+   int isList(void) const {
       return  ((spec[1] == '+') || (spec[1] == '*'));
    }
 
       // Does this option take any arguments?
-   int
-   isValTaken(void) const {
+   int isValTaken(void) const {
       return  (isValRequired() || isValOptional()) ;
    }
 
       // Format this option in the given buffer
-   unsigned
-   Format(char * buf, unsigned optctrls) const;
+   unsigned Format(char * buf, unsigned optctrls) const;
 
 private:
-   void
-   CheckHidden(void) {
+   void CheckHidden(void) {
       if ((! hidden) && (*spec == '-')) {
          ++hidden;
          ++spec;
@@ -529,8 +484,7 @@ OptionSpec::isSyntaxError(const char * name) const {
 // ^ALGORITHM:
 //    Follow along in the source - it's not hard but it is tedious!
 // ^^-------------------------------------------------------------------------
-unsigned
-OptionSpec::Format(char * buf, unsigned optctrls) const {
+unsigned OptionSpec::Format(char * buf, unsigned optctrls) const {
 #ifdef NO_USAGE
    return  (*buf = '\0');
 #else
@@ -633,9 +587,7 @@ Options::~Options(void) {}
    // Make sure each option-specifier has correct syntax.
    //
    // If there is even one invalid specifier, then exit ungracefully!
-   //
-void
-Options::check_syntax(void) const {
+   void Options::check_syntax(void) const {
    int  errors = 0;
    if ((optvec == NULL) || (! *optvec))  return;
 
@@ -889,8 +841,7 @@ Options::parse_opt(OptIter & iter, const char * & optarg) {
 // ^ALGORITHM:
 //    It gets complicated -- follow the comments in the source.
 // ^^-------------------------------------------------------------------------
-int
-Options::parse_longopt(OptIter & iter, const char * & optarg) {
+int Options::parse_longopt(OptIter & iter, const char * & optarg) {
    int  len = 0, ambiguous = 0;
 
    listopt = NULLSTR ;  // reset the list-spec
@@ -1064,7 +1015,6 @@ Options::usage(std::ostream & os, const char * positionals) const {
 #endif  /* NO_USAGE */
 }
 
-
 // ---------------------------------------------------------------------------
 // ^FUNCTION: Options::operator() - get options from the command-line
 //
@@ -1102,8 +1052,7 @@ Options::usage(std::ostream & os, const char * positionals) const {
 // ^ALGORITHM:
 //    It gets complicated -- follow the comments in the source.
 // ^^-------------------------------------------------------------------------
-int
-Options::operator()(OptIter & iter, const char * & optarg) {
+int Options::operator()(OptIter & iter, const char * & optarg) {
    int parse_opts_only = isOptsOnly(optctrls);
    if (parse_opts_only)  explicit_end = 0;
 
@@ -1167,4 +1116,3 @@ Options::operator()(OptIter & iter, const char * & optarg) {
    optarg = arg ;        // record the list value
    return  optspec.OptChar() ;
 }
-

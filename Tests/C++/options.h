@@ -1,27 +1,10 @@
-//
-//
-// $Id: options.h 3698 2003-09-23 20:07:15Z martinc $
-//
-//////////////////////////////////////////////////////////////////////
-/*
- * Copyright (c) 2003
- * University Corporation for Atmospheric Research, UCAR
- *
- * Permission to use, copy, modify, distribute and sell this software and
- * its documentation for any purpose is hereby granted without fee,
- * provided that the above copyright notice appear in all copies and that
- * both that copyright notice and this permission notice appear in
- * supporting documentation.  UCAR makes no representations about the
- * suitability of this software for any purpose.  It is provided "as is"
- * without express or implied warranty.
- * 
- * Note from the author:
- *
- * Where possible, you are encouraged to follow the GNU General Public
- * License, or at least the spirit of the license, for the distribution and
- * licensing of this software and any derived works.  See
- * http://www.gnu.org/copyleft/gpl.html.
- */
+/************************************************************************\
+	Copyright 2008 University Corporation for Atmospheric Research.
+	All rights reserved.
+	Use of this code is subject to UCAR's standard Terms of Use,
+	which can be found at http://www.ucar.edu/legal/terms_of_use.shtml .
+	By using this source code, you agree to abide by those Terms of Use.
+\*************************************************************************/
 
 // ****************************************************************************
 // ^FILE: options.h - option parsing classes
@@ -49,36 +32,39 @@
 
 #include <iostream>
 
-// Abstract class to iterate through options/arguments
-//
+/// Abstract class to iterate through options/arguments
+
 class OptIter {
 public:
+   /// Constructor.
    OptIter(void) {}
+   /// Destructor.
    virtual ~OptIter(void);
 
-      // curr() returns the current item in the iterator without
-      // advancing on to the next item. If we are at the end of items
-      // then NULL is returned.
+      /// curr() returns the current item in the iterator without
+      /// advancing on to the next item. If we are at the end of items
+      /// then NULL is returned.
    virtual const char *
    curr(void) = 0;
 
-      // next() advances to the next item.
+      /// next() advances to the next item.
    virtual void
    next(void) = 0;
 
-      // operator() returns the current item in the iterator and then
-      // advances on to the next item. If we are at the end of items
-      // then NULL is returned.
+      /// operator() returns the current item in the iterator and then
+      /// advances on to the next item. If we are at the end of items
+      /// then NULL is returned.
    virtual const char *
    operator()(void);
 } ;
 
-// Abstract class for a rewindable OptIter
-//
+/// Abstract class for a rewindable OptIter
 class OptIterRwd : public OptIter {
 public:
+	/// Constructor.
    OptIterRwd(void);
 
+   /// Destructor.
    virtual ~OptIterRwd(void);
 
    virtual const char *
@@ -90,14 +76,12 @@ public:
    virtual const char *
    operator()(void) = 0;
 
-      // rewind() resets the "current-element" to the first one in the "list"
-   virtual void
-   rewind(void) = 0;
+      /// rewind() resets the "current-element" to the first one in the "list"
+   virtual void rewind(void) = 0;
 } ;
 
-// Class to iterate through an array of tokens. The array may be terminated
-// by NULL or a count containing the number of tokens may be given.
-//
+/// Class to iterate through an array of tokens. The array may be terminated
+/// by NULL or a count containing the number of tokens may be given.
 class OptArgvIter : public OptIterRwd {
 private:
    int            ndx;   // index of current arg
@@ -105,115 +89,100 @@ private:
    const char * const * av;  // arg vector
 
 public:
+   /// Two-argument constructor.
    OptArgvIter(const char * const argv[])
       : av(argv), ac(-1), ndx(0) {}
 
+   /// Three-argument constructor.
    OptArgvIter(int argc, const char * const argv[])
       : av(argv), ac(argc), ndx(0) {}
 
-   virtual
-   ~OptArgvIter(void);
+   /// Destructor.
+   virtual ~OptArgvIter(void);
 
-   virtual const char *
-   curr(void);
+   virtual const char * curr(void);
 
-   virtual void
-   next(void);
+   virtual void next(void);
 
-   virtual const char *
-   operator()(void);
+   virtual const char * operator()(void);
 
-   virtual void
-   rewind(void);
+   virtual void rewind(void);
 
-      // index returns the current index to use for argv[]
+   /// index returns the current index to use for argv[]
    int index(void)  { return  ndx; }
 } ;
 
-
-// Class to iterate through a string containing delimiter-separated tokens
-//
+/// Class to iterate through a string containing delimiter-separated tokens
 class OptStrTokIter : public OptIterRwd {
 private:
-   unsigned     len;        // length of token-string
-   const char * str;        // the token-string
-   const char * seps;       // delimiter-set (separator-characters)
-   const char * cur;        // current token
-   char       * tokstr;     // our copy of the token-string
+   unsigned     len;        ///< length of token-string
+   const char * str;        ///< the token-string
+   const char * seps;       ///< delimiter-set (separator-characters)
+   const char * cur;        ///< current token
+   char       * tokstr;     ///< our copy of the token-string
 
-   static const char * default_delims;  // default delimiters = whitespace
+   static const char * default_delims;  ///< default delimiters = whitespace
 
 public:
+	/// Constructor.
    OptStrTokIter(const char * tokens, const char * delimiters =0);
 
-   virtual
-   ~OptStrTokIter(void);
+   /// Destructor.
+   virtual ~OptStrTokIter(void);
 
-   virtual const char *
-   curr(void);
+   virtual const char * curr(void);
 
-   virtual void
-   next(void);
+   virtual void next(void);
 
-   virtual const char *
-   operator()(void);
+   virtual const char * operator()(void);
 
-   virtual void
-   rewind(void);
+   virtual void rewind(void);
 
-      // delimiters() with NO arguments returns the current set of delimiters,
-      // If an argument is given then it is used as the new set of delimiters.
-   const char *
-   delimiters(void)  { return  seps; }
+      /// Delimiters() with NO arguments returns the current set of delimiters,
+      /// If an argument is given then it is used as the new set of delimiters.
+   const char * delimiters(void)  { return  seps; }
 
-   void
-   delimiters(const char * delims) {
+   void delimiters(const char * delims) {
       seps = (delims) ? delims : default_delims ;
    }
 } ;
 
-
-   // OptIstreamIter is a class for iterating over arguments that come
-   // from an input stream. Each line of the input stream is considered
-   // to be a set of white-space separated tokens. If the the first
-   // non-white character on a line is '#' ('!' for VMS systems) then
-   // the line is considered a comment and is ignored.
-   //
-   // *Note:: If a line is more than 1022 characters in length then we
-   // treat it as if it were several lines of length 1022 or less.
-   //
-   // *Note:: The string tokens returned by this iterator are pointers
-   //         to temporary buffers which may not necessarily stick around
-   //         for too long after the call to curr() or operator(), hence
-   //         if you need the string value to persist - you will need to
-   //         make a copy.
-   //
+   /// OptIstreamIter is a class for iterating over arguments that come
+   /// from an input stream. Each line of the input stream is considered
+   /// to be a set of white-space separated tokens. If the the first
+   /// non-white character on a line is '#' ('!' for VMS systems) then
+   /// the line is considered a comment and is ignored.
+   ///
+   /// *Note:: If a line is more than 1022 characters in length then we
+   /// treat it as if it were several lines of length 1022 or less.
+   ///
+   /// *Note:: The string tokens returned by this iterator are pointers
+   ///         to temporary buffers which may not necessarily stick around
+   ///         for too long after the call to curr() or operator(), hence
+   ///         if you need the string value to persist - you will need to
+   ///         make a copy.
 class OptIstreamIter : public OptIter {
 private:
    std::istream & is ;
    OptStrTokIter * tok_iter ;
 
-   void
-   fill(void);
+   void fill(void);
 
 public:
    static const unsigned  MAX_LINE_LEN ;
 
+   /// Constructor.
    OptIstreamIter(std::istream & input);
 
-   virtual
-   ~OptIstreamIter(void);
+   /// Destructor.
+   virtual ~OptIstreamIter(void);
 
-   virtual const char *
-   curr(void);
+   virtual const char * curr(void);
 
-   virtual void
-   next(void);
+   virtual void next(void);
 
-   virtual const char *
-   operator()(void);
+   virtual const char * operator()(void);
 } ;
-
 
 // Now we are ready to define a class to declare and parse command-options
 //
@@ -231,13 +200,13 @@ public:
 //
 // DESCRIPTION
 // ===========
-// The Options constructor expects a command-name (usually argv[0]) and
-// a pointer to an array of strings.  The last element in this array MUST
-// be NULL. Each non-NULL string in the array must have the following format:
+/// The Options constructor expects a command-name (usually argv[0]) and
+/// a pointer to an array of strings.  The last element in this array MUST
+/// be NULL. Each non-NULL string in the array must have the following format:
 //
-//   The 1st character must be the option-name ('c' for a -c option).
+///   The 1st character must be the option-name ('c' for a -c option).
 //
-//   The 2nd character must be one of '|', '?', ':', '*', or '+'.
+///   The 2nd character must be one of '|', '?', ':', '*', or '+'.
 //      '|' -- indicates that the option takes NO argument;
 //      '?' -- indicates that the option takes an OPTIONAL argument;
 //      ':' -- indicates that the option takes a REQUIRED argument;
@@ -388,55 +357,49 @@ public:
 //
 class Options {
 private:
-   unsigned       explicit_end : 1;  // were we terminated because of "--"?
-   unsigned       optctrls : 7;  // control settings (a set of OptCtrl masks)
-   const char  * const * optvec; // vector of option-specifications (last=NULL)
-   const char   * nextchar;      // next option-character to process
-   const char   * listopt;       // last list-option we matched
-   const char   * cmdname;       // name of the command
+   unsigned       explicit_end : 1; ///< were we terminated because of "--"?
+   unsigned       optctrls : 7;		///< control settings (a set of OptCtrl masks)
+   const char   * const * optvec;	///< vector of option-specifications (last=NULL)
+   const char   * nextchar;			///< next option-character to process
+   const char   * listopt;			///< last list-option we matched
+   const char   * cmdname;			///< name of the command
 
-   void
-   check_syntax(void) const;
+   void check_syntax(void) const;
 
-   const char *
-   match_opt(char opt, int ignore_case =0) const;
+   const char * match_opt(char opt, int ignore_case =0) const;
 
-   const char *
-   match_longopt(const char * opt, int  len, int & ambiguous) const;
+   const char * match_longopt(const char * opt, int  len, int & ambiguous) const;
 
-   int
-   parse_opt(OptIter & iter, const char * & optarg);
+   int parse_opt(OptIter & iter, const char * & optarg);
 
-   int
-   parse_longopt(OptIter & iter, const char * & optarg);
+   int parse_longopt(OptIter & iter, const char * & optarg);
 
 public:
    enum OptCtrl {
-      DEFAULT    = 0x00,  // Default setting
-      ANYCASE    = 0x01,  // Ignore case when matching short-options
-      QUIET      = 0x02,  // Dont print error messages
-      PLUS       = 0x04,  // Allow "+" as a long-option prefix
-      SHORT_ONLY = 0x08,  // Dont accept long-options
-      LONG_ONLY  = 0x10,  // Dont accept short-options
-                            // (also allows "-" as a long-option prefix).
-      NOGUESSING = 0x20,  // Normally, when we see a short (long) option
-                            // on the command line that doesnt match any
-                            // known short (long) options, then we try to
-                            // "guess" by seeing if it will match any known
-                            // long (short) option. Setting this mask prevents
-                            // this "guessing" from occurring.
-      PARSE_POS = 0x40    // By default, Options will not present positional
-                            // command-line arguments to the user and will
-                            // instead stop parsing when the first positonal
-                            // argument has been encountered. If this flag
-                            // is given, Options will present positional
-                            // arguments to the user with a return code of
-                            // POSITIONAL; ENDOPTS will be returned only
-                            // when the end of the argument list is reached.
+      DEFAULT    = 0x00,    ///< Default setting
+      ANYCASE    = 0x01,    ///< Ignore case when matching short-options
+      QUIET      = 0x02,    ///< Dont print error messages
+      PLUS       = 0x04,    ///< Allow "+" as a long-option prefix
+      SHORT_ONLY = 0x08,    ///< Dont accept long-options
+      LONG_ONLY  = 0x10,    ///< Dont accept short-options
+                            ///< (also allows "-" as a long-option prefix).
+      NOGUESSING = 0x20,    ///< Normally, when we see a short (long) option
+                            ///< on the command line that doesnt match any
+                            ///< known short (long) options, then we try to
+                            ///< "guess" by seeing if it will match any known
+                            ///< long (short) option. Setting this mask prevents
+                            ///< this "guessing" from occurring.
+      PARSE_POS = 0x40      ///< By default, Options will not present positional
+                            ///< command-line arguments to the user and will
+                            ///< instead stop parsing when the first positonal
+                            ///< argument has been encountered. If this flag
+                            ///< is given, Options will present positional
+                            ///< arguments to the user with a return code of
+                            ///< POSITIONAL; ENDOPTS will be returned only
+                            ///< when the end of the argument list is reached.
    } ;
 
-      // Error return values for operator()
-      //
+      /// Error return values for operator()
    enum OptRC {
       ENDOPTS    =  0,
       BADCHAR    = -1,
@@ -447,67 +410,58 @@ public:
 
    Options(const char * name, const char * const optv[]);
 
-   virtual
-   ~Options(void);
+   virtual ~Options(void);
 
-      // name() returns the command name
-   const char *
-   name(void) const { return  cmdname; }
+      /// name() returns the command name
+   const char * name(void) const { return  cmdname; }
 
-      // ctrls() (with no arguments) returns the existing control settings
-   unsigned
-   ctrls(void) const { return  optctrls; }
+      /// ctrls() (with no arguments) returns the existing control settings
+   unsigned ctrls(void) const { return  optctrls; }
 
-      // ctrls() (with 1 argument) sets new control settings
-   void
-   ctrls(unsigned newctrls) { optctrls = newctrls; }
+      /// ctrls() (with 1 argument) sets new control settings
+   void ctrls(unsigned newctrls) { optctrls = newctrls; }
 
-      // reset for another pass to parse for options
-   void
-   reset(void) { nextchar = listopt = NULL; }
+      /// reset for another pass to parse for options
+   void reset(void) { nextchar = listopt = NULL; }
   
-      // usage() prints options usage (followed by any positional arguments
-      // listed in the parameter "positionals") on the given outstream
-   void
-   usage(std::ostream & os, const char * positionals) const ;
+      /// usage() prints options usage (followed by any positional arguments
+      /// listed in the parameter "positionals") on the given outstream
+   void usage(std::ostream & os, const char * positionals) const ;
 
-      // operator() iterates through the arguments as necessary (using the
-      // given iterator) and returns the character value of the option
-      // (or long-option) that it matched. If the option has a value
-      // then the value given may be found in optarg (otherwise optarg
-      // will be NULL).
-      //
-      // 0 is returned upon end-of-options. At this point, "iter" may
-      // be used to process any remaining positional parameters. If the
-      // PARSE_POS control-flag is set then 0 is returned only when all
-      // arguments in "iter" have been exhausted.
-      //
-      // If an invalid option is found then BADCHAR is returned and *optarg
-      // is the unrecognized option character.
-      //
-      // If an invalid long-option is found then BADKWD is returned and optarg
-      // points to the bad long-option.
-      //
-      // If an ambiguous long-option is found then AMBIGUOUS is returned and
-      // optarg points to the ambiguous long-option.
-      //
-      // If the PARSE_POS control-flag is set then POSITIONAL is returned
-      // when a positional argument is encountered and optarg points to
-      // the positonal argument (and "iter" is advanced to the next argument
-      // in the iterator).
-      //
-      // Unless Options::QUIET is used, missing option-arguments and
-      // invalid options (and the like) will automatically cause error
-      // messages to be issued to cerr.
-   int
-   operator()(OptIter & iter, const char * & optarg) ;
+      /// operator() iterates through the arguments as necessary (using the
+      /// given iterator) and returns the character value of the option
+      /// (or long-option) that it matched. If the option has a value
+      /// then the value given may be found in optarg (otherwise optarg
+      /// will be NULL).
+      ///
+      /// 0 is returned upon end-of-options. At this point, "iter" may
+      /// be used to process any remaining positional parameters. If the
+      /// PARSE_POS control-flag is set then 0 is returned only when all
+      /// arguments in "iter" have been exhausted.
+      ///
+      /// If an invalid option is found then BADCHAR is returned and *optarg
+      /// is the unrecognized option character.
+      ///
+      /// If an invalid long-option is found then BADKWD is returned and optarg
+      /// points to the bad long-option.
+      ///
+      /// If an ambiguous long-option is found then AMBIGUOUS is returned and
+      /// optarg points to the ambiguous long-option.
+      ///
+      /// If the PARSE_POS control-flag is set then POSITIONAL is returned
+      /// when a positional argument is encountered and optarg points to
+      /// the positonal argument (and "iter" is advanced to the next argument
+      /// in the iterator).
+      ///
+      /// Unless Options::QUIET is used, missing option-arguments and
+      /// invalid options (and the like) will automatically cause error
+      /// messages to be issued to cerr.
+   int operator()(OptIter & iter, const char * & optarg) ;
 
-      // Call this member function after operator() has returned 0
-      // if you want to know whether or not options were explicitly
-      // terminated because "--" appeared on the command-line.
-      //
-   int
-   explicit_endopts() const { return  explicit_end; }
+      /// Call this member function after operator() has returned 0
+      /// if you want to know whether or not options were explicitly
+      /// terminated because "--" appeared on the command-line.
+   int explicit_endopts() const { return  explicit_end; }
 } ;
 
 #endif /* _options_h */

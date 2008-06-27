@@ -1,32 +1,13 @@
-// -*- mode: c++; c-basic-offset: 4; -*-
-//
-// $Id: driver.cpp 4168 2006-01-08 18:39:01Z martinc $
-//
-// Simple test driver for the bspline interface.
-//
-/*
- * Copyright (c) 1998,1999,2008
- * University Corporation for Atmospheric Research, UCAR
- *
- * Permission to use, copy, modify, distribute and sell this software and
- * its documentation for any purpose is hereby granted without fee,
- * provided that the above copyright notice appear in all copies and that
- * both that copyright notice and this permission notice appear in
- * supporting documentation.  UCAR makes no representations about the
- * suitability of this software for any purpose.  It is provided "as is"
- * without express or implied warranty.
- * 
- * Note from the author:
- *
- * Where possible, you are encouraged to follow the GNU General Public
- * License, or at least the spirit of the license, for the distribution and
- * licensing of this software and any derived works.  See
- * http://www.gnu.org/copyleft/gpl.html.
- */
+/************************************************************************\
+	Copyright 2008 University Corporation for Atmospheric Research.
+	All rights reserved.
+	Use of this code is subject to UCAR's standard Terms of Use,
+	which can be found at http://www.ucar.edu/legal/terms_of_use.shtml .
+	By using this source code, you agree to abide by those Terms of Use.
+\*************************************************************************/
 
 #include "BSpline/BSplinePlus.h"
 #include "options.h"
-
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -102,7 +83,6 @@ void parseCommandLine(int argc,
 
     // indicate that the wavelength has not been set
     wavelength = -1.0;
-
     bool err = false;
     const char *optarg;
     char optchar;
@@ -238,14 +218,12 @@ void parseCommandLine(int argc,
         opts.usage(std::cerr, "");
         exit(1);
     }
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc,
          char *argv[])
 {
-
     std::string infile;
     std::string outfile;
     int step;
@@ -324,10 +302,6 @@ int main(int argc,
     vector<datum>::iterator xo = x.begin(), yo = y.begin();
     if (step > 1) {
         while (xo < x.end() && yo < y.end()) {
-            //cout << *xo;
-            //cout << " ";
-            //cout << *yo;
-            //cout << endl;
             *xi++ = *xo;
             *yi++ = *yo;
             xo += step;
@@ -393,7 +367,6 @@ int main(int argc,
         delete instream;
     if (outfile.size())
         delete outstream;
-
     return 0;
 }
 
@@ -470,7 +443,6 @@ vic (float *xt, int nxp, double wl, int bc, float *y)
             &ydcwl, &kybc, &kybc, &ydcwl, &ydcwl, &ierr);
     if (ierr)
     return (false);
-
     return true;
 }
 
