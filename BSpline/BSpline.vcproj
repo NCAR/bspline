@@ -147,15 +147,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\BlendedBSpline.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\BSpline.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\BSplineLib.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\BSplinePlus.cpp"
 				>
 			</File>
 		</Filter>
@@ -169,11 +169,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\BSpline.h"
+				RelativePath=".\BlendedBSpline.h"
 				>
 			</File>
 			<File
-				RelativePath=".\BSplinePlus.h"
+				RelativePath=".\BSpline.h"
 				>
 			</File>
 		</Filter>
