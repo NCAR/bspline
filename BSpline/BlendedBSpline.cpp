@@ -6,7 +6,7 @@
 	By using this source code, you agree to abide by those Terms of Use.
 \*************************************************************************/
 
-#include "BSplinePlus.h"
+#include "BlendedBSpline.h"
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -16,7 +16,7 @@
 #include <assert.h>
 
 //////////////////////////////////////////////////////////////////////
-// BSplinePlus Class
+// BlendedBSpline Class
 //////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@
  * This BSpline constructor constructs and sets up a new base and 
  * solves for the spline curve coeffiecients all at once.
  */
-template<class T> BSplinePlus<T>::BSplinePlus(const T *x,
+template<class T> BlendedBSpline<T>::BlendedBSpline(const T *x,
                                               int nx,
                                               const T *y,
                                               double wl,
@@ -46,7 +46,7 @@ template<class T> BSplinePlus<T>::BSplinePlus(const T *x,
 /*
  * Create a new spline given a BSplineBase.
  */
-template<class T> BSplinePlus<T>::BSplinePlus(BSplineBase<T> &bb,
+template<class T> BlendedBSpline<T>::BlendedBSpline(BSplineBase<T> &bb,
                                               const T *y,
                                               BLENDMODE blendmode,
                                               T blendspan) :
@@ -60,17 +60,38 @@ template<class T> BSplinePlus<T>::BSplinePlus(BSplineBase<T> &bb,
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> void BSplinePlus<T>::initBlending(const T* y)
+template<class T> void BlendedBSpline<T>::initBlending(const T* y)
 {
     // verify that the x values are ordered
     for (unsigned int i = 1; i < NX; i++) {
         assert(base->X[i-1] < base->X[i]);
     }
 
-    // save y
+    // and verify that we have at least three points in the series
+    assert (NX > 2);
+    
+    // save y, and compute finiteDy.
     _y.resize(NX);
-    for (unsigned int i = 0; i < NX; i++)
+    _finiteDy.resize(NX);
+    
+    _finiteDy[0] = 0.0;
+    for (unsigned int i = 0; i < NX; i++) {
+        // copy y
         _y[i] = y[i];
+        // compute centered finite differences in the interior
+        if (i > 0 && i < NX-1) {
+            _finiteDy[i] = (y[i+1]-y[i-1])/(base->X[i+1]-base->X[i-1]);
+        } else {
+            // calculate one sided finite differences at the endpoints
+            if (i == 0) {
+                // left end
+                _finiteDy[i] = (y[i+1]-y[i])/(base->X[i+1]-base->X[i]);
+            } else {
+                // right end
+                _finiteDy[i] = (y[i]-y[i-1])/(base->X[i]-base->X[i-1]);                
+            }
+        }
+    }
 
     // save the boundaries of our blending areas
     _xLeft = xmin + _blendSpan;
@@ -94,17 +115,18 @@ template<class T> void BSplinePlus<T>::initBlending(const T* y)
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> BSplinePlus<T>::~BSplinePlus()
+template<class T> BlendedBSpline<T>::~BlendedBSpline()
 {
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> T BSplinePlus<T>::evaluate(T x)
+template<class T> T BlendedBSpline<T>::evaluate(T x)
 {
+    // get the normal spline estimation for y
     T y = BSpline<T>::evaluate(x);
 
     // Perform the blending. Two interpolations are involved:
-    //   The value of the original Y series, at the desired x value.
+    //   The value of the data values of Y, at the desired x value.
     //   The ratio of the x position in the span provides a 
     //     weighting foactor for the blending. As the x value approaches
     //     the end points of the series, the weighting goes to 100% in
@@ -116,18 +138,18 @@ template<class T> T BSplinePlus<T>::evaluate(T x)
         
         // get the value of the original y,
         // interpolated at X
-        T originalY = interpLeft(x);
+        T originalY = interpYLeft(x);
         // calculate out the blending ratio
         T factor = (x-xmin)/_blendSpan;
         // blend the spline value and the original value
         T newY = factor*y + (1.0-factor)*originalY;
         y = newY;
     } else if (x > _xRight && x <= xmax) {
-        // blend the right (Finish) side of the series
+        // blend the right (finish) side of the series
         
         // get the value of the original y,
         // interpolated at X
-        T originalY = interpRight(x);
+        T originalY = interpYRight(x);
         // calculate out the blending ratio
         T factor = (xmax-x)/_blendSpan;
         // blend the spline value and the original value
@@ -139,16 +161,51 @@ template<class T> T BSplinePlus<T>::evaluate(T x)
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> T BSplinePlus<T>::slope(T x)
+template<class T> T BlendedBSpline<T>::slope(T x)
 {
 
+    // get the normal spline estimation for dy
     T dy = BSpline<T>::slope(x);
 
+    // Perform the blending. Two interpolations are involved:
+    //   The value of a two sided finite difference, interpolated at the 
+    //   desired x value. 
+    //   The ratio of the x position in the span provides a 
+    //     weighting foactor for the blending. As the x value approaches
+    //     the end points of the series, the weighting goes to 100% in
+    //     favor of the original data.
+    
+    
+    if (x < _xLeft && x >= xmin) {
+        // blend the left (start) side of the series
+        
+        // get the value of the original y,
+        // interpolated at X
+        T finiteDy = interpDyLeft(x);
+        // calculate out the blending ratio
+        T factor = (x-xmin)/_blendSpan;
+        // blend the spline value and the original value
+        T newDy = factor*dy + (1.0-factor)*finiteDy;
+        dy = newDy;
+    } else if (x > _xRight && x <= xmax) {
+        // blend the right (finish) side of the series
+        
+        // get the value of the original y,
+        // interpolated at X
+        T finiteDy = interpDyRight(x);
+        // calculate out the blending ratio
+        T factor = (xmax-x)/_blendSpan;
+        // blend the spline value and the original value
+        T newDy = factor*dy + (1.0-factor)*finiteDy;
+        dy = newDy;
+    }
+
     return dy;
+    
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> T BSplinePlus<T>::interpLeft(T x)
+template<class T> T BlendedBSpline<T>::interpYLeft(T x)
 {
 
     T result = 0.0;
@@ -169,7 +226,7 @@ template<class T> T BSplinePlus<T>::interpLeft(T x)
 }
 
 //////////////////////////////////////////////////////////////////////
-template<class T> T BSplinePlus<T>::interpRight(T x)
+template<class T> T BlendedBSpline<T>::interpYRight(T x)
 {
 
     T result = 0.0;
@@ -181,6 +238,48 @@ template<class T> T BSplinePlus<T>::interpRight(T x)
                 T factor = (base->X[i]-x)/(base->X[i]-base->X[i-1]);
                 T increment = factor*deltaY;
                 result = _y[i] - increment;
+                break;
+            }
+        }
+    }
+
+    return result;
+
+}
+//////////////////////////////////////////////////////////////////////
+template<class T> T BlendedBSpline<T>::interpDyLeft(T x)
+{
+
+    T result = 0.0;
+    if (x >= xmin) {
+        for (int i = 0; i < NX-2; i++) {
+            // look for the X interval containing the requested x
+            if (x <= base->X[i+1]) {
+                T deltaDy = (_finiteDy[i+1]-_finiteDy[i]);
+                T factor = (x - base->X[i])/(base->X[i+1]-base->X[i]);
+                T increment = factor*deltaDy;
+                result = _finiteDy[i] + increment;
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
+//////////////////////////////////////////////////////////////////////
+template<class T> T BlendedBSpline<T>::interpDyRight(T x)
+{
+
+    T result = 0.0;
+    if (x <= xmax) {
+        for (int i = NX-1; i > 0; i--) {
+            // look for the X interval containing the requested x
+            if (x >= base->X[i-1]) {
+                T deltaDy = (_finiteDy[i]-_finiteDy[i-1]);
+                T factor = (base->X[i]-x)/(base->X[i]-base->X[i-1]);
+                T increment = factor*deltaDy;
+                result = _finiteDy[i] - increment;
                 break;
             }
         }

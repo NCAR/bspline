@@ -6,7 +6,7 @@
 	By using this source code, you agree to abide by those Terms of Use.
 \*************************************************************************/
 
-#include "BSpline/BSplinePlus.h"
+#include "BSpline/BlendedBSpline.h"
 #include "options.h"
 #include <iostream>
 #include <fstream>
@@ -19,7 +19,7 @@
 using namespace std;
 
 typedef double datum;
-typedef BSplinePlus<datum> SplineT;
+typedef BlendedBSpline<datum> SplineT;
 typedef BSplineBase<datum> SplineBase;
 
 void DumpSpline(vector<datum> &x,
@@ -68,7 +68,7 @@ void parseCommandLine(int argc,
                       double& wavelength,
                       int& bc,
                       int& num_nodes,
-                      BSplinePlus<double>::BLENDMODE& blendmode,
+                      BlendedBSpline<double>::BLENDMODE& blendmode,
                       double& blendlength,
                       bool& debug)
 {
@@ -77,7 +77,7 @@ void parseCommandLine(int argc,
     step = 0;
     bc = SplineBase::BC_ZERO_SECOND;
     num_nodes = 0;
-    blendmode = BSplinePlus<double>::BLENDNONE;
+    blendmode = BlendedBSpline<double>::BLENDNONE;
     blendlength = -1;
     debug = false;
 
@@ -168,13 +168,13 @@ void parseCommandLine(int argc,
             {
                 if (optarg)
                     if (!strcmp(optarg, "none"))
-                        blendmode = BSplinePlus<double>::BLENDNONE;
+                        blendmode = BlendedBSpline<double>::BLENDNONE;
                     else if (!strcmp(optarg, "start"))
-                        blendmode = BSplinePlus<double>::BLENDSTART;
+                        blendmode = BlendedBSpline<double>::BLENDSTART;
                     else if (!strcmp(optarg, "finish"))
-                        blendmode = BSplinePlus<double>::BLENDFINISH;
+                        blendmode = BlendedBSpline<double>::BLENDFINISH;
                     else if (!strcmp(optarg, "both"))
-                        blendmode = BSplinePlus<double>::BLENDBOTH;
+                        blendmode = BlendedBSpline<double>::BLENDBOTH;
                     else
                         err++;
                 else
@@ -207,11 +207,11 @@ void parseCommandLine(int argc,
         err++;
 
     // if blending is requested, there must be a blendlength
-    if (blendmode != BSplinePlus<double>::BLENDNONE && blendlength == -1)
+    if (blendmode != BlendedBSpline<double>::BLENDNONE && blendlength == -1)
         err++;
 
     // if blendlength is ot specified, blending must not be requested
-    if (blendmode == BSplinePlus<double>::BLENDNONE && blendlength != -1)
+    if (blendmode == BlendedBSpline<double>::BLENDNONE && blendlength != -1)
         err++;
 
     if (err) {
@@ -230,7 +230,7 @@ int main(int argc,
     double wavelength;
     int bc;
     int num_nodes;
-    BSplinePlus<double>::BLENDMODE blendmode;
+    BlendedBSpline<double>::BLENDMODE blendmode;
     double blendlength;
     bool debug;
 

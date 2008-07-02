@@ -6,8 +6,8 @@
 	By using this source code, you agree to abide by those Terms of Use.
 \*************************************************************************/
 
-#ifndef BSPLINEPLUS_H_
-#define BSPLINEPLUS_H_
+#ifndef BlendedBSpline_H_
+#define BlendedBSpline_H_
 
 #include "BSpline.h"
 
@@ -18,7 +18,7 @@
  * See the BSpline documentation for a summary of the
  * BSpline interface. 
  */
-template<class T> class BSplinePlus : public BSpline<T> {
+template<class T> class BlendedBSpline : public BSpline<T> {
     public:
         /// Blending modes
         enum BLENDMODE {BLENDNONE, ///< No blending 
@@ -54,13 +54,13 @@ template<class T> class BSplinePlus : public BSpline<T> {
          * @param blendmode Choose blending at the endpoints.
          * @param blendspan The distance over which the blending is applied.
          */
-        BSplinePlus(const T *x,
+        BlendedBSpline(const T *x,
                     int nx,
                     const T *y,
                     double wl,
                     int bc_type = BSplineBase<T>::BC_ZERO_SECOND,
                     int num_nodes = 0,
-                    BLENDMODE blendmode = BSplinePlus<T>::BLENDNONE,
+                    BLENDMODE blendmode = BlendedBSpline<T>::BLENDNONE,
                     T blendspan = 0.0);
 
         /**
@@ -69,9 +69,9 @@ template<class T> class BSplinePlus : public BSpline<T> {
          * @param blendmode Choose blending at the endpoints.
          * @param blendspan The distance over which the blending is applied.
          */
-        BSplinePlus(BSplineBase<T> &base,
+        BlendedBSpline(BSplineBase<T> &base,
                     const T *y,
-                    BLENDMODE blendmode = BSplinePlus<T>::BLENDNONE,
+                    BLENDMODE blendmode = BlendedBSpline<T>::BLENDNONE,
                     T blendspan = 0.0);
 
         /**
@@ -86,7 +86,7 @@ template<class T> class BSplinePlus : public BSpline<T> {
          */
         T slope(T x);
 
-        virtual ~BSplinePlus();
+        virtual ~BlendedBSpline();
 
     protected:
         /// Initialize the blending data.
@@ -97,15 +97,29 @@ template<class T> class BSplinePlus : public BSpline<T> {
         /// 0.0
         /// @param x Location at which to do the interpolation
         /// @return The interpolated value.
-        T interpLeft(T x);
+        T interpYLeft(T x);
         /// Find the interpolated value of the original Y for the specified X value
         /// starting from the right of the series.If X is not within the series, return 
         /// 0.0
         /// @param x Location at which to do the interpolation
-        /// 2retun The interpolated value.
-        T interpRight(T x);
+        /// @return The interpolated value.
+        T interpYRight(T x);
+        /// Find the interpolated value of a finite difference dy for the specified X value
+        /// starting from the left of the series. If X is not within the series, return 
+        /// 0.0
+        /// @param x Location at which to do the interpolation
+        /// @return The interpolated value.
+        T interpDyLeft(T x);
+        /// Find the interpolated value of a finite difference dy for the specified X value
+        /// starting from the right of the series.If X is not within the series, return 
+        /// 0.0
+        /// @param x Location at which to do the interpolation
+        /// @return The interpolated value.
+        T interpDyRight(T x);
         /// A copy of the input y vector, needed for the blending operation
         std::vector<T> _y;
+        /// Finite difference calculation of the slope. 
+        std::vector<T> _finiteDy;
         /// The blending mode.
         BLENDMODE _blendMode;
         /// The span over which the blending occurs
@@ -124,4 +138,4 @@ template<class T> class BSplinePlus : public BSpline<T> {
 
 };
 
-#endif /*BSPLINEPLUS_H_*/
+#endif /*BlendedBSpline_H_*/
