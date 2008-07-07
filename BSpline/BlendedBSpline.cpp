@@ -70,32 +70,52 @@ template<class T> void BlendedBSpline<T>::initBlending(const T* y)
     // and verify that we have at least three points in the series
     assert (NX > 2);
     
-    // save y, and compute finiteDy.
+    // save the boundaries of our blending areas
+    _xLeft = xmin + _blendSpan;
+    _xRight = xmax - _blendSpan;
+
+    // save y
     _y.resize(NX);
-    _finiteDy.resize(NX);
+    for (unsigned int i = 0; i < NX; i++) {
+        // copy y
+        _y[i] = y[i];
+    }
     
+    // compute finite difference slopes in the blending region
+    _finiteDy.resize(NX);
     _finiteDy[0] = 0.0;
     for (unsigned int i = 0; i < NX; i++) {
         // copy y
         _y[i] = y[i];
-        // compute centered finite differences in the interior
+        // compute centered finite differences in the interior,
+        // but not between _xLeft and _xRight
         if (i > 0 && i < NX-1) {
-            _finiteDy[i] = (y[i+1]-y[i-1])/(base->X[i+1]-base->X[i-1]);
+        	if (base->X[i] <= _xLeft || base->X[i] >= _xRight) {
+        		T xleft = base->X[i-1];
+        		T xright = base->X[i+1];
+        		T yleft = evaluate(xleft);
+        		T yright = evaluate(xright);
+        		_finiteDy[i] = (yright-yleft)/(xright-xleft);
+        	}
         } else {
             // calculate one sided finite differences at the endpoints
             if (i == 0) {
                 // left end
-                _finiteDy[i] = (y[i+1]-y[i])/(base->X[i+1]-base->X[i]);
+        		T xleft = base->X[i];
+        		T xright = base->X[i+1];
+        		T yleft = evaluate(xleft);
+        		T yright = evaluate(xright);
+        		_finiteDy[i] = (yright-yleft)/(xright-xleft);
             } else {
                 // right end
-                _finiteDy[i] = (y[i]-y[i-1])/(base->X[i]-base->X[i-1]);                
+        		T xleft = base->X[i-1];
+        		T xright = base->X[i];
+        		T yleft = evaluate(xleft);
+        		T yright = evaluate(xright);
+        		_finiteDy[i] = (yright-yleft)/(xright-xleft);
             }
         }
     }
-
-    // save the boundaries of our blending areas
-    _xLeft = xmin + _blendSpan;
-    _xRight = xmax - _blendSpan;
 
     if (BSplineBase<T>::Debug()) {
         // save all of our diagnostic prints for here.
