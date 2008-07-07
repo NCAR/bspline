@@ -48,7 +48,7 @@ extern "C" {
 }
 
 static const char ident[] = "@(#)Options  1.05" ;
-   // I need a portable version of "tolower" that does NOT modify
+   // @todo: I need a portable version of "tolower" that does NOT modify
    // non-uppercase characters.
 #define  TOLOWER(c)  (isupper(c) ? tolower(c) : c)
 
