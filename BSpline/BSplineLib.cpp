@@ -10,7 +10,6 @@
 
 #include "BSplineBase.cpp"
 #include "BSpline.cpp"
-#include "BlendedBSpline.cpp"
 
 /// Instantiate BSplineBase for a library
 template class  BSplineBase<double>;
@@ -19,7 +18,3 @@ template class  BSplineBase<float>;
 /// Instantiate BSpline for a library
 template class BSpline<double>;
 template class BSpline<float>;
-
-/// Instantiate BlendedBSpline for a library
-template class BlendedBSpline<double>;
-template class BlendedBSpline<float>;

@@ -147,10 +147,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\BlendedBSpline.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\BSpline.cpp"
 				>
 			</File>
@@ -166,10 +162,6 @@
 			>
 			<File
 				RelativePath=".\BandedMatrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BlendedBSpline.h"
 				>
 			</File>
 			<File
