@@ -93,8 +93,8 @@ template<class T> void BlendedBSpline<T>::initBlending(const T* y)
         	if (base->X[i] <= _xLeft || base->X[i] >= _xRight) {
         		T xleft = base->X[i-1];
         		T xright = base->X[i+1];
-        		T yleft = evaluate(xleft);
-        		T yright = evaluate(xright);
+        		T yleft = _y[i-1];
+        		T yright = _y[i+1];
         		_finiteDy[i] = (yright-yleft)/(xright-xleft);
         	}
         } else {
@@ -103,15 +103,15 @@ template<class T> void BlendedBSpline<T>::initBlending(const T* y)
                 // left end
         		T xleft = base->X[i];
         		T xright = base->X[i+1];
-        		T yleft = evaluate(xleft);
-        		T yright = evaluate(xright);
+        		T yleft = _y[i];
+        		T yright = _y[i+1];
         		_finiteDy[i] = (yright-yleft)/(xright-xleft);
             } else {
                 // right end
         		T xleft = base->X[i-1];
         		T xright = base->X[i];
-        		T yleft = evaluate(xleft);
-        		T yright = evaluate(xright);
+        		T yleft = _y[i-1];
+        		T yright = _y[i];
         		_finiteDy[i] = (yright-yleft)/(xright-xleft);
             }
         }
@@ -295,11 +295,16 @@ template<class T> T BlendedBSpline<T>::interpDyRight(T x)
     if (x <= xmax) {
         for (int i = NX-1; i > 0; i--) {
             // look for the X interval containing the requested x
-            if (x >= base->X[i-1]) {
-                T deltaDy = (_finiteDy[i]-_finiteDy[i-1]);
-                T factor = (base->X[i]-x)/(base->X[i]-base->X[i-1]);
-                T increment = factor*deltaDy;
-                result = _finiteDy[i] - increment;
+            if (x > base->X[i-1]) {
+                double xx = base->X[i-1];
+                std::cout << i << " " << xx << "\n";
+                if (i == NX-1) {
+                    // one sided difference
+                    result = (_y[i]-_y[i-1])/(base->X[i]-base->X[i-1]);
+                } else {
+                    // centered difference
+                    result = (_y[i+1]-_y[i-1])/(base->X[i+1]-base->X[i-1]);
+                }
                 break;
             }
         }
