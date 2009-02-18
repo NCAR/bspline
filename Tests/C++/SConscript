@@ -1,4 +1,5 @@
 import os
+import sys
 
 tools = ['default',]
 env = Environment(tools = tools)
@@ -7,7 +8,10 @@ env = Environment(tools = tools)
 # directory, and other times BSpline will live 
 # one directory down within another project.
 
-env.Append(CCFLAGS=['-g',])
+if sys.platform == 'win32':
+    env.Append(CCFLAGS=['/EHsc','/Zi'])
+else:
+    env.Append(CCFLAGS=['-g',])
 env.AppendUnique(CPPPATH=['#/',])
 env.AppendUnique(CPPPATH=['#/BSpline',])
 
