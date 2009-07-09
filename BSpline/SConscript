@@ -1,6 +1,5 @@
 
-tools = ['default',]
-env = Environment(tools = tools)
+Import('env')
 
 sources = Split('''
 BSplineLib.cpp
