@@ -142,7 +142,7 @@ template <class T> struct BSplineBaseP;
  * substitution, and the basis function is evaluated as few times as
  * possible in computing the diagonal matrix and B vector.
  *
- * @author Gary Granger (http://www.atd.ucar.edu/~granger)
+ * @author Gary Granger (http://www.eol.ucar.edu/homes/granger)
  *
 @verbatim
 Copyright (c) 1998-2008
