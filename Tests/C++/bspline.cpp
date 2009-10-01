@@ -6,7 +6,8 @@
 	By using this source code, you agree to abide by those Terms of Use.
 \*************************************************************************/
 
-#include "BSpline/BlendedBSpline.h"
+#include "BSpline.h"
+
 #include "options.h"
 #include <iostream>
 #include <fstream>
@@ -19,7 +20,7 @@
 using namespace std;
 
 typedef double datum;
-typedef BlendedBSpline<datum> SplineT;
+typedef BSpline<datum> SplineT;
 typedef BSplineBase<datum> SplineBase;
 
 void DumpSpline(vector<datum> &x,
@@ -53,10 +54,8 @@ static const char
                     "s:step        <step interval>",
                     "b:bcdegree    <bc derivative degree (0,1,2)>",
                     "n:nodes       <specify number of nodes (n)>",
-                    "m:blendmode   <blending mode (none, start, end, both)> (requires blendlength)",
-                    "l:blendlength <length> (requires blendmode)",
                     "d|debug       <enable diagnostic output>"
-                        "h|help        <print this help>",
+		    "h|help        <print this help>",
                     NULL };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,8 +67,6 @@ void parseCommandLine(int argc,
                       double& wavelength,
                       int& bc,
                       int& num_nodes,
-                      BlendedBSpline<double>::BLENDMODE& blendmode,
-                      double& blendlength,
                       bool& debug)
 {
 
@@ -77,8 +74,6 @@ void parseCommandLine(int argc,
     step = 0;
     bc = SplineBase::BC_ZERO_SECOND;
     num_nodes = 0;
-    blendmode = BlendedBSpline<double>::BLENDNONE;
-    blendlength = -1;
     debug = false;
 
     // indicate that the wavelength has not been set
@@ -164,31 +159,6 @@ void parseCommandLine(int argc,
                     err++;
                 break;
             }
-        case 'm':
-            {
-                if (optarg)
-                    if (!strcmp(optarg, "none"))
-                        blendmode = BlendedBSpline<double>::BLENDNONE;
-                    else if (!strcmp(optarg, "start"))
-                        blendmode = BlendedBSpline<double>::BLENDSTART;
-                    else if (!strcmp(optarg, "finish"))
-                        blendmode = BlendedBSpline<double>::BLENDFINISH;
-                    else if (!strcmp(optarg, "both"))
-                        blendmode = BlendedBSpline<double>::BLENDBOTH;
-                    else
-                        err++;
-                else
-                    err++;
-                break;
-            }
-        case 'l':
-            {
-                if (optarg)
-                    blendlength = atof(optarg);
-                else
-                    err++;
-                break;
-            }
         case 'd':
             {
                 debug = true;
@@ -204,14 +174,6 @@ void parseCommandLine(int argc,
 
     // wavelength must be supplied
     if (wavelength < 0)
-        err++;
-
-    // if blending is requested, there must be a blendlength
-    if (blendmode != BlendedBSpline<double>::BLENDNONE && blendlength == -1)
-        err++;
-
-    // if blendlength is ot specified, blending must not be requested
-    if (blendmode == BlendedBSpline<double>::BLENDNONE && blendlength != -1)
         err++;
 
     if (err) {
@@ -230,8 +192,6 @@ int main(int argc,
     double wavelength;
     int bc;
     int num_nodes;
-    BlendedBSpline<double>::BLENDMODE blendmode;
-    double blendlength;
     bool debug;
 
     parseCommandLine(argc,
@@ -242,8 +202,6 @@ int main(int argc,
                      wavelength,
                      bc,
                      num_nodes,
-                     blendmode,
-                     blendlength,
                      debug);
 
     if (debug) {
@@ -320,9 +278,7 @@ int main(int argc,
                     &y[0],
                    wavelength,
                    bc,
-                   num_nodes,
-                   blendmode,
-                   blendlength);
+                   num_nodes);
     if (spline.ok()) {
         // And finally write the curve to a file
         DumpSpline(x, y, spline, outstream, debug);
