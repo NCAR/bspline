@@ -12,6 +12,23 @@ BSplineBase class.
 
 @section download Download
 
+This software is copyright 2009 by the University Corporation for
+Atmospheric Research (UCAR).  It is licensed for use according to the
+standard BSD license:
+
+- http://www.opensource.org/licenses/bsd-license.html
+
+When citing this software, here is a suggested reference:
+
+@verbatim
+This software is written by Gary Granger of the National Center for
+Atmospheric Research (NCAR), sponsored by the National Science Foundation
+(NSF).  The algorithm is based on the cubic spline described by Katsuyuki
+Ooyama in Montly Weather Review, Vol 115, October 1987.  This
+implementation has benefited from comparisons with a previous FORTRAN
+implementation by James L. Franklin, NOAA/Hurricane Research Division.
+@endverbatim
+
 The source should be available for download from here:
 
 - http://www.eol.ucar.edu/homes/granger/bspline/
@@ -28,15 +45,6 @@ BSplineBase class.
 There is no documentation (as yet) on any of the mathematical details of
 the implementation.  Refer to the Ooyama article, and there may be some
 notes in the source.
-
-When citing this software, here is a suggested reference:
-
- This software is written by Gary Granger of the National Center for
- Atmospheric Research (NCAR), sponsored by the National Science Foundation
- (NSF).  The algorithm is based on the cubic spline described by Katsuyuki
- Ooyama in Montly Weather Review, Vol 115, October 1987.  This
- implementation has benefited from comparisons with a previous FORTRAN
- implementation by James L. Franklin, NOAA/Hurricane Research Division.
 
 The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
