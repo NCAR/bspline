@@ -6,19 +6,19 @@ BSplineBase class.
 
 /**
 @mainpage Cubic B-Spline
-@version Version_1_4
-@author Gary Granger (http://www.atd.ucar.edu/~granger)
-@date April 28, 2008
+@version Version_1_5
+@author Gary Granger (http://www.eol.ucar.edu/homes/granger)
+@date September 30, 2009
 
 @section download Download
 
 The source should be available for download from here:
 
-- http://www.atd.ucar.edu/~granger/bspline/
+- http://www.eol.ucar.edu/homes/granger/bspline/
 
 This documentation is also online here:
 
-- http://www.atd.ucar.edu/~granger/bspline/doc/
+- http://www.eol.ucar.edu/homes/granger/bspline/doc/
 
 @section documentation Documentation
 
@@ -29,17 +29,23 @@ There is no documentation (as yet) on any of the mathematical details of
 the implementation.  Refer to the Ooyama article, and there may be some
 notes in the source.
 
+When citing this software, here is a suggested reference:
+
+ This software is written by Gary Granger of the National Center for
+ Atmospheric Research (NCAR), sponsored by the National Science Foundation
+ (NSF).  The algorithm is based on the cubic spline described by Katsuyuki
+ Ooyama in Montly Weather Review, Vol 115, October 1987.  This
+ implementation has benefited from comparisons with a previous FORTRAN
+ implementation by James L. Franklin, NOAA/Hurricane Research Division.
+
 The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
 
 @section releasenotes Release Notes
 
-<h2>Release 1_5</h2>
+<h2>Release 1.5</h2>
 
-Added the BSplinePlus<T> class, derived from BSpline<T>. 
-This allows the user to  specify blending at the endpoints 
-of the spline, so that the  normal BSpline bondary conditions can 
-be thwarted.
+Change the license to BSD and update some of the documentation.
 
 <h2>Release 1_4</h2>
 
@@ -76,7 +82,7 @@ cxx to cpp.
 
 @section samples Samples
 
-The top source directory contains several sample data files for the driver
+The Tests/Data directory contains several sample data files for the driver
 program.  The sample.txt file contains an example of dropsonde data.  From
 that file, three fields have been extracted into separate files:
 
@@ -94,8 +100,6 @@ the @p step, @p cutoff, and @p boundary-condition options on the command
 line.
 
 @code
-BSpline interface version: $Id$
-BSpline implementation version: $Id$
 Usage: ./driver <step> <cutoff> [<bc>]
   <step> is the number of points to skip in the input.
   <cutoff> is the cutoff wavelength.
@@ -146,7 +150,7 @@ the spline.
 
 This is a C++ implementation of a cubic b-spline least squares and
 derivative constraint algorithm.  See the documentation for the BSplineBase
-class (in BSpline/BSpline.h) for details.
+class (in BSpline/BSplineBase.h) for details.
 
 This work was done for meteorological research at the University
 Corporation for Atmospheric Research (http://www.ucar.edu/).  There is no
@@ -154,24 +158,21 @@ warranty of any kind.  Please see the COPYRIGHT file.
 
 @section installation Installation
 
-As the implementation itself is mostly template code, it is not necessary
+As the implementation itself is entirely template code, it is not necessary
 to build the library separately.  The template implementation can be
 included directly.  The templates can also be compiled for the usual float
 and double types into their own object modules and library (DLL on Win32).
-See the documentation for details.  The code is known to compile under the
-GNU g++ compiler 3.2 (http://gcc.gnu.org/) and Microsft Developer Studio
-Visual C++ version 6.0.
+See the documentation for details.
 
-The distribution contains two parts.  The b-spline code itself is
-contained in the lib/ directory, while the top directory only contains a
-test driver program.  There are MS VC++ projects and/or workspaces for
-both, but they may not be current.  On UNIX, running make in the top
-directory builds only the driver program by including the template
-implementation directly.  Run make in the lib directory to build a library
-with float and double instantiations of the BSpline templates.
+The distribution contains two parts.  The b-spline code itself is contained
+in the BSpline/ directory, while test data and the C++ test driver program
+are under the Tests directory.  There are MS Studio solution and projects
+files which should build the library for floats and doubles. On UNIX, the
+software is compiled with SCons (http://www.scons.org/).  Run `scons -u` to
+build the library and also the C++ driver program.
 
-To install the code into an include directory, all of the *.cxx and *.h
-files in lib/ must be copied into the include directory.
+To install the code into an include directory, all of the *.cpp and *.h
+files in BSpline/ must be copied into the include directory.
 
 @section questions Questions
 

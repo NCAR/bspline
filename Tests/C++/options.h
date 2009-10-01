@@ -1,10 +1,17 @@
-/************************************************************************\
-	Copyright 2008 University Corporation for Atmospheric Research.
-	All rights reserved.
-	Use of this code is subject to UCAR's standard Terms of Use,
-	which can be found at http://www.ucar.edu/legal/terms_of_use.shtml .
-	By using this source code, you agree to abide by those Terms of Use.
-\*************************************************************************/
+/************************************************************************
+ * Copyright 2009 University Corporation for Atmospheric Research.
+ * All rights reserved.
+ *
+ * Use of this code is subject to the standard BSD license:
+ *
+ *  http://www.opensource.org/licenses/bsd-license.html
+ *
+ * See the COPYRIGHT file in the source distribution for the license text,
+ * or see this web page:
+ *
+ *  http://www.eol.ucar.edu/homes/granger/bspline/doc/
+ *
+ *************************************************************************/
 
 // ****************************************************************************
 // ^FILE: options.h - option parsing classes

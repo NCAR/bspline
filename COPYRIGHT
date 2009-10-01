@@ -6,7 +6,14 @@ This software is licensed with the standard BSD license:
 
  http://www.opensource.org/licenses/bsd-license.html
 
-When 
+When citing this software, here is a suggested reference:
+
+ This software is written by Gary Granger of the National Center for
+ Atmospheric Research (NCAR), sponsored by the National Science Foundation
+ (NSF).  The algorithm is based on the cubic spline described by Katsuyuki
+ Ooyama in Montly Weather Review, Vol 115, October 1987.  This
+ implementation has benefited from comparisons with a previous FORTRAN
+ implementation by James L. Franklin, NOAA/Hurricane Research Division.
 
 The text of the license is reproduced below:
 

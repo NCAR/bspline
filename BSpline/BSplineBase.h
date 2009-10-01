@@ -1,3 +1,17 @@
+/************************************************************************
+ * Copyright 2009 University Corporation for Atmospheric Research.
+ * All rights reserved.
+ *
+ * Use of this code is subject to the standard BSD license:
+ *
+ *  http://www.opensource.org/licenses/bsd-license.html
+ *
+ * See the COPYRIGHT file in the source distribution for the license text,
+ * or see this web page:
+ *
+ *  http://www.eol.ucar.edu/homes/granger/bspline/doc/
+ *
+ *************************************************************************/
 #ifndef BSPLINEBASE_H_
 #define BSPLINEBASE_H_
 
@@ -145,8 +159,9 @@ template <class T> struct BSplineBaseP;
  * @author Gary Granger (http://www.eol.ucar.edu/homes/granger)
  *
 @verbatim
-Copyright (c) 1998-2008
+Copyright (c) 1998-2009
 University Corporation for Atmospheric Research, UCAR
+All rights reserved.
 @endverbatim
  **/
 
