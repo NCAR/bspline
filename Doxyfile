@@ -1,9 +1,8 @@
 
-PROJECT_NAME           = "dataspace"
-PROJECT_NUMBER         = "Version 1.4"
+PROJECT_NAME           = "EOL BSpline Library"
+PROJECT_NUMBER         = "Version 1.5"
 HTML_OUTPUT            = doc/
 
-PROJECT_NAME           = "BSpline Library"
 INPUT                  = ./BSpline/BSpline.dox ./BSpline
 GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
@@ -26,7 +25,6 @@ EXTRACT_PRIVATE	       = NO
 
 SOURCE_BROWSER         = NO
 REFERENCED_BY_RELATION = NO
-REFERENCE_RELATION     = NO
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = NO
 INCLUDE_GRAPH          = NO
