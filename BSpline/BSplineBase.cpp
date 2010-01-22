@@ -173,7 +173,7 @@ template<class T> BSplineBase<T>::BSplineBase(const T *x,
                                               double wl,
                                               int bc,
                                               int num_nodes) :
-    K(2), NX(0), OK(false), base(new BSplineBaseP<T>)
+    NX(0), K(2), OK(false), base(new BSplineBaseP<T>)
 {
     setDomain(x, nx, wl, bc, num_nodes);
 }
