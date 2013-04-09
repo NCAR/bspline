@@ -98,6 +98,8 @@ public:
     virtual ~BSpline();
 
     using BSplineBase<T>::Debug;
+    using BSplineBase<T>::Basis;
+    using BSplineBase<T>::DBasis;
 
 protected:
 
