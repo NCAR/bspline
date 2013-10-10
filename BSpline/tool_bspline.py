@@ -1,7 +1,5 @@
 # -*- python -*-
 
-import eol_scons
-
 # The tool name and the library name will be the same.
 toolname = 'bspline'
 
