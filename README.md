@@ -73,3 +73,39 @@ doxygen
    
 This will produce html formatted documentation in the `doc/` directory.
 Open `doc/index.html` with your favorite browser.
+
+The generated documentation is also committed to the GitHub Pages for this
+project, so it can be viewed online:
+
+ * http://ncareol.github.io/bspline/
+
+Here are the steps to update the documentation in GitHub pages from the
+source tree:
+
+1. In a clone of the bspline project, clone it again into a `doc` directory:
+
+```
+cd bspline
+git clone git@github.com:ncareol/bspline.git doc
+```
+
+2. Checkout the gh-pages branch in the `doc` subdirectory.
+
+```
+cd doc
+git checkout origin/gh-pages -b gh-pages
+```
+
+3. Generate the doxygen output into the doc directory:
+
+```
+cd ..
+scons doc
+```
+
+4. Commit the changes to the gh-pages branch:
+
+```
+cd doc
+git commit -a -m'generated updated documentation'
+```
