@@ -6,13 +6,13 @@ BSplineBase class.
 
 /**
 @mainpage Cubic B-Spline
-@version Version_1_5
+@version Version_1_6
 @author Gary Granger (http://www.eol.ucar.edu/homes/granger)
-@date September 30, 2009
+@date July, 2015
 
 @section download Download
 
-This software is copyright 2009 by the University Corporation for
+This software is copyright 2015 by the University Corporation for
 Atmospheric Research (UCAR).  It is licensed for use according to the
 standard BSD license:
 
@@ -29,11 +29,11 @@ implementation has benefited from comparisons with a previous FORTRAN
 implementation by James L. Franklin, NOAA/Hurricane Research Division.
 @endverbatim
 
-The source should be available for download from here:
+The source should be available for download from github here:
 
-- http://www.eol.ucar.edu/homes/granger/bspline/
+- https://github.com/ncareol/bspline
 
-This documentation is also online here:
+The generated documentation may also be online here:
 
 - http://www.eol.ucar.edu/homes/granger/bspline/doc/
 
@@ -50,6 +50,10 @@ The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
 
 @section releasenotes Release Notes
+
+<h2>Release 1.6</h2>
+
+Documentation changes for migrating to github.
 
 <h2>Release 1.5</h2>
 
