@@ -1,6 +1,6 @@
 
 PROJECT_NAME           = "EOL BSpline Library"
-PROJECT_NUMBER         = "Version 1.5"
+PROJECT_NUMBER         = "Version 1.6"
 HTML_OUTPUT            = doc/
 
 INPUT                  = ./BSpline/BSpline.dox ./BSpline

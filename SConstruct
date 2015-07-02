@@ -20,7 +20,7 @@ plot-1.png plot-2.png plot-3.png plot-4.png plot-5.png plot-6.png
 IMAGES = [ os.path.join("Tests", "R", f) for f in IMAGES ]
 
 distfiles = Split("""
- README
+ README.md
  COPYRIGHT 
  Doxyfile
  SConstruct
