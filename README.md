@@ -12,7 +12,7 @@ generic B-Spline class library.
 
 ## Legal
 
-See the COPYRIGHT file in the source distribution.
+See the [COPYRIGHT](./COPYRIGHT) file in the source distribution.
 
 ## Requirements
 
