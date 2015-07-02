@@ -82,28 +82,28 @@ project, so it can be viewed online:
 Here are the steps to update the documentation in GitHub pages from the
 source tree:
 
-1. In a clone of the bspline project, clone it again into a `doc` directory:
+In a clone of the bspline project, clone it again into a `doc` directory:
 
 ```
 cd bspline
 git clone git@github.com:ncareol/bspline.git doc
 ```
 
-2. Checkout the gh-pages branch in the `doc` subdirectory.
+Checkout the gh-pages branch in the `doc` subdirectory.
 
 ```
 cd doc
 git checkout origin/gh-pages -b gh-pages
 ```
 
-3. Generate the doxygen output into the doc directory:
+Generate the doxygen output into the doc directory:
 
 ```
 cd ..
 scons doc
 ```
 
-4. Commit the changes to the gh-pages branch:
+Commit the changes to the gh-pages branch:
 
 ```
 cd doc
