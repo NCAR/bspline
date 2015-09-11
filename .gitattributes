@@ -1,0 +1,26 @@
+# Repository default
+* text=auto
+
+# Text files which should always be normalized and converted to native line
+# endings on checkout.
+
+*.c text
+*.cc text
+*.h text
+*.hh text
+*.f text
+*.oct text
+*.R text
+*.cpp text
+*.wspd
+*.temps
+*.wdir
+
+# Files that will always have CRLF line endings on checkout.
+
+*.sln text eol=crlf
+
+# Binary files that should not be modified.
+
+*.png binary
+*.jpg binary
