@@ -19,6 +19,7 @@
 # Files that will always have CRLF line endings on checkout.
 
 *.sln text eol=crlf
+*.vcproj text eol=crlf
 
 # Binary files that should not be modified.
 
