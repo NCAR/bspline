@@ -333,8 +333,8 @@ int main(int argc,
     return 0;
 }
 
-void DumpSpline(vector<datum> &x,
-                vector<datum> &y,
+void DumpSpline(vector<datum> &xv,
+                vector<datum> &yv,
                 SplineT &spline,
                 ostream* out,
                 bool debug)
@@ -342,21 +342,34 @@ void DumpSpline(vector<datum> &x,
     int width = 15;
     
     // write column headings
-    *out << "x, y, spline(x), slope(spline(x))\n";
+    *out << setw(10) << "x"
+	 << setw(10) << "y"
+	 << setw(15) << "spline(x)"
+	 << setw(20) << "slope(spline(x))"
+	 << std::endl;
     
     datum variance = 0;
+    bool evalmid = false;
 
-    for (unsigned int i = 0; i < x.size(); ++i) {
-        *out << x[i] << ", ";
-        *out << y[i] << ", ";
-        datum ys = spline.evaluate(x[i]);
-        *out << ys << ", ";
-        datum slope = spline.slope(x[i]);
-        *out << slope;
+    for (unsigned int i = 0; i < 2*xv.size()-1; i += (2 - int(evalmid)))
+    {
+	datum x1 = xv[i >> 1];
+	datum x2 = xv[(i >> 1) + i%2];
+	datum x = (x1 + x2)/datum(2);
+	datum y1 = yv[i >> 1];
+	datum y2 = yv[(i >> 1) + i%2];
+	datum y = (y1 + y2)/datum(2);
+	*out << setw(10) << x;
+	*out << setw(10) << y;
+        datum ys = spline.evaluate(x);
+        *out << setw(15) << ys;
+        datum slope = spline.slope(x);
+        *out << setw(20) << slope;
         *out << endl;
-        variance += (ys - y[i])*(ys - y[i]);
+	if (i % 2 == 0)
+	    variance += (ys - yv[i >> 1])*(ys - yv[i >> 1]);
     }
-    variance /= (datum)x.size();
+    variance /= (datum)xv.size();
     if (debug)
         cerr << "Variance: " << variance << endl;
 }
