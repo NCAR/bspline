@@ -574,8 +574,11 @@ template<class T> bool BSplineBase<T>::Setup(int num_nodes)
         else if (X[i] > xmax)
             xmax = X[i];
     }
+    if (Debug())
+	std::cerr << "Xmax=" << xmax << ", Xmin=" << xmin << std::endl;
 
-    int ni = 9; // Number of node intervals (NX - 1)
+    // Number of node intervals (number of spline nodes - 1).
+    int ni;
     double deltax;
 
     if (num_nodes >= 2) {
@@ -584,16 +587,46 @@ template<class T> bool BSplineBase<T>::Setup(int num_nodes)
         if (waveLength == 0) {
             waveLength = 1.0;
         }
+	if (Debug())
+	{
+	    std::cerr << "Num nodes explicitly given as " << num_nodes
+		      << ", wavelength set to " << waveLength << std::endl;
+	}
     } else if (waveLength == 0) {
         // Turn off frequency constraint and just set two node intervals per
         // data point.
         ni = NX * 2;
         waveLength = 1;
+	if (Debug())
+	{
+	    std::cerr << "Frequency constraint disabled, using 2 intervals "
+		      << "per node: " << ni << " intervals, wavelength="
+		      << waveLength << std::endl;
+	}
     } else if (waveLength > xmax - xmin) {
+	if (Debug())
+	{
+	    std::cerr << "Wavelength " << waveLength << " exceeds X span: "
+		      << xmin << " - " << xmax << std::endl;
+	}
         return (false);
     } else {
+	if (Debug())
+	{
+	    std::cerr << "Searching for a reasonable number of "
+		      << "intervals for wavelength " << waveLength
+		      << " while keeping at least 2 intervals per "
+		      << "wavelength ..." << std::endl;
+	}
         // Minimum acceptable number of node intervals per cutoff wavelength.
         static const double fmin = 2.0;
+
+	// Start out at a minimum number of intervals, meaning the maximum
+	// number of points per interval, then work up to the maximum
+	// number of intervals for which the intervals per wavelength is
+	// still adequate.  I think the minimum must be more than 2 since
+	// the basis function is evaluated on multiple nodes.
+	ni = 5;
 
         double ratiof; // Nodes per wavelength for current deltax
         double ratiod; // Points per node interval
@@ -603,7 +636,16 @@ template<class T> bool BSplineBase<T>::Setup(int num_nodes)
         // we can maintain at least one point per interval.
         do {
             if (Ratiod(++ni, deltax, ratiof) < 1.0)
+	    {
+		if (Debug())
+		{
+		    std::cerr << "At " << ni << " intervals, fewer than "
+			      << "one point per interval, and "
+			      << "intervals per wavelength is "
+			      << ratiof << "." << std::endl;
+		}
                 return false;
+	    }
         } while (ratiof < fmin);
 
         // Now increase the number of intervals until we have at least 4
@@ -617,7 +659,16 @@ template<class T> bool BSplineBase<T>::Setup(int num_nodes)
                 --ni;
                 break;
             }
-        } while (ratiof< 4 || ratiod> 2.0);
+        } while (ratiof < 4 || ratiod > 2.0);
+
+	if (Debug())
+	{
+	    std::cerr << "Found " << ni << " intervals, "
+		      << "length " << deltax << ", "
+		      << ratiof << " nodes per wavelength " << waveLength
+		      << ", "
+		      << ratiod << " data points per interval." << std::endl;
+	}
     }
 
     // Store the calculations in our state
