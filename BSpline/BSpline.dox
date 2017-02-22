@@ -5,7 +5,7 @@ and in the BSpline/BSpline.h header file, especially the comments for the
 BSplineBase class.
 
 /**
-@mainpage Cubic B-Spline
+@page Cubic B-Spline
 @version Version_1_6
 @author Gary Granger (http://www.eol.ucar.edu/homes/granger)
 @date July, 2015
