@@ -497,21 +497,20 @@ template<class T> void BSplineBase<T>::addP()
 
     // For each data point, sum the product of the nearest, non-zero Basis
     // nodes
-    int mx, m, n, i;
+    int m, n, i;
     for (i = 0; i < NX; ++i) {
         // Which node does this put us in?
         T &x = X[i];
-        mx = (int)((x - xmin) / DX);
+        int mx = (int)((x - xmin) / DX);
 
         // Loop over the upper triangle of nonzero basis functions,
         // and add in the products on each side of the diagonal.
         for (m = my::max(0, mx-1); m <= my::min(M, mx+2); ++m) {
-            float pn;
             float pm = Basis(m, x);
             float sum = pm * pm;
             P[m][m] += sum;
             for (n = m+1; n <= my::min(M, mx+2); ++n) {
-                pn = Basis(n, x);
+                float pn = Basis(n, x);
                 sum = pm * pn;
                 P[m][n] += sum;
                 P[n][m] += sum;

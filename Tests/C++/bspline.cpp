@@ -85,7 +85,7 @@ void parseCommandLine(int argc,
 
     // indicate that the wavelength has not been set
     wavelength = -1.0;
-    bool err = false;
+    unsigned int err = 0;
     const char *optarg;
     char optchar;
     Options opts(*argv, optv);
@@ -103,7 +103,6 @@ void parseCommandLine(int argc,
                         << SplineBase::ImplVersion() << endl;
                 opts.usage(std::cout, "");
                 exit(0);
-                break;
             }
         case 'i':
             {
@@ -339,8 +338,6 @@ void DumpSpline(vector<datum> &xv,
                 ostream* out,
                 bool debug)
 {
-    int width = 15;
-    
     // write column headings
     *out << setw(10) << "x"
 	 << setw(10) << "y"

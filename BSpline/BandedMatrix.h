@@ -95,7 +95,8 @@ public:
 
     BandedMatrix<T> & operator= (const BandedMatrix<T> &b) 
     {
-	return Copy (*this, b);
+		Copy (*this, b);
+		return *this;
     }
 
     BandedMatrix<T> & operator= (const T &e)

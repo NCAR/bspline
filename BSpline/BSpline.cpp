@@ -100,12 +100,12 @@ template<class T> bool BSpline<T>::solve(const T *y) {
     if (Debug())
         std::cerr << "Mean for y: " << mean << std::endl;
 
-    int mx, m, j;
+    int m, j;
     for (j = 0; j < NX; ++j) {
         // Which node does this put us in?
         T &xj = base->X[j];
         T yj = y[j] - mean;
-        mx = (int)((xj - xmin) / DX);
+        int mx = (int)((xj - xmin) / DX);
 
         for (m = my::max(0, mx-1); m <= my::min(mx+2, M); ++m) {
             B[m] += yj * Basis(m, xj);
