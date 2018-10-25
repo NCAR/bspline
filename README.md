@@ -77,7 +77,7 @@ Open `doc/index.html` with your favorite browser.
 The generated documentation is also committed to the GitHub Pages for this
 project, so it can be viewed online:
 
- * http://ncareol.github.io/bspline/
+ * http://ncar.github.io/bspline/
 
 Here are the steps to update the documentation in GitHub pages from the
 source tree:
@@ -86,7 +86,7 @@ In a clone of the bspline project, clone it again into a `doc` directory:
 
 ```
 cd bspline
-git clone git@github.com:ncareol/bspline.git doc
+git clone git@github.com:NCAR/bspline.git doc
 ```
 
 Checkout the gh-pages branch in the `doc` subdirectory.
