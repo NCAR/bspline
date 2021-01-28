@@ -20,18 +20,14 @@ par(mfrow=c(2,1))
 for (cutoff in c(5, 30, 0)) {
 for (bc in c(0, 1, 2)) {
 
-	cmd = paste("../C++/driver 1", cutoff, bc, "<", filename)
+	output = paste("spline-", cutoff, "-", bc, ".out", sep="")
+	cmd = paste("../C++/bspline -w", cutoff, "-b", bc, "-i", filename, "-o", output)
 	cat(cmd, "\n")
 	system(cmd)
-	output = paste("spline-", cutoff, "-", bc, ".out", sep="")
-	system(paste("mv -f spline.out", output))
-	spline = matrix(scan(output), ncol=3, byrow=1,
-		dimnames=list(c(), c("time","smoothed","deriv")))
-	input = matrix(scan("input.out"), ncol=3, byrow=1,
-		dimnames=list(c(), c("time","input","smoothed")))
+	spline = read.table(output, header=TRUE)
 	plot(input[,1], input[,2], type="p", main="Input Temperatures",
 		xlab="Seconds", ylab="Temp (C)")
-	plot(spline[,1], spline[,2], type="l",
+	plot(spline[,1], spline[,3], type="l",
 		main=paste("Smoothed Temperatures: bc=",bc,"cutoff=",cutoff),
 		xlab="Seconds", ylab="Temp (C)")
 }
