@@ -61,9 +61,18 @@ static const char
                     "s:step        <step interval>",
                     "b:bcdegree    <bc derivative degree (0,1,2)>",
                     "n:nodes       <specify number of nodes (n)>",
-                    "d|debug       <enable diagnostic output>"
-		    "h|help        <print this help>",
+                    "d|debug       <enable diagnostic output>",
+                    "h|help        <print this help>",
                     NULL };
+
+const char* _usage =
+"Read an input file where each line has two space-separated floats.\n"
+"The first column is X, the second is Y.  Process the arrays of data\n"
+"using BSpline with the parameters passed as command-line options,\n"
+"and write the result to the output.\n"
+"The output has 4 space-separated columns with a single header line\n"
+"identifying each column.\n";
+
 
 ///////////////////////////////////////////////////////////////////////////////
 void parseCommandLine(int argc,
@@ -97,6 +106,7 @@ void parseCommandLine(int argc,
         case 'h':
             {
                 // Some basics first
+                cout << _usage;
                 cout << "BSpline interface version: "
                         << SplineBase::IfaceVersion() << endl;
                 cout << "BSpline implementation version: "
@@ -340,31 +350,31 @@ void DumpSpline(vector<datum> &xv,
 {
     // write column headings
     *out << setw(10) << "x"
-	 << setw(10) << "y"
-	 << setw(15) << "spline(x)"
-	 << setw(20) << "slope(spline(x))"
-	 << std::endl;
+         << setw(10) << "y"
+         << setw(15) << "spline(x)"
+         << setw(20) << "slope(spline(x))"
+         << std::endl;
     
     datum variance = 0;
     bool evalmid = false;
 
     for (unsigned int i = 0; i < 2*xv.size()-1; i += (2 - int(evalmid)))
     {
-	datum x1 = xv[i >> 1];
-	datum x2 = xv[(i >> 1) + i%2];
-	datum x = (x1 + x2)/datum(2);
-	datum y1 = yv[i >> 1];
-	datum y2 = yv[(i >> 1) + i%2];
-	datum y = (y1 + y2)/datum(2);
-	*out << setw(10) << x;
-	*out << setw(10) << y;
+        datum x1 = xv[i >> 1];
+        datum x2 = xv[(i >> 1) + i%2];
+        datum x = (x1 + x2)/datum(2);
+        datum y1 = yv[i >> 1];
+        datum y2 = yv[(i >> 1) + i%2];
+        datum y = (y1 + y2)/datum(2);
+        *out << setw(10) << x;
+        *out << setw(10) << y;
         datum ys = spline.evaluate(x);
         *out << setw(15) << ys;
         datum slope = spline.slope(x);
         *out << setw(20) << slope;
         *out << endl;
-	if (i % 2 == 0)
-	    variance += (ys - yv[i >> 1])*(ys - yv[i >> 1]);
+        if (i % 2 == 0)
+            variance += (ys - yv[i >> 1])*(ys - yv[i >> 1]);
     }
     variance /= (datum)xv.size();
     if (debug)
