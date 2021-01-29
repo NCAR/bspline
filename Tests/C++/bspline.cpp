@@ -14,6 +14,7 @@
  *************************************************************************/
 
 #include "BSpline.h"
+#include "BSplineVersion.h"
 
 #include "options.h"
 #include <iostream>
@@ -55,13 +56,14 @@ extern "C"
 static const char
         * optv[] =
             {
-                    "i:input       <input file>",
-                    "o:output       <output file>",
+                    "i:input       <input file> (defaults to stdin)",
+                    "o:output      <output file> (defaults to stdout)",
                     "w:wavelength  <spline wavelength> (required)",
                     "s:step        <step interval>",
-                    "b:bcdegree    <bc derivative degree (0,1,2)>",
-                    "n:nodes       <specify number of nodes (n)>",
+                    "b:bcdegree    <bc derivative degree (0,1,2)> (default is 0)",
+                    "n:nodes       <specify number of nodes (n)> (default is 0)",
                     "d|debug       <enable diagnostic output>",
+                    "v|version     <print version information>",
                     "h|help        <print this help>",
                     NULL };
 
@@ -105,13 +107,15 @@ void parseCommandLine(int argc,
         {
         case 'h':
             {
-                // Some basics first
-                cout << _usage;
-                cout << "BSpline interface version: "
-                        << SplineBase::IfaceVersion() << endl;
-                cout << "BSpline implementation version: "
-                        << SplineBase::ImplVersion() << endl;
                 opts.usage(std::cout, "");
+                cout << "\n" << _usage;
+                exit(0);
+            }
+        case 'v':
+            {
+                cout << "BSpline version: "
+                        << SplineBase::Version() << endl;
+                cout << BSPLINE_URL << endl;
                 exit(0);
             }
         case 'i':

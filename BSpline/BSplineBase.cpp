@@ -13,6 +13,7 @@
  *
  *************************************************************************/
 #include "BSpline.h"
+#include "BSplineVersion.h"
 #include "BandedMatrix.h"
 
 #include <vector>
@@ -131,16 +132,11 @@ template<class T> inline bool BSplineBase<T>::Debug(int on)
 
 //////////////////////////////////////////////////////////////////////
 template<class T> const double BSplineBase<T>::PI = 3.1415927;
-//////////////////////////////////////////////////////////////////////
-template<class T> const char * BSplineBase<T>::ImplVersion()
-{
-    return ("$Id: BSpline.cpp 6352 2008-05-05 04:40:39Z martinc $");
-}
 
 //////////////////////////////////////////////////////////////////////
-template<class T> const char * BSplineBase<T>::IfaceVersion()
+template<class T> const char * BSplineBase<T>::Version()
 {
-    return (_BSPLINEBASE_IFACE_ID);
+    return (BSPLINE_VERSION);
 }
 
 //////////////////////////////////////////////////////////////////////

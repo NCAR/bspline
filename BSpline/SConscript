@@ -1,11 +1,45 @@
 
+from SCons.Script import Import
+
 Import('env')
 
-sources = Split('''
-BSplineLib.cpp
-''')
+env.Require('gitinfo')
 
+# Since this is often a submodule, use the git version info for the
+# submodule.
+env.LoadGitInfo('.')
+
+version_header = """
+/* %(REPO_ERROR)s */
+#ifndef _BSPLINE_VERSION_INFO
+#define _BSPLINE_VERSION_INFO
+
+#ifdef BSPLINE_VERSION
+#undef BSPLINE_VERSION
+#define BSPLINE_VERSION  "%(REPO_REVISION)s"
+#endif
+#define BSPLINE_REPO_HASH      "%(REPO_HASH)s"
+#define BSPLINE_REPO_BRANCH    "%(REPO_BRANCH)s"
+
+#endif
+"""
+
+
+def source_builder(target, source, env):
+    text = source[0].get_text_contents()
+    with open(str(target[0]), "w") as outfile:
+        outfile.write(text)
+
+vhdr = env.Command('bspline-auto-revision.h',
+                   env.Value(version_header % env),
+                   source_builder)
+
+sources = ['BSplineLib.cpp', vhdr]
+
+env.Append(CPPDEFINES=['BSPLINE_AUTO_REVISION'])
 bsplinelib = env.Library('bspline', sources)
 
+# The header needs to be generated even if the library is not compiled, in
+# case this is used as a header-only library.
+env.Default(vhdr)
 env.Default(bsplinelib)
-

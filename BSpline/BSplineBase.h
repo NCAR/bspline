@@ -15,10 +15,6 @@
 #ifndef BSPLINEBASE_H_
 #define BSPLINEBASE_H_
 
-#ifndef _BSPLINEBASE_IFACE_ID
-#define _BSPLINEBASE_IFACE_ID "$Id: BSpline.h 6353 2008-05-05 19:30:48Z martinc $"
-#endif
-
 /**
  * @file
  *
@@ -172,11 +168,8 @@ public:
     // Datum type
     typedef T datum_type;
 
-    /// Return a string describing the implementation version.
-    static const char *ImplVersion();
-
-    /// Return a string describing the interface version.
-    static const char *IfaceVersion();
+    /// Return a string describing the bspline library version.
+    static const char *Version();
     
     /**
      * Call this class method with a value greater than zero to enable
