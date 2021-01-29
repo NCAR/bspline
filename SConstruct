@@ -44,10 +44,11 @@ ALPHABETICAL_INDEX     = NO
 GRAPHICAL_HIERARCHY    = YES
 """
 
+version = "%(REPO_REVISION)s" % env
 docs = env.Apidocs(docfiles,
                    DOXYFILE_TEXT=doxyfile_text,
                    DOXYFILE_DICT={'PROJECT_NAME': 'EOL BSpline Library',
-                                  'PROJECT_NUMBER': env['REPO_REVISION']})
+                                  'PROJECT_NUMBER': version})
 
 env.AddPostAction(docs, [Copy(docs[0].dir, f) for f in IMAGES])
 

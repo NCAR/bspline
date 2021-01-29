@@ -9,37 +9,17 @@ env.Require('gitinfo')
 # submodule.
 env.LoadGitInfo('.')
 
-version_header = """
-/* %(REPO_ERROR)s */
-#ifndef _BSPLINE_VERSION_INFO
-#define _BSPLINE_VERSION_INFO
+version = env.get('REPO_REVISION', 'unknown')
+if version == 'unknown' or env.get('REPO_ERROR'):
+    version = None
 
-#ifdef BSPLINE_VERSION
-#undef BSPLINE_VERSION
-#define BSPLINE_VERSION  "%(REPO_REVISION)s-%(REPO_HASH)s"
-#endif
-#define BSPLINE_REPO_HASH      "%(REPO_HASH)s"
-#define BSPLINE_REPO_BRANCH    "%(REPO_BRANCH)s"
+# If git revision info is loaded successfully, then set the
+# auto-revision, otherwise the default will be used.
+if version:
+    env.Append(CPPDEFINES=['BSPLINE_AUTO_REVISION="%s"' % (version)])
 
-#endif
-"""
+sources = ['BSplineLib.cpp']
 
-
-def source_builder(target, source, env):
-    text = source[0].get_text_contents()
-    with open(str(target[0]), "w") as outfile:
-        outfile.write(text)
-
-vhdr = env.Command('bspline-auto-revision.h',
-                   env.Value(version_header % env),
-                   source_builder)
-
-sources = ['BSplineLib.cpp', vhdr]
-
-env.Append(CPPDEFINES=['BSPLINE_AUTO_REVISION'])
 bsplinelib = env.Library('bspline', sources)
 
-# The header needs to be generated even if the library is not compiled, in
-# case this is used as a header-only library.
-env.Default(vhdr)
 env.Default(bsplinelib)

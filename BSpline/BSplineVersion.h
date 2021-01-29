@@ -13,16 +13,20 @@
  * v1.7-alpha-x.  Ideally, the auto revisions are only seen by developers
  * and never appear in releases.
  */
+#ifdef BSPLINE_AUTO_REVISION
+// We have to use two levels of macros to first expand BSPLINE_AUTO_REVISION
+// before stringifying it.
+#define bspline_xstr(s) bspline_str(s)
+#define bspline_str(s) #s
+#define BSPLINE_VERSION  bspline_xstr(BSPLINE_AUTO_REVISION)
+#else
 #define BSPLINE_VERSION  "v1.6-x"
+#endif
 
 /*
  * The repo URL has been hardcoded to the NCAR organization, since it moved
  * from the ncareol organization.
  */
 #define BSPLINE_URL      "https://github.com/NCAR/bspline"
-
-#ifdef BSPLINE_AUTO_REVISION
-#include "bspline-auto-revision.h"
-#endif
 
 #endif // _BSPLINE_VERSION_H_
