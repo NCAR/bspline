@@ -3,7 +3,7 @@
 import eol_scons
 from SCons.Script import Environment, Copy
 
-env = Environment(tools=['default'])
+env = Environment(tools=['default', 'doxygen'])
 
 env.Export('env')
 
@@ -18,7 +18,6 @@ IMAGES = [env.File("#/Tests/R/" + f) for f in IMAGES]
 
 docfiles = env.Split("""
  README.md
- Doxyfile
  BSpline/BSpline.dox
  BSpline/BSplineLib.cpp
  BSpline/BSpline.cpp
@@ -29,8 +28,27 @@ docfiles = env.Split("""
 """)
 docfiles.extend([str(f) for f in IMAGES])
 
-doc = env.Command(env.File('#/doc/index.html'), docfiles,
-                  ['doxygen'] +
-                  [Copy(env.Dir('#/doc'), f) for f in IMAGES])
+doxyfile_text = """
+EXTRACT_ALL	       = NO
+EXTRACT_STATIC	       = NO
+EXTRACT_PRIVATE	       = NO
 
-env.Alias('doc', doc)
+SOURCE_BROWSER         = NO
+REFERENCED_BY_RELATION = NO
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = NO
+INCLUDE_GRAPH          = NO
+INCLUDED_BY_GRAPH      = NO
+ALPHABETICAL_INDEX     = NO
+
+GRAPHICAL_HIERARCHY    = YES
+"""
+
+docs = env.Apidocs(docfiles,
+                   DOXYFILE_TEXT=doxyfile_text,
+                   DOXYFILE_DICT={'PROJECT_NAME': 'EOL BSpline Library',
+                                  'PROJECT_NUMBER': env['REPO_REVISION']})
+
+env.AddPostAction(docs, [Copy(docs[0].dir, f) for f in IMAGES])
+
+env.Alias('doc', docs)

@@ -1,4 +1,6 @@
-This is the source distribution for the NCAR/EOL BSpline C++ library. 
+# EOL BSpline Library README
+
+This is the source distribution for the NCAR/EOL BSpline C++ library.
 
 ## Background
 
@@ -19,9 +21,9 @@ See the [COPYRIGHT](./COPYRIGHT) file in the source distribution.
 BSpline builds on Windows, Linux and Mac. Here are the build environments
 for each operating system:
 
- * Windows: Microsoft Visual Studio 2005
- * Linux: scons and g++
- * Mac: scons and g++ (both provided by Xcode)
+* Windows: Microsoft Visual Studio 2005
+* Linux: scons and g++
+* Mac: scons and g++ (both provided by Xcode)
 
 BSpline uses the [Doxygen](www.doxygen.org) documentation system. Doxygen
 is not required to build BSpline, but if available it can be used to create
@@ -29,20 +31,20 @@ html documentation.
 
 ## Organization
 
- * BSpline/
-   * Contains the source code to create a bspline library, and a header file to access the BSpline from your code.
- * Tests/
-   * Contains several subdirectories with code for evaluating
-      the code. The C++ directory is the only one that is currently compiled
-      and known to work. The R directory contains code for plotting
-      results using the R statistical langauge. The Fortran directory contains
-      code for some unknown application.
- * Design/
-   * Contains notes and and some original Ooyama code.
+* BSpline/
+  * Contains the source code to create a bspline library, and a header file to access the BSpline from your code.
+* Tests/
+  * Contains several subdirectories with code for evaluating
+    the code. The C++ directory is the only one that is currently compiled
+    and known to work. The R directory contains code for plotting
+    results using the R statistical langauge. The Fortran directory contains
+    code for some unknown application.
+* Design/
+  * Contains notes and and some original Ooyama code.
 
 ## Building
 
-#### Linux/Mac
+### Linux/Mac
 
 [Scons] (http://www.scons.org) is used to build BSpline.
 
@@ -56,7 +58,7 @@ This will create `BSpline/libbspline.a` and `Tests/C++/bspline`. The library
 will contain float and double instantiations of the BSpline
 templates.
 
-#### Windows
+### Windows
 
 A Visual Studio solution (`bspline.sln`) is provided for building the
 same products.
@@ -70,7 +72,7 @@ configuration file:
 ```
 doxygen
 ```
-   
+
 This will produce html formatted documentation in the `doc/` directory.
 Open `doc/index.html` with your favorite browser.
 

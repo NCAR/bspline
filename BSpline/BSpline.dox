@@ -6,7 +6,6 @@ BSplineBase class.
 
 /**
 @page Cubic B-Spline
-@version Version_1_6
 @author Gary Granger (http://www.eol.ucar.edu/homes/granger)
 @date July, 2015
 

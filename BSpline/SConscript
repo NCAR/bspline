@@ -16,7 +16,7 @@ version_header = """
 
 #ifdef BSPLINE_VERSION
 #undef BSPLINE_VERSION
-#define BSPLINE_VERSION  "%(REPO_REVISION)s"
+#define BSPLINE_VERSION  "%(REPO_REVISION)s-%(REPO_HASH)s"
 #endif
 #define BSPLINE_REPO_HASH      "%(REPO_HASH)s"
 #define BSPLINE_REPO_BRANCH    "%(REPO_BRANCH)s"

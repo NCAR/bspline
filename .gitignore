@@ -1,3 +1,4 @@
 /.sconsign.dblite
-doc/
+/doc
 .DS_Store
+/apidocs
