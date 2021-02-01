@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['ifaceversion',['IfaceVersion',['../classBSplineBase.html#a59777a705d51b304607a7dd7f95abe76',1,'BSplineBase']]],
-  ['implversion',['ImplVersion',['../classBSplineBase.html#a694981dfca5154701a87319a79467de1',1,'BSplineBase']]]
+  ['nnodes_48',['nNodes',['../classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75',1,'BSplineBase']]],
+  ['nodes_49',['nodes',['../classBSplineBase.html#aa348e90f54e237276bf0947da927cd24',1,'BSplineBase']]],
+  ['nx_50',['nX',['../classBSplineBase.html#a7b6a533b72487d286fe610882db05528',1,'BSplineBase']]]
 ];

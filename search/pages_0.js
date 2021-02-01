@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['cubic_20b_2dspline',['Cubic B-Spline',['../index.html',1,'']]]
+  ['b_2dspline_62',['B-Spline',['../Cubic.html',1,'']]]
 ];
