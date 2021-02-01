@@ -50,6 +50,13 @@ The HTML documentation is generated from the source files by Doxygen
 
 @section releasenotes Release Notes
 
+<h2>Release 2.0</h2>
+
+The two obsolete version methods were merged into one,
+BSplineBase::Version(), and the method reports useful information even when
+the library is used as headers only, without compiling.  There are no
+changes to the spline computation.
+
 <h2>Release 1.6</h2>
 
 Documentation changes for migrating to github.

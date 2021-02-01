@@ -20,7 +20,7 @@
 #define bspline_str(s) #s
 #define BSPLINE_VERSION  bspline_xstr(BSPLINE_AUTO_REVISION)
 #else
-#define BSPLINE_VERSION  "v1.6-x"
+#define BSPLINE_VERSION  "v2.0"
 #endif
 
 /*
