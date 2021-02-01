@@ -140,12 +140,17 @@ frequencies.  The results are plotted in 6 PNG images.
 
 <table border='2'>
 <tr><th>Cutoff</th><th>BC 0</th><th>BC 1</th><th>BC 2</th></tr>
-<tr><td>5</td><td><a href='plot-1.png'>plot-1.png</a></td>
-              <td><a href='plot-2.png'>plot-2.png</a></td>
-              <td><a href='plot-3.png'>plot-3.png</a></td></tr>
-<tr><td>30</td><td><a href='plot-4.png'>plot-4.png</a></td>
-              <td><a href='plot-5.png'>plot-5.png</a></td>
-              <td><a href='plot-6.png'>plot-6.png</a></td></tr>
+<tr>
+  <td>5</td>
+  <td><a href='plot-spline-temps-5-0.png'>plot-spline-temps-5-0.png</a></td>
+  <td><a href='plot-spline-temps-5-1.png'>plot-spline-temps-5-1.png</a></td>
+  <td><a href='plot-spline-temps-5-2.png'>plot-spline-temps-5-2.png</a></td>
+<tr>
+  <td>30</td>
+  <td><a href='plot-spline-temps-30-0.png'>plot-spline-temps-30-0.png</a></td>
+  <td><a href='plot-spline-temps-30-1.png'>plot-spline-temps-30-1.png</a></td>
+  <td><a href='plot-spline-temps-30-2.png'>plot-spline-temps-30-2.png</a></td>
+</tr>
 </table>
 
 Note that for boundary condition 0, the endpoints are not at zero as might

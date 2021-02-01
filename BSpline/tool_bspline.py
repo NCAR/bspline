@@ -37,7 +37,15 @@ Export('bspline')
 # Setup apidocs
 
 IMAGES = env.Split("""
-plot-1.png plot-2.png plot-3.png plot-4.png plot-5.png plot-6.png
+plot-spline-temps-0-0.png
+plot-spline-temps-0-1.png
+plot-spline-temps-0-2.png
+plot-spline-temps-5-0.png
+plot-spline-temps-5-1.png
+plot-spline-temps-5-2.png
+plot-spline-temps-30-0.png
+plot-spline-temps-30-1.png
+plot-spline-temps-30-2.png
 """)
 
 IMAGES = [env.File("../Tests/R/" + f) for f in IMAGES]
