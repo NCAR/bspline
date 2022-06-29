@@ -1,4 +1,3 @@
-#! /usr/local/bin/octave
 
 global dx = 1;
 
