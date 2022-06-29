@@ -18,15 +18,15 @@
 // before stringifying it.
 #define bspline_xstr(s) bspline_str(s)
 #define bspline_str(s) #s
-#define BSPLINE_VERSION  bspline_xstr(BSPLINE_AUTO_REVISION)
+#define BSPLINE_VERSION bspline_xstr(BSPLINE_AUTO_REVISION)
 #else
-#define BSPLINE_VERSION  "v2.0-x"
+#define BSPLINE_VERSION "v2.0-x"
 #endif
 
 /*
  * The repo URL has been hardcoded to the NCAR organization, since it moved
  * from the ncareol organization.
  */
-#define BSPLINE_URL      "https://github.com/NCAR/bspline"
+#define BSPLINE_URL "https://github.com/NCAR/bspline"
 
 #endif // _BSPLINE_VERSION_H_

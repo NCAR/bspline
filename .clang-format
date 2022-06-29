@@ -1,0 +1,14 @@
+# clang-format settings for BSpline.
+---
+Language: Cpp
+BasedOnStyle: gnu
+IndentWidth: 4
+PointerAlignment: Left
+DerivePointerAlignment: false
+SpaceBeforeParens: ControlStatements
+BreakBeforeBraces: Allman
+BreakBeforeBinaryOperators: None
+BreakConstructorInitializers: AfterColon
+AccessModifierOffset: -4
+SortIncludes: Never
+...

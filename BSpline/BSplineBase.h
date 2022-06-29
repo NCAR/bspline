@@ -75,7 +75,7 @@ template <class T> struct BSplineBaseP;
         *of++ = spline.evaluate (xi);
     }
     }
- 
+
 @endverbatim
  *
  * In the usual usage, the BSplineBase can compute a reasonable number of
@@ -109,12 +109,12 @@ template <class T> struct BSplineBaseP;
  * the solution (or non-solution) of the spline.  Remember to check the
  * ok() method to detect when the spline solution has failed.
  *
- * The interface for the BSplineBase and BSpline templates is defined in 
+ * The interface for the BSplineBase and BSpline templates is defined in
  * the header file BSpline.h.  The implementation is defined in BSpline.cpp.
  * Source files which will instantiate the template should include the
  * implementation file and @em not the interface.  If the implementation
  * for a specific type will be linked from elsewhere, such as a
- * static library or Windows DLL, source files should only include the 
+ * static library or Windows DLL, source files should only include the
  * interface file.  On Windows, applications should link with the import
  * library BSpline.lib and make sure BSpline.dll is on the path.  The DLL
  * contains an implementation for BSpline<float> and BSpline<double>.
@@ -161,50 +161,47 @@ All rights reserved.
 @endverbatim
  **/
 
-template <class T> 
-class BSplineBase  
+template <class T> class BSplineBase
 {
 public:
     // Datum type
     typedef T datum_type;
 
     /// Return a string describing the bspline library version.
-    static const char *Version();
-    
+    static const char* Version();
+
     /**
      * Call this class method with a value greater than zero to enable
      * debug messages, or with zero to disable messages.  Calling with
      * no arguments returns true if debugging enabled, else false.
      */
-    static bool Debug (int on = -1);
+    static bool Debug(int on = -1);
 
     /**
      * Boundary condition types.
      */
     enum BoundaryConditionTypes
     {
-    /// Set the endpoints of the spline to zero.
-    BC_ZERO_ENDPOINTS = 0,
-    /// Set the first derivative of the spline to zero at the endpoints.
-    BC_ZERO_FIRST = 1,
-    /// Set the second derivative to zero.
-    BC_ZERO_SECOND = 2
+        /// Set the endpoints of the spline to zero.
+        BC_ZERO_ENDPOINTS = 0,
+        /// Set the first derivative of the spline to zero at the endpoints.
+        BC_ZERO_FIRST = 1,
+        /// Set the second derivative to zero.
+        BC_ZERO_SECOND = 2
     };
 
 public:
-
     /**
      * Construct a spline domain for the given set of x values, cutoff
      * wavelength, and boundary condition type.  The parameters are the
      * same as for setDomain().  Call ok() to check whether domain
      * setup succeeded after construction.
      */
-    BSplineBase (const T *x, int nx, 
-         double wl, int bc_type = BC_ZERO_SECOND,
-         int num_nodes = 0);
+    BSplineBase(const T* x, int nx, double wl, int bc_type = BC_ZERO_SECOND,
+                int num_nodes = 0);
 
     /// Copy constructor
-    BSplineBase (const BSplineBase &);
+    BSplineBase(const BSplineBase&);
 
     /**
      * Change the domain of this base.  [If this is part of a BSpline
@@ -231,9 +228,8 @@ public:
      *
      * @see ok().
      */
-    bool setDomain (const T *x, int nx, double wl, 
-            int bc_type = BC_ZERO_SECOND,
-            int num_nodes = 0);
+    bool setDomain(const T* x, int nx, double wl, int bc_type = BC_ZERO_SECOND,
+                   int num_nodes = 0);
 
     /**
      * Create a BSpline smoothed curve for the given set of NX y values.
@@ -242,41 +238,61 @@ public:
      *      x values in the domain.
      * @see ok()
      */
-    BSpline<T> *apply (const T *y);
+    BSpline<T>* apply(const T* y);
 
     /**
      * Return array of the node coordinates.  Returns 0 if not ok().  The
      * array of nodes returned by nodes() belongs to the object and should
      * not be deleted; it will also be invalid if the object is destroyed.
      */
-    const T *nodes (int *nnodes);
+    const T* nodes(int* nnodes);
 
-    /** 
+    /**
      * Return the number of nodes (one more than the number of intervals).
      */
-    int nNodes () { return M+1; }
+    int
+    nNodes()
+    {
+        return M + 1;
+    }
 
     /**
      * Number of original x values.
      */
-    int nX () { return NX; }
+    int
+    nX()
+    {
+        return NX;
+    }
 
     /// Minimum x value found.
-    T Xmin () { return xmin; }
+    T
+    Xmin()
+    {
+        return xmin;
+    }
 
     /// Maximum x value found.
-    T Xmax () { return xmin + (M * DX); }
+    T
+    Xmax()
+    {
+        return xmin + (M * DX);
+    }
 
-    /** 
+    /**
      * Return the Alpha value for a given wavelength.  Note that this
      * depends on the current node interval length (DX).
      */
-    double Alpha (double wavelength);
+    double Alpha(double wavelength);
 
     /**
      * Return alpha currently in use by this domain.
      */
-    double Alpha () { return alpha; }
+    double
+    Alpha()
+    {
+        return alpha;
+    }
 
     /**
      * Return the current state of the object, either ok or not ok.
@@ -286,43 +302,46 @@ public:
      * found for a given wavelength, or when the linear equation for the
      * coefficients cannot be solved.
      */
-    bool ok () { return OK; }
+    bool
+    ok()
+    {
+        return OK;
+    }
 
     virtual ~BSplineBase();
 
 protected:
-
     typedef BSplineBaseP<T> Base;
 
     // Provided
-    double waveLength;  // Cutoff wavelength (l sub c)
+    double waveLength; // Cutoff wavelength (l sub c)
     int NX;
     int K;  // Degree of derivative constraint (currently fixed at 2)
-    int BC;         // Boundary conditions type (0,1,2)
+    int BC; // Boundary conditions type (0,1,2)
 
     // Derived
     T xmax;
     T xmin;
-    int M;          // Number of intervals (M+1 nodes)
-    double DX;          // Interval length in same units as X
+    int M;     // Number of intervals (M+1 nodes)
+    double DX; // Interval length in same units as X
     double alpha;
     bool OK;
-    Base *base;         // Hide more complicated state members
-                    // from the public interface.
+    Base* base; // Hide more complicated state members
+                // from the public interface.
 
-    bool Setup (int num_nodes = 0);
-    void calculateQ ();
-    double qDelta (int m1, int m2);
-    double Beta (int m);
-    void addP ();
-    bool factor ();
-    double Basis (int m, T x);
-    double DBasis (int m, T x);
+    bool Setup(int num_nodes = 0);
+    void calculateQ();
+    double qDelta(int m1, int m2);
+    double Beta(int m);
+    void addP();
+    bool factor();
+    double Basis(int m, T x);
+    double DBasis(int m, T x);
 
     static const double BoundaryConditions[3][4];
     static const double PI;
 
-    double Ratiod (int&, double &, double &);
+    double Ratiod(int&, double&, double&);
 };
 
 #endif /*BSPLINEBASE_H_*/

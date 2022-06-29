@@ -22,15 +22,13 @@
 
 template <class T> struct BSplineP;
 
-
 /**
  * Used to evaluate a BSpline.
  * Inherits the BSplineBase domain information and interface and adds
  * smoothing.  See the BSplineBase documentation for a summary of the
  * BSpline interface.
  */
-template <class T>
-class BSpline : public BSplineBase<T>
+template <class T> class BSpline : public BSplineBase<T>
 {
 public:
     /**
@@ -56,17 +54,16 @@ public:
      *			calculated automatically, taking into account
      *			the given cutoff wavelength.
      */
-    BSpline (const T *x, int nx, 		/* independent variable */
-	     const T *y,			/* dependent values @ ea X */
-	     double wl,				/* cutoff wavelength */
-	     int bc_type = BSplineBase<T>::BC_ZERO_SECOND,
-	     int num_nodes = 0);
+    BSpline(const T* x, int nx, /* independent variable */
+            const T* y,         /* dependent values @ ea X */
+            double wl,          /* cutoff wavelength */
+            int bc_type = BSplineBase<T>::BC_ZERO_SECOND, int num_nodes = 0);
 
     /**
      * A BSpline curve can be derived from a separate @p base and a set
      * of data points @p y over that base.
      */
-    BSpline (BSplineBase<T> &base, const T *y);
+    BSpline(BSplineBase<T>& base, const T* y);
 
     /**
      * Solve the spline curve for a new set of y values.  Returns false
@@ -75,25 +72,25 @@ public:
      * @param y The array of y values corresponding to each of the nX()
      *		x values in the domain.
      */
-    bool solve (const T *y);
+    bool solve(const T* y);
 
     /**
-     * Return the evaluation of the smoothed curve 
+     * Return the evaluation of the smoothed curve
      * at a particular @p x value.  If current state is not ok(), returns 0.
      */
-    T evaluate (T x);
+    T evaluate(T x);
 
-    /** 
+    /**
      * Return the first derivative of the spline curve at the given @p x.
      * Returns zero if the current state is not ok().
      */
-    T slope (T x);
+    T slope(T x);
 
     /**
      * Return the @p n-th basis coefficient, from 0 to M.  If the current
      * state is not ok(), or @p n is out of range, the method returns zero.
      */
-    T coefficient (int n);
+    T coefficient(int n);
 
     virtual ~BSpline();
 
@@ -102,7 +99,6 @@ public:
     using BSplineBase<T>::DBasis;
 
 protected:
-
     using BSplineBase<T>::OK;
     using BSplineBase<T>::M;
     using BSplineBase<T>::NX;
@@ -112,9 +108,8 @@ protected:
     using BSplineBase<T>::xmax;
 
     // Our hidden state structure
-    BSplineP<T> *s;
-    T mean;			// Fit without mean and add it in later
-
+    BSplineP<T>* s;
+    T mean; // Fit without mean and add it in later
 };
 
-#endif 
+#endif
