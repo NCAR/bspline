@@ -1,0 +1,37 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "scons rebuild",
+            "type": "shell",
+            "command": "scons --clean ; scons --no-cache",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "scons build",
+            "type": "shell",
+            "command": "scons",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "scons clean",
+            "type": "shell",
+            "command": "scons -c .",
+            "group": {"kind": "build"},
+            "problemMatcher": []
+        }
+    ]
+}
