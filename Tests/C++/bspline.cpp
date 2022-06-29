@@ -47,7 +47,6 @@ extern "C"
 }
 #endif /* OOYAMA */
 
-///////////////////////////////////////////////////////////////////////////////
 static const char* optv[] = {
     "i:input       <input file> (defaults to stdin)",
     "o:output      <output file> (defaults to stdout)",
@@ -69,7 +68,6 @@ const char* _usage =
     "The output has 4 space-separated columns with a single header line\n"
     "identifying each column.\n";
 
-///////////////////////////////////////////////////////////////////////////////
 void
 parseCommandLine(int argc, char* const argv[], std::string& infile,
                  std::string& outfile, int& step, double& wavelength, int& bc,
@@ -193,7 +191,6 @@ parseCommandLine(int argc, char* const argv[], std::string& infile,
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 int
 main(int argc, char* argv[])
 {

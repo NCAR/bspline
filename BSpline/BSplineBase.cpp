@@ -53,7 +53,6 @@ public:
     }
 };
 
-//////////////////////////////////////////////////////////////////////
 template <class T> class Matrix : public BandedMatrix<T>
 {
 public:
@@ -87,10 +86,10 @@ public:
         return *this;
     }
 };
-//////////////////////////////////////////////////////////////////////
-// Our private state structure, which hides our use of some matrix
-// template classes.
 
+/**
+ * @brief Private state structure, hiding use of matrix template classes.
+ **/
 template <class T> struct BSplineBaseP
 {
     typedef Matrix<T> MatrixT;
@@ -100,12 +99,12 @@ template <class T> struct BSplineBaseP
     std::vector<T> Nodes;
 };
 
-//////////////////////////////////////////////////////////////////////
-
-// This array contains the beta parameter for the boundary condition
-// constraints.  The boundary condition type--0, 1, or 2--is the first
-// index into the array, followed by the index of the endpoints.  See the
-// Beta() method.
+/**
+ * This array contains the beta parameter for the boundary condition
+ * constraints.  The boundary condition type--0, 1, or 2--is the first index
+ * into the array, followed by the index of the endpoints.  See the Beta()
+ * method.
+ **/
 // clang-format off
 template <class T>
 const double BSplineBase<T>::BoundaryConditions[3][4] =
@@ -116,7 +115,7 @@ const double BSplineBase<T>::BoundaryConditions[3][4] =
     {   2,  -1,   -1,   2 }
 };
 // clang-format on
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 inline bool
 BSplineBase<T>::Debug(int on)
@@ -127,10 +126,8 @@ BSplineBase<T>::Debug(int on)
     return debug;
 }
 
-//////////////////////////////////////////////////////////////////////
 template <class T> const double BSplineBase<T>::PI = 3.1415927;
 
-//////////////////////////////////////////////////////////////////////
 template <class T>
 const char*
 BSplineBase<T>::Version()
@@ -138,16 +135,11 @@ BSplineBase<T>::Version()
     return (BSPLINE_VERSION);
 }
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 template <class T> BSplineBase<T>::~BSplineBase() { delete base; }
 
-// This is a member-wise copy except for replacing our
-// private base structure with the source's, rather than just copying
-// the pointer.  But we use the compiler's default copy constructor for
-// constructing our BSplineBaseP.
+// This is a member-wise copy except for replacing our private base structure
+// with the source's, rather than just copying the pointer.  But we use the
+// compiler's default copy constructor for constructing our BSplineBaseP.
 template <class T>
 BSplineBase<T>::BSplineBase(const BSplineBase<T>& bb) :
     K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP<T>(*bb.base))
@@ -160,7 +152,7 @@ BSplineBase<T>::BSplineBase(const BSplineBase<T>& bb) :
     M = bb.M;
     NX = base->X.size();
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 BSplineBase<T>::BSplineBase(const T* x, int nx, double wl, int bc,
                             int num_nodes) :
@@ -170,8 +162,6 @@ BSplineBase<T>::BSplineBase(const T* x, int nx, double wl, int bc,
     setDomain(x, nx, wl, bc, num_nodes);
 }
 
-//////////////////////////////////////////////////////////////////////
-// Methods
 template <class T>
 bool
 BSplineBase<T>::setDomain(const T* x, int nx, double wl, int bc, int num_nodes)
@@ -251,8 +241,8 @@ BSplineBase<T>::setDomain(const T* x, int nx, double wl, int bc, int num_nodes)
     }
     return OK;
 }
-//////////////////////////////////////////////////////////////////////
-/*
+
+/**
  * Calculate the alpha parameter given a wavelength.
  */
 template <class T>
@@ -268,8 +258,8 @@ BSplineBase<T>::Alpha(double wl)
         a = a * a * a; // a^6
     return a;
 }
-//////////////////////////////////////////////////////////////////////
-/*
+
+/**
  * Return the correct beta value given the node index.  The value depends
  * on the node index and the current boundary condition type.
  */
@@ -285,8 +275,8 @@ BSplineBase<T>::Beta(int m)
     assert(0 <= m && m <= 3);
     return BoundaryConditions[BC][m];
 }
-//////////////////////////////////////////////////////////////////////
-/*
+
+/**
  * Given an array of y data points defined over the domain
  * of x data points in this BSplineBase, create a BSpline
  * object which contains the smoothed curve for the y array.
@@ -297,8 +287,8 @@ BSplineBase<T>::apply(const T* y)
 {
     return new BSpline<T>(*this, y);
 }
-//////////////////////////////////////////////////////////////////////
-/*
+
+/**
  * Evaluate the closed basis function at node m for value x,
  * using the parameters for the current boundary conditions.
  */
@@ -326,8 +316,8 @@ BSplineBase<T>::Basis(int m, T x)
 
     return y;
 }
-//////////////////////////////////////////////////////////////////////
-/*
+
+/**
  * Evaluate the deriviative of the closed basis function at node m for
  * value x, using the parameters for the current boundary conditions.
  */
@@ -360,14 +350,14 @@ BSplineBase<T>::DBasis(int m, T x)
 
     return dy;
 }
-//////////////////////////////////////////////////////////////////////
-template <class T>
-double
-BSplineBase<T>::qDelta(int m1, int m2)
-/*
+
+/**
  * Return the integral of the product of the basis function derivative
  * restricted to the node domain, 0 to M.
  */
+template <class T>
+double
+BSplineBase<T>::qDelta(int m1, int m2)
 {
     // clang-format off
     // These are the products of the Kth derivative of the
@@ -401,7 +391,7 @@ BSplineBase<T>::qDelta(int m1, int m2)
         q += qparts[K - 1][m2 - m1][m - m1 + 2];
     return q * alpha;
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 void
 BSplineBase<T>::calculateQ()
@@ -460,7 +450,7 @@ BSplineBase<T>::calculateQ()
         }
     }
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 void
 BSplineBase<T>::addP()
@@ -495,7 +485,7 @@ BSplineBase<T>::addP()
         }
     }
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 bool
 BSplineBase<T>::factor()
@@ -512,7 +502,7 @@ BSplineBase<T>::factor()
         std::cerr << "LU decomposition: " << std::endl << LU << std::endl;
     return true;
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 inline double
 BSplineBase<T>::Ratiod(int& ni, double& deltax, double& ratiof)
@@ -522,22 +512,28 @@ BSplineBase<T>::Ratiod(int& ni, double& deltax, double& ratiof)
     double ratiod = (double)NX / (double)(ni + 1);
     return ratiod;
 }
-//////////////////////////////////////////////////////////////////////
-// Setup the number of nodes (and hence deltax) for the given domain and
-// cutoff wavelength.  According to Ooyama, the derivative constraint
-// approximates a lo-pass filter if the cutoff wavelength is about 4*deltax
-// or more, but it should at least be 2*deltax.  We can increase the number
-// of nodes to increase the number of nodes per cutoff wavelength.
-// However, to get a reasonable representation of the data, the setup
-// enforces at least as many nodes as data points in the domain.  (This
-// constraint assumes reasonably even distribution of data points, since
-// its really the density of data points which matters.)
-//
-// Return zero if the setup fails, non-zero otherwise.
-//
-// The algorithm in this routine is mostly taken from the FORTRAN
-// implementation by James Franklin, NOAA/HRD.
-//
+
+/**
+ * @brief Setup number of nodes and deltax for the given domain and cutoff
+ *        wavelength.
+ *
+ * According to Ooyama, the derivative constraint approximates a lo-pass
+ * filter if the cutoff wavelength is about 4*deltax or more, but it should at
+ * least be 2*deltax.  We can increase the number of nodes to increase the
+ * number of nodes per cutoff wavelength.  However, to get a reasonable
+ * representation of the data, the setup enforces at least as many nodes as
+ * data points in the domain.  (This constraint assumes reasonably even
+ * distribution of data points, since its really the density of data points
+ * which matters.)
+ *
+ * Return zero if the setup fails, non-zero otherwise.
+ *
+ * The algorithm in this routine is mostly taken from the FORTRAN
+ * implementation by James Franklin, NOAA/HRD.
+ *
+ * @param num_nodes
+ * @return bool
+ */
 template <class T>
 bool
 BSplineBase<T>::Setup(int num_nodes)
@@ -670,7 +666,7 @@ BSplineBase<T>::Setup(int num_nodes)
 
     return (true);
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 const T*
 BSplineBase<T>::nodes(int* nn)
@@ -690,7 +686,7 @@ BSplineBase<T>::nodes(int* nn)
     assert(base->Nodes.size() == (unsigned)(M + 1));
     return &base->Nodes[0];
 }
-//////////////////////////////////////////////////////////////////////
+
 template <class T>
 std::ostream&
 operator<<(std::ostream& out, const std::vector<T>& c)
