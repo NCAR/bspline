@@ -88,7 +88,7 @@ parseCommandLine(int argc, char* const argv[], std::string& infile,
     Options opts(*argv, optv);
     OptArgvIter iter(--argc, ++argv);
 
-    while (optchar = opts(iter, optarg))
+    while ((optchar = opts(iter, optarg)))
     {
         switch (optchar)
         {
