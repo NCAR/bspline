@@ -83,11 +83,11 @@ private:
 public:
    /// Two-argument constructor.
    OptArgvIter(const char * const argv[])
-      : av(argv), ac(-1), ndx(0) {}
+      : ndx(0), ac(-1), av(argv)  {}
 
    /// Three-argument constructor.
    OptArgvIter(int argc, const char * const argv[])
-      : av(argv), ac(argc), ndx(0) {}
+      : ndx(0), ac(argc), av(argv) {}
 
    /// Destructor.
    virtual ~OptArgvIter(void);

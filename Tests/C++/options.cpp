@@ -32,12 +32,10 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "options.h"
 
-extern "C" {
-   void  exit(int);
-}
 
 static const char ident[] = "@(#)Options  1.05" ;
    // @todo: I need a portable version of "tolower" that does NOT modify
@@ -566,8 +564,8 @@ unsigned OptionSpec::Format(char * buf, unsigned optctrls) const {
 #endif
 
 Options::Options(const char * name, const char * const optv[])
-   : cmdname(name), optvec(optv), explicit_end(0), optctrls(DEFAULT),
-     nextchar(NULLSTR), listopt(NULLSTR)
+   : explicit_end(0), optctrls(DEFAULT), optvec(optv),
+     nextchar(NULLSTR), listopt(NULLSTR), cmdname(name)
 {
    const char * basename = ::strrchr(cmdname, DIR_SEP_CHAR);
    if (basename)  cmdname = basename + 1;
