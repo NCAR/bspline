@@ -34,7 +34,7 @@ public:
 
     // Create a banded matrix with the same number of bands above and below
     // the diagonal.
-    BandedMatrix(int N_ = 1, int nbands_off_diagonal = 0) : bands(0)
+    BandedMatrix(int N_ = 1, int nbands_off_diagonal = 0)
     {
         if (!setup(N_, nbands_off_diagonal))
             setup();
@@ -43,14 +43,11 @@ public:
     // Create a banded matrix by naming the first and last non-zero bands,
     // where the diagonal is at zero, and bands below the diagonal are
     // negative, bands above the diagonal are positive.
-    BandedMatrix(int N_, int first, int last) : bands(0)
+    BandedMatrix(int N_, int first, int last)
     {
         if (!setup(N_, first, last))
             setup();
     }
-
-    // Copy constructor
-    BandedMatrix(const BandedMatrix& b) : bands(0) { Copy(*this, b); }
 
     inline bool
     setup(int N_ = 1, int noff = 0)
@@ -77,9 +74,7 @@ public:
 
         // Finally setup the diagonal vectors
         nbands = last - first + 1;
-        if (bands)
-            delete[] bands;
-        bands = new std::vector<T>[nbands];
+        bands.resize(nbands);
         int i;
         for (i = 0; i < nbands; ++i)
         {
@@ -90,13 +85,6 @@ public:
             bands[i].resize(len);
         }
         return true;
-    }
-
-    BandedMatrix<T>&
-    operator=(const BandedMatrix<T>& b)
-    {
-        Copy(*this, b);
-        return *this;
     }
 
     BandedMatrix<T>&
@@ -111,11 +99,8 @@ public:
         return (*this);
     }
 
-    ~BandedMatrix()
-    {
-        if (bands)
-            delete[] bands;
-    }
+    BandedMatrix<T>(BandedMatrix<T>&) = default;
+    BandedMatrix<T>& operator=(BandedMatrix<T>&) = default;
 
 private:
     // Return false if coordinates are out of bounds
@@ -126,25 +111,6 @@ private:
         e = (i >= j) ? j : i;
         return !(v < 0 || v >= nbands || e < 0 ||
                  (unsigned int)e >= bands[v].size());
-    }
-
-    static BandedMatrix&
-    Copy(BandedMatrix& a, const BandedMatrix& b)
-    {
-        if (a.bands)
-            delete[] a.bands;
-        a.top = b.top;
-        a.bot = b.bot;
-        a.N = b.N;
-        a.out_of_bounds = b.out_of_bounds;
-        a.nbands = a.top - a.bot + 1;
-        a.bands = new std::vector<T>[a.nbands];
-        int i;
-        for (i = 0; i < a.nbands; ++i)
-        {
-            a.bands[i] = b.bands[i];
-        }
-        return a;
     }
 
 public:
@@ -205,10 +171,13 @@ public:
     }
 
 private:
+    // Each diagonal band is a vector of T.
+    typedef std::vector<T> diagonal_t;
+
     int top;
     int bot;
     int nbands;
-    std::vector<T>* bands;
+    std::vector<diagonal_t> bands;
     int N;
     T out_of_bounds;
 };
@@ -238,8 +207,6 @@ public:
     BandedMatrixRow(const BandedMatrix<T>& _m, int _row) : bm(_m), i(_row) {}
 
     BandedMatrixRow(BandedMatrix<T>& _m, int _row) : bm(_m), i(_row) {}
-
-    ~BandedMatrixRow() {}
 
     typename BandedMatrix<T>::element_type&
     operator[](int j)

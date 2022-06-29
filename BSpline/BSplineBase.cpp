@@ -74,12 +74,6 @@ public:
     }
 
     inline Matrix&
-    operator=(const Matrix& b)
-    {
-        return Copy(*this, b);
-    }
-
-    inline Matrix&
     operator=(const T& e)
     {
         BandedMatrix<T>::operator=(e);
