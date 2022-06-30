@@ -129,15 +129,33 @@ BSplineBase<T>::Version()
     return (BSPLINE_VERSION);
 }
 
-template <class T> BSplineBase<T>::~BSplineBase() { delete base; }
-
 // This is a member-wise copy except for replacing our private base structure
 // with the source's, rather than just copying the pointer.  But we use the
 // compiler's default copy constructor for constructing our BSplineBaseP.
-template <class T>
-BSplineBase<T>::BSplineBase(const BSplineBase<T>& bb) :
-    K(bb.K), BC(bb.BC), OK(bb.OK), base(new BSplineBaseP<T>(*bb.base))
+template <class T> BSplineBase<T>::BSplineBase(const BSplineBase<T>& bb)
 {
+    operator=(bb);
+}
+
+template <class T>
+BSplineBase<T>&
+BSplineBase<T>::operator=(const BSplineBase<T>& bb)
+{
+    if (this == &bb)
+        return *this;
+    // If a private base instance has already been allocated, then copy into
+    // it, otherwise allocate one.
+    if (!base)
+    {
+        base.reset(new BSplineBaseP<T>(*bb.base));
+    }
+    else
+    {
+        *base = *bb.base;
+    }
+    K = bb.K;
+    BC = bb.BC;
+    OK = bb.OK;
     xmin = bb.xmin;
     xmax = bb.xmax;
     alpha = bb.alpha;
@@ -145,6 +163,7 @@ BSplineBase<T>::BSplineBase(const BSplineBase<T>& bb) :
     DX = bb.DX;
     M = bb.M;
     NX = base->X.size();
+    return *this;
 }
 
 template <class T>

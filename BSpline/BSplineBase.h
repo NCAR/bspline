@@ -15,6 +15,8 @@
 #ifndef BSPLINEBASE_H_
 #define BSPLINEBASE_H_
 
+#include <memory>
+
 /**
  * @file
  *
@@ -201,7 +203,10 @@ public:
                 int num_nodes = 0);
 
     /// Copy constructor
-    BSplineBase(const BSplineBase&);
+    BSplineBase(const BSplineBase& bb);
+
+    /// Assignment operator
+    BSplineBase& operator=(const BSplineBase& right);
 
     /**
      * Change the domain of this base.  [If this is part of a BSpline
@@ -308,8 +313,6 @@ public:
         return OK;
     }
 
-    virtual ~BSplineBase();
-
 protected:
     typedef BSplineBaseP<T> Base;
 
@@ -326,8 +329,8 @@ protected:
     double DX; // Interval length in same units as X
     double alpha;
     bool OK;
-    Base* base; // Hide more complicated state members
-                // from the public interface.
+    // Hide more complicated state members from the public interface.
+    std::unique_ptr<Base> base;
 
     bool Setup(int num_nodes = 0);
     void calculateQ();
