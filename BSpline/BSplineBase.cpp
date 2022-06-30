@@ -1,5 +1,5 @@
 /************************************************************************
- * Copyright 2009 University Corporation for Atmospheric Research.
+ * Copyright 2022 University Corporation for Atmospheric Research.
  * All rights reserved.
  *
  * Use of this code is subject to the standard BSD license:

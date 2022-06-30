@@ -1,5 +1,5 @@
 bspline
-Copyright © 2015 University Corporation for Atmospheric Research (UCAR). 
+Copyright © 2022 University Corporation for Atmospheric Research (UCAR). 
 All rights reserved. Developed by NCAR's Earth Observing Laboratory (www.eol.ucar.edu).
 
 
