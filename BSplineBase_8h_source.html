@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">EOL BSpline Library
-   &#160;<span id="projectnumber">v2.1</span>
+   &#160;<span id="projectnumber">v2.2</span>
    </div>
   </td>
  </tr>
@@ -121,110 +121,114 @@ $(function() {
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <a class="code" href="classBSplineBase.html">BSplineBase</a>&amp; <a class="code" href="classBSplineBase.html#aa692681d1da2f8bb103dcd76175b0135">operator=</a>(<span class="keyword">const</span> <a class="code" href="classBSplineBase.html">BSplineBase</a>&amp; right);</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160; </div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classBSplineBase.html#acf18fd5d8fd0c0723fe8ef688a9d220f">setDomain</a>(<span class="keyword">const</span> T* x, <span class="keywordtype">int</span> nx, <span class="keywordtype">double</span> wl, <span class="keywordtype">int</span> bc_type = <a class="code" href="classBSplineBase.html#a5e748cf066e66d178717673ec04400bbabe606d289277b3422eb8928803f55dbd">BC_ZERO_SECOND</a>,</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                   <span class="keywordtype">int</span> num_nodes = 0);</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160; </div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <a class="code" href="classBSpline.html">BSpline&lt;T&gt;</a>* <a class="code" href="classBSplineBase.html#a8b5cedde9516de8d3d70502b93377469">apply</a>(<span class="keyword">const</span> T* y);</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keyword">const</span> T* <a class="code" href="classBSplineBase.html#aa348e90f54e237276bf0947da927cd24">nodes</a>(<span class="keywordtype">int</span>* nnodes);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160; </div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordtype">int</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno"><a class="line" href="classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75">  259</a></span>&#160;    <a class="code" href="classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75">nNodes</a>()</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    {</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">return</span> M + 1;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordtype">int</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a7b6a533b72487d286fe610882db05528">  268</a></span>&#160;    <a class="code" href="classBSplineBase.html#a7b6a533b72487d286fe610882db05528">nX</a>()</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    {</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">return</span> NX;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    T</div>
-<div class="line"><a name="l00275"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a6f6f2b2080c68b79e40a40fafa44636c">  275</a></span>&#160;    <a class="code" href="classBSplineBase.html#a6f6f2b2080c68b79e40a40fafa44636c">Xmin</a>()</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    {</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        <span class="keywordflow">return</span> xmin;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    }</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    T</div>
-<div class="line"><a name="l00282"></a><span class="lineno"><a class="line" href="classBSplineBase.html#ad3002c6ef83126236e1a2ff6a8995293">  282</a></span>&#160;    <a class="code" href="classBSplineBase.html#ad3002c6ef83126236e1a2ff6a8995293">Xmax</a>()</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="keywordflow">return</span> xmin + (M * DX);</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    }</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">Alpha</a>(<span class="keywordtype">double</span> wavelength);</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160; </div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordtype">double</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">  297</a></span>&#160;    <a class="code" href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">Alpha</a>()</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    {</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        <span class="keywordflow">return</span> alpha;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    }</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160; </div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno"><a class="line" href="classBSplineBase.html#aa1cd42e86d06c2fcd56d422cca33ec54">  311</a></span>&#160;    <a class="code" href="classBSplineBase.html#aa1cd42e86d06c2fcd56d422cca33ec54">ok</a>()</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    {</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="keywordflow">return</span> OK;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keyword">typedef</span> <a class="code" href="structBSplineBaseP.html">BSplineBaseP&lt;T&gt;</a> Base;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="comment">// Provided</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordtype">double</span> waveLength; <span class="comment">// Cutoff wavelength (l sub c)</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordtype">int</span> NX;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordtype">int</span> K;  <span class="comment">// Degree of derivative constraint (currently fixed at 2)</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordtype">int</span> BC; <span class="comment">// Boundary conditions type (0,1,2)</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="comment">// Derived</span></div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    T xmax;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    T xmin;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordtype">int</span> M;     <span class="comment">// Number of intervals (M+1 nodes)</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordtype">double</span> DX; <span class="comment">// Interval length in same units as X</span></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordtype">double</span> alpha;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keywordtype">bool</span> OK;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="comment">// Hide more complicated state members from the public interface.</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    std::unique_ptr&lt;Base&gt; base;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classBSplineBase.html#a8910fa43321182d1dbc192422f0d7518">Setup</a>(<span class="keywordtype">int</span> num_nodes = 0);</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keywordtype">void</span> calculateQ();</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a86ccf8bcfd237d1d2f663ee755c06c39">qDelta</a>(<span class="keywordtype">int</span> m1, <span class="keywordtype">int</span> m2);</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a5ae444b1b403cf909503985d6e00cc1a">Beta</a>(<span class="keywordtype">int</span> m);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordtype">void</span> addP();</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="keywordtype">bool</span> factor();</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a5171903e7037da186a72eb636f7f537f">Basis</a>(<span class="keywordtype">int</span> m, T x);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#aaa64f1458530f4c64973f22425017fcc">DBasis</a>(<span class="keywordtype">int</span> m, T x);</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160; </div>
-<div class="line"><a name="l00344"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a7857ee42bae59319f95a7baca5be814e">  344</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a7857ee42bae59319f95a7baca5be814e">BoundaryConditions</a>[3][4];</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> PI;</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160; </div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    <span class="keywordtype">double</span> Ratiod(<span class="keywordtype">int</span>&amp;, <span class="keywordtype">double</span>&amp;, <span class="keywordtype">double</span>&amp;);</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;};</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160; </div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*BSPLINEBASE_H_*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="comment">// Declare the destructor so it is not implicitly instantiated.  It can</span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="comment">// only be instantiated with the full implementation in BSplineBase.cpp.</span></div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    ~<a class="code" href="classBSplineBase.html">BSplineBase</a>();</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160; </div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classBSplineBase.html#acf18fd5d8fd0c0723fe8ef688a9d220f">setDomain</a>(<span class="keyword">const</span> T* x, <span class="keywordtype">int</span> nx, <span class="keywordtype">double</span> wl, <span class="keywordtype">int</span> bc_type = <a class="code" href="classBSplineBase.html#a5e748cf066e66d178717673ec04400bbabe606d289277b3422eb8928803f55dbd">BC_ZERO_SECOND</a>,</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                   <span class="keywordtype">int</span> num_nodes = 0);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160; </div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <a class="code" href="classBSpline.html">BSpline&lt;T&gt;</a>* <a class="code" href="classBSplineBase.html#a8b5cedde9516de8d3d70502b93377469">apply</a>(<span class="keyword">const</span> T* y);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="keyword">const</span> T* <a class="code" href="classBSplineBase.html#aa348e90f54e237276bf0947da927cd24">nodes</a>(<span class="keywordtype">int</span>* nnodes);</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160; </div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordtype">int</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno"><a class="line" href="classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75">  263</a></span>&#160;    <a class="code" href="classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75">nNodes</a>()</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    {</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> M + 1;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160; </div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    <span class="keywordtype">int</span></div>
+<div class="line"><a name="l00272"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a7b6a533b72487d286fe610882db05528">  272</a></span>&#160;    <a class="code" href="classBSplineBase.html#a7b6a533b72487d286fe610882db05528">nX</a>()</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    {</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">return</span> NX;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    }</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    T</div>
+<div class="line"><a name="l00279"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a6f6f2b2080c68b79e40a40fafa44636c">  279</a></span>&#160;    <a class="code" href="classBSplineBase.html#a6f6f2b2080c68b79e40a40fafa44636c">Xmin</a>()</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    {</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        <span class="keywordflow">return</span> xmin;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    }</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160; </div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    T</div>
+<div class="line"><a name="l00286"></a><span class="lineno"><a class="line" href="classBSplineBase.html#ad3002c6ef83126236e1a2ff6a8995293">  286</a></span>&#160;    <a class="code" href="classBSplineBase.html#ad3002c6ef83126236e1a2ff6a8995293">Xmax</a>()</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">return</span> xmin + (M * DX);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160; </div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">Alpha</a>(<span class="keywordtype">double</span> wavelength);</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; </div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordtype">double</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">  301</a></span>&#160;    <a class="code" href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">Alpha</a>()</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        <span class="keywordflow">return</span> alpha;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    }</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160; </div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno"><a class="line" href="classBSplineBase.html#aa1cd42e86d06c2fcd56d422cca33ec54">  315</a></span>&#160;    <a class="code" href="classBSplineBase.html#aa1cd42e86d06c2fcd56d422cca33ec54">ok</a>()</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keywordflow">return</span> OK;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    }</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keyword">typedef</span> <a class="code" href="structBSplineBaseP.html">BSplineBaseP&lt;T&gt;</a> Base;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160; </div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="comment">// Provided</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keywordtype">double</span> waveLength; <span class="comment">// Cutoff wavelength (l sub c)</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordtype">int</span> NX;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordtype">int</span> K;  <span class="comment">// Degree of derivative constraint (currently fixed at 2)</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keywordtype">int</span> BC; <span class="comment">// Boundary conditions type (0,1,2)</span></div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160; </div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="comment">// Derived</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    T xmax;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    T xmin;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="keywordtype">int</span> M;     <span class="comment">// Number of intervals (M+1 nodes)</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="keywordtype">double</span> DX; <span class="comment">// Interval length in same units as X</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordtype">double</span> alpha;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordtype">bool</span> OK;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="comment">// Hide more complicated state members from the public interface.</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    std::unique_ptr&lt;Base&gt; base;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160; </div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classBSplineBase.html#a8910fa43321182d1dbc192422f0d7518">Setup</a>(<span class="keywordtype">int</span> num_nodes = 0);</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="keywordtype">void</span> calculateQ();</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a86ccf8bcfd237d1d2f663ee755c06c39">qDelta</a>(<span class="keywordtype">int</span> m1, <span class="keywordtype">int</span> m2);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a5ae444b1b403cf909503985d6e00cc1a">Beta</a>(<span class="keywordtype">int</span> m);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <span class="keywordtype">void</span> addP();</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    <span class="keywordtype">bool</span> factor();</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a5171903e7037da186a72eb636f7f537f">Basis</a>(<span class="keywordtype">int</span> m, T x);</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#aaa64f1458530f4c64973f22425017fcc">DBasis</a>(<span class="keywordtype">int</span> m, T x);</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
+<div class="line"><a name="l00348"></a><span class="lineno"><a class="line" href="classBSplineBase.html#a7857ee42bae59319f95a7baca5be814e">  348</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="classBSplineBase.html#a7857ee42bae59319f95a7baca5be814e">BoundaryConditions</a>[3][4];</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> PI;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160; </div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordtype">double</span> Ratiod(<span class="keywordtype">int</span>&amp;, <span class="keywordtype">double</span>&amp;, <span class="keywordtype">double</span>&amp;);</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;};</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160; </div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*BSPLINEBASE_H_*/</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aclassBSplineBase_html"><div class="ttname"><a href="classBSplineBase.html">BSplineBase</a></div><div class="ttdef"><b>Definition:</b> BSplineBase.h:167</div></div>
 <div class="ttc" id="aclassBSplineBase_html_a0f101eb05135df237d55f2d07647a045"><div class="ttname"><a href="classBSplineBase.html#a0f101eb05135df237d55f2d07647a045">BSplineBase::Version</a></div><div class="ttdeci">static const char * Version()</div><div class="ttdoc">Return a string describing the bspline library version.</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:127</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a2cd4453e84abfc323fb1e9ce9bc47308"><div class="ttname"><a href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">BSplineBase::Alpha</a></div><div class="ttdeci">double Alpha()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:297</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a5171903e7037da186a72eb636f7f537f"><div class="ttname"><a href="classBSplineBase.html#a5171903e7037da186a72eb636f7f537f">BSplineBase::Basis</a></div><div class="ttdeci">double Basis(int m, T x)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:310</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a5ae444b1b403cf909503985d6e00cc1a"><div class="ttname"><a href="classBSplineBase.html#a5ae444b1b403cf909503985d6e00cc1a">BSplineBase::Beta</a></div><div class="ttdeci">double Beta(int m)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:281</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a2cd4453e84abfc323fb1e9ce9bc47308"><div class="ttname"><a href="classBSplineBase.html#a2cd4453e84abfc323fb1e9ce9bc47308">BSplineBase::Alpha</a></div><div class="ttdeci">double Alpha()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:301</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a5171903e7037da186a72eb636f7f537f"><div class="ttname"><a href="classBSplineBase.html#a5171903e7037da186a72eb636f7f537f">BSplineBase::Basis</a></div><div class="ttdeci">double Basis(int m, T x)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:319</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a5ae444b1b403cf909503985d6e00cc1a"><div class="ttname"><a href="classBSplineBase.html#a5ae444b1b403cf909503985d6e00cc1a">BSplineBase::Beta</a></div><div class="ttdeci">double Beta(int m)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:290</div></div>
 <div class="ttc" id="aclassBSplineBase_html_a5e748cf066e66d178717673ec04400bb"><div class="ttname"><a href="classBSplineBase.html#a5e748cf066e66d178717673ec04400bb">BSplineBase::BoundaryConditionTypes</a></div><div class="ttdeci">BoundaryConditionTypes</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:186</div></div>
 <div class="ttc" id="aclassBSplineBase_html_a5e748cf066e66d178717673ec04400bba73e5ec93ff720eff69ebc922e0adbf98"><div class="ttname"><a href="classBSplineBase.html#a5e748cf066e66d178717673ec04400bba73e5ec93ff720eff69ebc922e0adbf98">BSplineBase::BC_ZERO_FIRST</a></div><div class="ttdeci">@ BC_ZERO_FIRST</div><div class="ttdoc">Set the first derivative of the spline to zero at the endpoints.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:190</div></div>
 <div class="ttc" id="aclassBSplineBase_html_a5e748cf066e66d178717673ec04400bbab2cbe9b650cf1b47b98aeef19ddc81a0"><div class="ttname"><a href="classBSplineBase.html#a5e748cf066e66d178717673ec04400bbab2cbe9b650cf1b47b98aeef19ddc81a0">BSplineBase::BC_ZERO_ENDPOINTS</a></div><div class="ttdeci">@ BC_ZERO_ENDPOINTS</div><div class="ttdoc">Set the endpoints of the spline to zero.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:188</div></div>
 <div class="ttc" id="aclassBSplineBase_html_a5e748cf066e66d178717673ec04400bbabe606d289277b3422eb8928803f55dbd"><div class="ttname"><a href="classBSplineBase.html#a5e748cf066e66d178717673ec04400bbabe606d289277b3422eb8928803f55dbd">BSplineBase::BC_ZERO_SECOND</a></div><div class="ttdeci">@ BC_ZERO_SECOND</div><div class="ttdoc">Set the second derivative to zero.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:192</div></div>
 <div class="ttc" id="aclassBSplineBase_html_a6219fc2b912a7fe31bcbb2f06dace4f8"><div class="ttname"><a href="classBSplineBase.html#a6219fc2b912a7fe31bcbb2f06dace4f8">BSplineBase::Debug</a></div><div class="ttdeci">static bool Debug(int on=-1)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:115</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a6f6f2b2080c68b79e40a40fafa44636c"><div class="ttname"><a href="classBSplineBase.html#a6f6f2b2080c68b79e40a40fafa44636c">BSplineBase::Xmin</a></div><div class="ttdeci">T Xmin()</div><div class="ttdoc">Minimum x value found.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:275</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a7857ee42bae59319f95a7baca5be814e"><div class="ttname"><a href="classBSplineBase.html#a7857ee42bae59319f95a7baca5be814e">BSplineBase::BoundaryConditions</a></div><div class="ttdeci">static const double BoundaryConditions[3][4]</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:344</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a7b6a533b72487d286fe610882db05528"><div class="ttname"><a href="classBSplineBase.html#a7b6a533b72487d286fe610882db05528">BSplineBase::nX</a></div><div class="ttdeci">int nX()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:268</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a86ccf8bcfd237d1d2f663ee755c06c39"><div class="ttname"><a href="classBSplineBase.html#a86ccf8bcfd237d1d2f663ee755c06c39">BSplineBase::qDelta</a></div><div class="ttdeci">double qDelta(int m1, int m2)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:373</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a8910fa43321182d1dbc192422f0d7518"><div class="ttname"><a href="classBSplineBase.html#a8910fa43321182d1dbc192422f0d7518">BSplineBase::Setup</a></div><div class="ttdeci">bool Setup(int num_nodes=0)</div><div class="ttdoc">Setup number of nodes and deltax for the given domain and cutoff wavelength.</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:552</div></div>
-<div class="ttc" id="aclassBSplineBase_html_a8b5cedde9516de8d3d70502b93377469"><div class="ttname"><a href="classBSplineBase.html#a8b5cedde9516de8d3d70502b93377469">BSplineBase::apply</a></div><div class="ttdeci">BSpline&lt; T &gt; * apply(const T *y)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:299</div></div>
-<div class="ttc" id="aclassBSplineBase_html_aa1cd42e86d06c2fcd56d422cca33ec54"><div class="ttname"><a href="classBSplineBase.html#aa1cd42e86d06c2fcd56d422cca33ec54">BSplineBase::ok</a></div><div class="ttdeci">bool ok()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:311</div></div>
-<div class="ttc" id="aclassBSplineBase_html_aa348e90f54e237276bf0947da927cd24"><div class="ttname"><a href="classBSplineBase.html#aa348e90f54e237276bf0947da927cd24">BSplineBase::nodes</a></div><div class="ttdeci">const T * nodes(int *nnodes)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:685</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a6f6f2b2080c68b79e40a40fafa44636c"><div class="ttname"><a href="classBSplineBase.html#a6f6f2b2080c68b79e40a40fafa44636c">BSplineBase::Xmin</a></div><div class="ttdeci">T Xmin()</div><div class="ttdoc">Minimum x value found.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:279</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a7857ee42bae59319f95a7baca5be814e"><div class="ttname"><a href="classBSplineBase.html#a7857ee42bae59319f95a7baca5be814e">BSplineBase::BoundaryConditions</a></div><div class="ttdeci">static const double BoundaryConditions[3][4]</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:348</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a7b6a533b72487d286fe610882db05528"><div class="ttname"><a href="classBSplineBase.html#a7b6a533b72487d286fe610882db05528">BSplineBase::nX</a></div><div class="ttdeci">int nX()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:272</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a86ccf8bcfd237d1d2f663ee755c06c39"><div class="ttname"><a href="classBSplineBase.html#a86ccf8bcfd237d1d2f663ee755c06c39">BSplineBase::qDelta</a></div><div class="ttdeci">double qDelta(int m1, int m2)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:382</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a8910fa43321182d1dbc192422f0d7518"><div class="ttname"><a href="classBSplineBase.html#a8910fa43321182d1dbc192422f0d7518">BSplineBase::Setup</a></div><div class="ttdeci">bool Setup(int num_nodes=0)</div><div class="ttdoc">Setup number of nodes and deltax for the given domain and cutoff wavelength.</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:561</div></div>
+<div class="ttc" id="aclassBSplineBase_html_a8b5cedde9516de8d3d70502b93377469"><div class="ttname"><a href="classBSplineBase.html#a8b5cedde9516de8d3d70502b93377469">BSplineBase::apply</a></div><div class="ttdeci">BSpline&lt; T &gt; * apply(const T *y)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:308</div></div>
+<div class="ttc" id="aclassBSplineBase_html_aa1cd42e86d06c2fcd56d422cca33ec54"><div class="ttname"><a href="classBSplineBase.html#aa1cd42e86d06c2fcd56d422cca33ec54">BSplineBase::ok</a></div><div class="ttdeci">bool ok()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:315</div></div>
+<div class="ttc" id="aclassBSplineBase_html_aa348e90f54e237276bf0947da927cd24"><div class="ttname"><a href="classBSplineBase.html#aa348e90f54e237276bf0947da927cd24">BSplineBase::nodes</a></div><div class="ttdeci">const T * nodes(int *nnodes)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:694</div></div>
 <div class="ttc" id="aclassBSplineBase_html_aa692681d1da2f8bb103dcd76175b0135"><div class="ttname"><a href="classBSplineBase.html#aa692681d1da2f8bb103dcd76175b0135">BSplineBase::operator=</a></div><div class="ttdeci">BSplineBase &amp; operator=(const BSplineBase &amp;right)</div><div class="ttdoc">Assignment operator.</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:142</div></div>
-<div class="ttc" id="aclassBSplineBase_html_aaa64f1458530f4c64973f22425017fcc"><div class="ttname"><a href="classBSplineBase.html#aaa64f1458530f4c64973f22425017fcc">BSplineBase::DBasis</a></div><div class="ttdeci">double DBasis(int m, T x)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:339</div></div>
-<div class="ttc" id="aclassBSplineBase_html_ac749628a10c09afa9593c4315d9d1a75"><div class="ttname"><a href="classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75">BSplineBase::nNodes</a></div><div class="ttdeci">int nNodes()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:259</div></div>
+<div class="ttc" id="aclassBSplineBase_html_aaa64f1458530f4c64973f22425017fcc"><div class="ttname"><a href="classBSplineBase.html#aaa64f1458530f4c64973f22425017fcc">BSplineBase::DBasis</a></div><div class="ttdeci">double DBasis(int m, T x)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:348</div></div>
+<div class="ttc" id="aclassBSplineBase_html_ac749628a10c09afa9593c4315d9d1a75"><div class="ttname"><a href="classBSplineBase.html#ac749628a10c09afa9593c4315d9d1a75">BSplineBase::nNodes</a></div><div class="ttdeci">int nNodes()</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:263</div></div>
 <div class="ttc" id="aclassBSplineBase_html_ac7e23fd18ea3f194d179d6da62a59c6d"><div class="ttname"><a href="classBSplineBase.html#ac7e23fd18ea3f194d179d6da62a59c6d">BSplineBase::BSplineBase</a></div><div class="ttdeci">BSplineBase(const T *x, int nx, double wl, int bc_type=BC_ZERO_SECOND, int num_nodes=0)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:170</div></div>
-<div class="ttc" id="aclassBSplineBase_html_acf18fd5d8fd0c0723fe8ef688a9d220f"><div class="ttname"><a href="classBSplineBase.html#acf18fd5d8fd0c0723fe8ef688a9d220f">BSplineBase::setDomain</a></div><div class="ttdeci">bool setDomain(const T *x, int nx, double wl, int bc_type=BC_ZERO_SECOND, int num_nodes=0)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:180</div></div>
-<div class="ttc" id="aclassBSplineBase_html_ad3002c6ef83126236e1a2ff6a8995293"><div class="ttname"><a href="classBSplineBase.html#ad3002c6ef83126236e1a2ff6a8995293">BSplineBase::Xmax</a></div><div class="ttdeci">T Xmax()</div><div class="ttdoc">Maximum x value found.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:282</div></div>
+<div class="ttc" id="aclassBSplineBase_html_acf18fd5d8fd0c0723fe8ef688a9d220f"><div class="ttname"><a href="classBSplineBase.html#acf18fd5d8fd0c0723fe8ef688a9d220f">BSplineBase::setDomain</a></div><div class="ttdeci">bool setDomain(const T *x, int nx, double wl, int bc_type=BC_ZERO_SECOND, int num_nodes=0)</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:189</div></div>
+<div class="ttc" id="aclassBSplineBase_html_ad3002c6ef83126236e1a2ff6a8995293"><div class="ttname"><a href="classBSplineBase.html#ad3002c6ef83126236e1a2ff6a8995293">BSplineBase::Xmax</a></div><div class="ttdeci">T Xmax()</div><div class="ttdoc">Maximum x value found.</div><div class="ttdef"><b>Definition:</b> BSplineBase.h:286</div></div>
 <div class="ttc" id="aclassBSpline_html"><div class="ttname"><a href="classBSpline.html">BSpline</a></div><div class="ttdef"><b>Definition:</b> BSpline.h:32</div></div>
 <div class="ttc" id="astructBSplineBaseP_html"><div class="ttname"><a href="structBSplineBaseP.html">BSplineBaseP</a></div><div class="ttdoc">Private state structure, hiding use of matrix template classes.</div><div class="ttdef"><b>Definition:</b> BSplineBase.cpp:88</div></div>
 </div><!-- fragment --></div><!-- contents -->
