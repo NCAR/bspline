@@ -2,27 +2,11 @@
 import os
 import sys
 
-tools = ['default',]
-env = Environment(tools = tools)
-# provide two paths for CPP and the linker, since
-# sometimes BSpline will be the top level scons
-# directory, and other times BSpline will live 
-# one directory down within another project.
+from SCons.Script import Environment
 
-if sys.platform == 'win32':
-    env.Append(CCFLAGS=['/EHsc','/Zi'])
-else:
-    env.Append(CCFLAGS=['-g',])
-env.AppendUnique(CPPPATH=['#/',])
-env.AppendUnique(CPPPATH=['#/BSpline',])
+env = Environment(tools = ['default', 'bspline', 'testing'])
 
-# some linkers don't like missing library search paths:
-env.AppendUnique(LIBPATH=['#/BSpline', ])
-if os.path.exists('#/BSpline/BSpline'):
-   env.AppendUnique(LIBPATH=['#/BSpline/BSpline', ])
-env.AppendUnique(LIBS=['bspline',])
-
-sources = Split('''
+sources = env.Split('''
 bspline.cpp
 options.cpp
 ''')
@@ -30,3 +14,21 @@ options.cpp
 bspline = env.Program('bspline', sources)
 
 env.Default(bspline)
+
+env['BSPLINE'] = bspline
+datadir = env.Dir('../Data')
+outputdir = env.Dir('./output')
+baselinedir = env.Dir('./baseline')
+
+# Create builders for all of the test outputs and a diff between the output
+# and the baseline.
+for cutoff in [5, 30, 0]:
+    for bc in [0, 1, 2]:
+        for field in ['temps', 'wdir', 'wspd']:
+            ofile = f"{outputdir}/spline-{field}-{cutoff}-{bc}.out"
+            bfile = f"{baselinedir}/spline-{field}-{cutoff}-{bc}.out"
+            dfile = f"{datadir}/sample.{field}"
+            ofile = env.Command(ofile, [bspline, dfile], "${SOURCES[0]}"
+                                f" -w {cutoff} -b {bc} "
+                                "-i ${SOURCES[1]} -o $TARGETS")
+            env.DefaultTest(env.Diff([f"{bfile}", ofile]))

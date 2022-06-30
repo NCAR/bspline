@@ -13,8 +13,8 @@
  *
  *************************************************************************/
 
-#include "BSpline.h"
-#include "BSplineVersion.h"
+#include "BSpline/BSpline.h"
+#include "BSpline/BSplineVersion.h"
 
 #include "options.h"
 #include <iostream>
