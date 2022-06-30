@@ -208,6 +208,10 @@ public:
     /// Assignment operator
     BSplineBase& operator=(const BSplineBase& right);
 
+    // Declare the destructor so it is not implicitly instantiated.  It can
+    // only be instantiated with the full implementation in BSplineBase.cpp.
+    ~BSplineBase();
+
     /**
      * Change the domain of this base.  [If this is part of a BSpline
      * object, this method {\em will not} change the existing curve or

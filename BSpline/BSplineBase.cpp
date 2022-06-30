@@ -175,6 +175,15 @@ BSplineBase<T>::BSplineBase(const T* x, int nx, double wl, int bc,
     setDomain(x, nx, wl, bc, num_nodes);
 }
 
+// The destructor is declared in the class definition but not defined so the
+// compiler does not try to generate it when the full implementation is not
+// available.  The implicit destructor fails to instantiate when BSplineBaseP
+// is still incomplete, because the std::unique_ptr<BSplineBaseP> destructor
+// cannot be instantiated.  To fully instantiate BSplineBase, this file has to
+// be included.  The header alone can be used when the template is explicitly
+// instantiated elsewhere.
+template <class T> BSplineBase<T>::~BSplineBase() {}
+
 template <class T>
 bool
 BSplineBase<T>::setDomain(const T* x, int nx, double wl, int bc, int num_nodes)

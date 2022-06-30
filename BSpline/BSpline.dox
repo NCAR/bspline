@@ -50,6 +50,11 @@ The HTML documentation is generated from the source files by Doxygen
 
 @section releasenotes Release Notes
 
+<h2>Release 2.2</h2>
+
+Restore the explicit destructor so BSplineBase.h can be used by itself when
+explicit instantiations will be linked from a library.
+
 <h2>Release 2.1</h2>
 
 Fix missing assignment operator bug in BSplineBase.  Thanks to @@AlexRockliff
