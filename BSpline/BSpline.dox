@@ -7,11 +7,11 @@ BSplineBase class.
 /**
 @page Cubic B-Spline
 @author Gary Granger (http://www.eol.ucar.edu/homes/granger)
-@date July, 2015
+@date June, 2022
 
 @section download Download
 
-This software is copyright 2015 by the University Corporation for
+This software is copyright 2022 by the University Corporation for
 Atmospheric Research (UCAR).  It is licensed for use according to the
 standard BSD license:
 
@@ -30,11 +30,11 @@ implementation by James L. Franklin, NOAA/Hurricane Research Division.
 
 The source should be available for download from github here:
 
-- https://github.com/ncareol/bspline
+- https://github.com/NCAR/bspline
 
 The generated documentation may also be online here:
 
-- http://ncareol.github.io/bspline/
+- http://ncar.github.io/bspline/
 
 @section documentation Documentation
 
@@ -49,6 +49,13 @@ The HTML documentation is generated from the source files by Doxygen
 (http://www.doxygen.org).  Thanks to Dimitri for a great tool.
 
 @section releasenotes Release Notes
+
+<h2>Release 2.1</h2>
+
+Fix missing assignment operator bug in BSplineBase.  Thanks to @@AlexRockliff
+for reporting it.
+
+Add simple automated test which compares sample outputs against baseline.
 
 <h2>Release 2.0</h2>
 
