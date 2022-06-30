@@ -1,3 +1,5 @@
 /bspline
 /bspline.o
 /options.o
+/output/*.out
+
