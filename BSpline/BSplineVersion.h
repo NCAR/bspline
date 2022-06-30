@@ -20,7 +20,7 @@
 #define bspline_str(s) #s
 #define BSPLINE_VERSION bspline_xstr(BSPLINE_AUTO_REVISION)
 #else
-#define BSPLINE_VERSION "v2.1"
+#define BSPLINE_VERSION "v2.1-x"
 #endif
 
 #define BSPLINE_URL "https://github.com/NCAR/bspline"
