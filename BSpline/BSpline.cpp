@@ -131,8 +131,8 @@ BSpline<T>::solve(const T* y)
         if (Debug() && M < 30)
         {
             std::cerr << " a: " << A << std::endl;
-            std::cerr << "LU factor of (P+Q) = " << std::endl
-                      << base->Q << std::endl;
+            std::cerr << "LU factor of (P+Q) = \n"
+                      << fmt_matrix << base->Q << std::endl;
         }
     }
     return (OK);

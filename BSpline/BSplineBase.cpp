@@ -21,6 +21,7 @@
 #include <iterator>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 #include <map>
 #include <assert.h>
 
@@ -227,10 +228,7 @@ BSplineBase<T>::setDomain(const T* x, int nx, double wl, int bc, int num_nodes)
         calculateQ();
         if (Debug() && M < 30)
         {
-            std::cerr.fill(' ');
-            std::cerr.precision(2);
-            std::cerr.width(5);
-            std::cerr << base->Q << std::endl;
+            std::cerr << fmt_matrix << base->Q << std::endl;
         }
 
         if (Debug())
@@ -241,8 +239,8 @@ BSplineBase<T>::setDomain(const T* x, int nx, double wl, int bc, int num_nodes)
             std::cerr << "Done." << std::endl;
             if (M < 30)
             {
-                std::cerr << "Array Q after addition of P." << std::endl;
-                std::cerr << base->Q;
+                std::cerr << "Array Q after addition of P.\n";
+                std::cerr << fmt_matrix << base->Q << std::endl;
             }
         }
 
@@ -521,7 +519,10 @@ BSplineBase<T>::factor()
         return false;
     }
     if (Debug() && M < 30)
-        std::cerr << "LU decomposition: " << std::endl << LU << std::endl;
+    {
+        std::cerr << "LU decomposition: \n"
+                  << fmt_matrix << LU << std::endl;
+    }
     return true;
 }
 
@@ -713,9 +714,20 @@ template <class T>
 std::ostream&
 operator<<(std::ostream& out, const std::vector<T>& c)
 {
-    for (typename std::vector<T>::const_iterator it = c.begin(); it < c.end();
-         ++it)
-        out << *it << ", ";
-    out << std::endl;
+    std::ostream::sentry se(out);
+    if (se)
+    {
+        std::ostringstream buf;
+        buf.copyfmt(out);
+        std::streamsize width = out.width();
+        for (typename std::vector<T>::const_iterator it = c.begin(); it < c.end();
+            ++it)
+        {
+            buf << std::setw(0) << (it == c.begin() ? "" : ", ")
+                << std::setw(width) << *it;
+        }
+        buf << std::endl;
+        out << buf.str();
+    }
     return out;
 }

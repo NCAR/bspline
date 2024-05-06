@@ -23,6 +23,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 template <class T> class BandedMatrixRow;
 
@@ -186,17 +188,39 @@ template <class T>
 std::ostream&
 operator<<(std::ostream& out, const BandedMatrix<T>& m)
 {
-    unsigned int i, j;
-    for (i = 0; i < m.num_rows(); ++i)
+    std::ostream::sentry se(out);
+    if (se)
     {
-        for (j = 0; j < m.num_cols(); ++j)
+        std::ostringstream buf;
+        buf.copyfmt(out);
+        std::streamsize width = out.width();
+        unsigned int i, j;
+        for (i = 0; i < m.num_rows(); ++i)
         {
-            out << m.element(i, j) << " ";
+            for (j = 0; j < m.num_cols(); ++j)
+            {
+                buf << std::setw(0) << (j ? " " : "")
+                    << std::setw(width) << m.element(i, j);
+            }
+            buf << std::endl;
         }
-        out << std::endl;
+        out << buf.str();
     }
     return out;
 }
+
+
+/**
+ * @brief Provide default iostream formatting for matrix types.
+ */
+inline std::ostream&
+fmt_matrix(std::ostream& out)
+{
+    out << std::fixed << std::right << std::setw(6)
+        << std::setfill(' ') << std::setprecision(2);
+    return out;
+}
+
 
 /*
  * Helper class for the intermediate in the [][] operation.
