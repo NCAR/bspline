@@ -89,7 +89,7 @@ public:
         return true;
     }
 
-    BandedMatrix<T>&
+    BandedMatrix&
     operator=(const T& e)
     {
         int i;
@@ -101,8 +101,8 @@ public:
         return (*this);
     }
 
-    BandedMatrix<T>(BandedMatrix<T>&) = default;
-    BandedMatrix<T>& operator=(BandedMatrix<T>&) = default;
+    BandedMatrix(const BandedMatrix&) = default;
+    BandedMatrix& operator=(const BandedMatrix&) = default;
 
 private:
     // Return false if coordinates are out of bounds
